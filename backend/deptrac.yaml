@@ -27,24 +27,38 @@ deptrac:
           collectors:
               - type: classLike
                 value: 'Modules\\Shared\\Kernel\\.*'
+        - name: Vendor
+          collectors:
+              - type: classLike
+                value: 'Symfony\\.*'
+              - type: classLike
+                value: 'Doctrine\\.*'
+              - type: classLike
+                value: 'Psr\\.*'
 
     ruleset:
         # Domain is pure: no outward dependencies on other layers
         Domain:
             - SharedKernel
+            - Vendor
         # Application orchestrates Domain + SharedKernel
         Application:
             - Domain
             - SharedKernel
+            - Vendor
         # Infrastructure wires Application + Domain + SharedKernel
         Infrastructure:
             - Application
             - Domain
             - SharedKernel
+            - Vendor
         # Api exposes DTO + adapter over Application
         Api:
             - Application
             - SharedKernel
-        SharedKernel: ~
+            - Vendor
+        SharedKernel:
+            - Vendor
+        Vendor: ~
 
     skip_violations: []

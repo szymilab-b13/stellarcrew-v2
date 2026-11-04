@@ -19,5 +19,16 @@ services:
     App\:
         resource: '../src/'
 
+    # registers every module class as a service (DDD + CQRS, bundle per module)
+    Modules\:
+        resource: '../modules/'
+
+    # shared kernel bindings: clock + uuid generator defaults for all consumers
+    Modules\Shared\Kernel\Clock:
+        alias: Modules\Shared\Kernel\SystemClock
+
+    Modules\Shared\Kernel\UuidGenerator:
+        alias: Modules\Shared\Kernel\Uuid7Generator
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
