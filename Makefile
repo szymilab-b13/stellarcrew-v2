@@ -78,8 +78,9 @@ frontend-build: ## Build production bundle (uses node:22-alpine image)
 		-w /app \
 		node:22-alpine sh -c "corepack enable && pnpm build && chown -R $(shell id -u):$(shell id -g) /app"
 
-frontend-dev: ## pnpm dev (TBD: BL-SETUP-005, requires frontend container + port mapping)
-	@echo "[frontend-dev] TBD: pnpm dev — frontend container is wired in BL-SETUP-005."
+frontend-dev: ## Start Vite dev server inside the frontend container (follows logs)
+	$(DOCKER_COMPOSE) up -d frontend
+	$(DOCKER_COMPOSE) logs -f --tail=100 frontend
 
 frontend-test: ## vitest (TBD: BL-SETUP-009)
 	@echo "[frontend-test] TBD: vitest — added in BL-SETUP-009."
