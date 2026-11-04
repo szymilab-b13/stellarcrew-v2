@@ -6,7 +6,9 @@ vendor/
 node_modules/
 
 # Environment
-.env
+# Root .env is a local docker-compose override (ports/credentials for host).
+# Backend/frontend .env files are Symfony defaults and MUST be committed.
+/.env
 .env.local
 .env.*.local
 
