@@ -38,8 +38,8 @@ ps: ## Show running containers
 
 ## ---- Shells ---------------------------------------------------------------
 
-shell: ## Open shell in backend container (TBD after BL-SETUP-003)
-	@echo "[shell] Backend container TBD — added in BL-SETUP-003 once Symfony kernel is ported."
+shell: ## Open shell in backend container
+	$(DOCKER_COMPOSE) exec backend sh
 
 shell-db: ## Open psql shell
 	$(DOCKER_COMPOSE) exec postgres psql -U $${POSTGRES_USER:-app} -d $${POSTGRES_DB:-stellarcrew}
