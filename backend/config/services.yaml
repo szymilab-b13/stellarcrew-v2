@@ -30,5 +30,21 @@ services:
     Modules\Shared\Kernel\UuidGenerator:
         alias: Modules\Shared\Kernel\Uuid7Generator
 
+    # Redis client built from REDIS_URL (DSN parsed by symfony/cache's Redis adapter)
+    Redis:
+        class: Redis
+        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', 'createConnection']
+        arguments:
+            $dsn: '%env(REDIS_URL)%'
+
+    # Rabbit probe wired to the broker host+port (DSN not required: health check is a TCP ping)
+    Modules\Core\Infrastructure\HealthCheck\TcpRabbitConnectionProbe:
+        arguments:
+            $host: '%env(RABBITMQ_HOST)%'
+            $port: '%env(int:RABBITMQ_PORT)%'
+
+    Modules\Core\Infrastructure\HealthCheck\RabbitConnectionProbe:
+        alias: Modules\Core\Infrastructure\HealthCheck\TcpRabbitConnectionProbe
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

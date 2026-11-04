@@ -35,6 +35,8 @@ deptrac:
                 value: 'Doctrine\\.*'
               - type: classLike
                 value: 'Psr\\.*'
+              - type: classLike
+                value: 'OpenApi\\.*'
 
     ruleset:
         # Domain is pure: no outward dependencies on other layers
@@ -46,10 +48,11 @@ deptrac:
             - Domain
             - SharedKernel
             - Vendor
-        # Infrastructure wires Application + Domain + SharedKernel
+        # Infrastructure wires Application + Domain + SharedKernel and implements Api contracts
         Infrastructure:
             - Application
             - Domain
+            - Api
             - SharedKernel
             - Vendor
         # Api exposes DTO + adapter over Application
