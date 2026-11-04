@@ -7,7 +7,7 @@ FRONTEND_DIR   := frontend
 .PHONY: help install up down restart logs ps shell shell-db shell-redis \
         backend-install backend-shell backend-test backend-lint \
         frontend-install frontend-dev frontend-test frontend-lint \
-        migrate seed test lint build clean
+        migrate seed test lint build clean smoke
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-24s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -38,8 +38,8 @@ ps: ## Show running containers
 
 ## ---- Shells ---------------------------------------------------------------
 
-shell: ## Open shell in backend container (TBD after BL-SETUP-003)
-	@echo "[shell] Backend container TBD — added in BL-SETUP-003 once Symfony kernel is ported."
+shell: ## Open shell in backend container
+	$(DOCKER_COMPOSE) exec backend sh
 
 shell-db: ## Open psql shell
 	$(DOCKER_COMPOSE) exec postgres psql -U $${POSTGRES_USER:-app} -d $${POSTGRES_DB:-stellarcrew}
@@ -49,8 +49,12 @@ shell-redis: ## Open redis-cli
 
 ## ---- Backend (Symfony) — TBD after BL-SETUP-002/003 ----------------------
 
-backend-install: ## composer install (TBD: BL-SETUP-002)
-	@echo "[backend-install] TBD: composer install — added in BL-SETUP-002."
+backend-install: ## composer install (uses composer:2 image until backend container is wired in BL-SETUP-003)
+	docker run --rm --user "$(shell id -u):$(shell id -g)" \
+		-e COMPOSER_HOME=/tmp/composer \
+		-v "$(PWD)/$(BACKEND_DIR):/app" \
+		-w /app \
+		composer:2 install --ignore-platform-reqs
 
 backend-shell: shell ## Alias
 
@@ -95,6 +99,8 @@ clean: ## Stop containers + remove volumes (DESTRUCTIVE)
 
 ## ---- Smoke ----------------------------------------------------------------
 
-smoke: ## Validate docker-compose + check services healthy
+smoke: ## Validate docker-compose + composer.json
 	$(DOCKER_COMPOSE) config --quiet
 	@echo "[smoke] docker-compose.yml is valid."
+	docker run --rm -v "$(PWD)/$(BACKEND_DIR):/app" -w /app composer:2 validate --no-check-publish
+	@echo "[smoke] backend/composer.json is valid."
