@@ -17,8 +17,10 @@ export function App() {
         <section className="rounded-lg border border-sc-border bg-sc-bg-card p-5 shadow-sm">
           <h2 className="text-lg font-medium">Design tokens</h2>
           <p className="mt-2 text-sm text-sc-text-muted">
-            Backgrounds, borders and text colours are driven by <code className="font-mono">--color-sc-*</code> CSS
-            variables, remapped per <code className="font-mono">data-theme</code> on <code className="font-mono">&lt;html&gt;</code>.
+            Backgrounds, borders and text colours are driven by{' '}
+            <code className="font-mono">--color-sc-*</code> CSS variables, remapped per{' '}
+            <code className="font-mono">data-theme</code> on{' '}
+            <code className="font-mono">&lt;html&gt;</code>.
           </p>
         </section>
 
