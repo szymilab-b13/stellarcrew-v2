@@ -5,7 +5,9 @@ BACKEND_DIR    := backend
 FRONTEND_DIR   := frontend
 
 .PHONY: help install up down restart logs ps shell shell-db shell-redis \
-        backend-install backend-shell backend-test backend-lint \
+        backend-install backend-shell backend-test backend-lint backend-lint-fix \
+        backend-phpstan backend-deptrac backend-cs-fixer backend-cs-fixer-fix \
+        backend-rector backend-rector-fix \
         frontend-install frontend-dev frontend-test frontend-lint \
         migrate seed test lint build clean smoke
 
@@ -61,8 +63,28 @@ backend-shell: shell ## Alias
 backend-test: ## phpunit (TBD: BL-SETUP-009)
 	@echo "[backend-test] TBD: phpunit — added in BL-SETUP-009."
 
-backend-lint: ## phpstan + deptrac + cs-fixer (TBD: BL-SETUP-007)
-	@echo "[backend-lint] TBD: phpstan + deptrac + php-cs-fixer — added in BL-SETUP-007."
+backend-phpstan: ## Static analysis (phpstan level 8, requires backend container up)
+	$(DOCKER_COMPOSE) exec -T backend bin/console cache:warmup --env=dev --quiet
+	$(DOCKER_COMPOSE) exec -T backend vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+
+backend-deptrac: ## Enforce modular bundle boundaries (requires backend container up)
+	$(DOCKER_COMPOSE) exec -T backend vendor/bin/deptrac analyse --no-progress --fail-on-uncovered
+
+backend-cs-fixer: ## Check PSR-12 + PHP84Migration (dry-run, requires backend container up)
+	$(DOCKER_COMPOSE) exec -T backend vendor/bin/php-cs-fixer fix --dry-run --diff --verbose
+
+backend-cs-fixer-fix: ## Apply php-cs-fixer changes (requires backend container up)
+	$(DOCKER_COMPOSE) exec -T backend vendor/bin/php-cs-fixer fix
+
+backend-rector: ## Rector dry-run (requires backend container up)
+	$(DOCKER_COMPOSE) exec -T backend vendor/bin/rector process --dry-run --no-progress-bar
+
+backend-rector-fix: ## Apply rector refactors (requires backend container up)
+	$(DOCKER_COMPOSE) exec -T backend vendor/bin/rector process --no-progress-bar
+
+backend-lint: backend-phpstan backend-deptrac backend-cs-fixer backend-rector ## Full backend static analysis pipeline
+
+backend-lint-fix: backend-cs-fixer-fix backend-rector-fix ## Auto-fix style + refactors (then rerun backend-lint)
 
 ## ---- Frontend (React/Vite) -----------------------------------------------
 

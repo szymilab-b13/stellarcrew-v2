@@ -48,7 +48,3 @@ deptrac:
         SharedKernel: ~
 
     skip_violations: []
-
-    formatters:
-        github_actions:
-            report_uncovered: true

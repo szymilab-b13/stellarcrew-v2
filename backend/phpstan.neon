@@ -11,10 +11,8 @@ parameters:
         - modules
         - tests
     excludePaths:
-        - src/Kernel.php
+        - tests/bootstrap.php
     tmpDir: var/phpstan
-    checkMissingIterableValueType: true
-    checkGenericClassInNonGenericObjectType: true
     treatPhpDocTypesAsCertain: false
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
