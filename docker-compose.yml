@@ -1,0 +1,90 @@
+name: stellarcrew-v2
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: sc_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-stellarcrew}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-stellarcrew}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+    networks:
+      - sc_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: sc_redis
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - sc_net
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: sc_mailpit
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_WEB_PORT:-8025}:8025"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8025/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - sc_net
+
+  backend:
+    build:
+      context: ./backend
+      target: dev
+    container_name: sc_backend
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+      APP_SECRET: ${APP_SECRET:-replace_me}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://app:app@postgres:5432/stellarcrew?serverVersion=17&charset=utf8}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      MAILER_DSN: ${MAILER_DSN:-smtp://mailpit:1025}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "php -r 'exit(0);'"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    networks:
+      - sc_net
+
+networks:
+  sc_net:
+    name: sc_net
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: sc_postgres_data
+  redis_data:
+    name: sc_redis_data

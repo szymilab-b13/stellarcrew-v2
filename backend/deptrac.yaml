@@ -1,0 +1,54 @@
+deptrac:
+    paths:
+        - src
+        - modules
+    exclude_files:
+        - '#.*/tests/.*#'
+        - '#.*/vendor/.*#'
+
+    layers:
+        - name: Domain
+          collectors:
+              - type: classLike
+                value: 'Modules\\[A-Za-z0-9]+\\Domain\\.*'
+        - name: Application
+          collectors:
+              - type: classLike
+                value: 'Modules\\[A-Za-z0-9]+\\Application\\.*'
+        - name: Infrastructure
+          collectors:
+              - type: classLike
+                value: 'Modules\\[A-Za-z0-9]+\\Infrastructure\\.*'
+        - name: Api
+          collectors:
+              - type: classLike
+                value: 'Modules\\[A-Za-z0-9]+\\Api\\.*'
+        - name: SharedKernel
+          collectors:
+              - type: classLike
+                value: 'Modules\\Shared\\Kernel\\.*'
+
+    ruleset:
+        # Domain is pure: no outward dependencies on other layers
+        Domain:
+            - SharedKernel
+        # Application orchestrates Domain + SharedKernel
+        Application:
+            - Domain
+            - SharedKernel
+        # Infrastructure wires Application + Domain + SharedKernel
+        Infrastructure:
+            - Application
+            - Domain
+            - SharedKernel
+        # Api exposes DTO + adapter over Application
+        Api:
+            - Application
+            - SharedKernel
+        SharedKernel: ~
+
+    skip_violations: []
+
+    formatters:
+        github_actions:
+            report_uncovered: true
