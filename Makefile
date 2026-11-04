@@ -61,8 +61,8 @@ backend-install: ## composer install (uses composer:2 image until backend contai
 
 backend-shell: shell ## Alias
 
-backend-test: ## phpunit (TBD: BL-SETUP-009)
-	@echo "[backend-test] TBD: phpunit — added in BL-SETUP-009."
+backend-test: ## phpunit (requires backend container up)
+	$(DOCKER_COMPOSE) exec -T backend vendor/bin/phpunit
 
 backend-phpstan: ## Static analysis (phpstan level 8, requires backend container up)
 	$(DOCKER_COMPOSE) exec -T backend bin/console cache:warmup --env=dev --quiet
@@ -105,8 +105,8 @@ frontend-dev: ## Start Vite dev server inside the frontend container (follows lo
 	$(DOCKER_COMPOSE) up -d frontend
 	$(DOCKER_COMPOSE) logs -f --tail=100 frontend
 
-frontend-test: ## vitest (TBD: BL-SETUP-009)
-	@echo "[frontend-test] TBD: vitest sanity — added in BL-SETUP-009."
+frontend-test: ## vitest (requires frontend container up)
+	$(DOCKER_COMPOSE) exec -T frontend pnpm test
 
 frontend-eslint: ## eslint check (requires frontend container up)
 	$(DOCKER_COMPOSE) exec -T frontend pnpm lint
