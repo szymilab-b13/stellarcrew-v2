@@ -8,7 +8,8 @@ FRONTEND_DIR   := frontend
         backend-install backend-shell backend-test backend-lint backend-lint-fix \
         backend-phpstan backend-deptrac backend-cs-fixer backend-cs-fixer-fix \
         backend-rector backend-rector-fix \
-        frontend-install frontend-dev frontend-test frontend-lint \
+        frontend-install frontend-build frontend-dev frontend-test \
+        frontend-lint frontend-lint-fix frontend-eslint frontend-prettier frontend-typecheck \
         migrate seed test lint build clean smoke
 
 help: ## Show available targets
@@ -105,10 +106,22 @@ frontend-dev: ## Start Vite dev server inside the frontend container (follows lo
 	$(DOCKER_COMPOSE) logs -f --tail=100 frontend
 
 frontend-test: ## vitest (TBD: BL-SETUP-009)
-	@echo "[frontend-test] TBD: vitest — added in BL-SETUP-009."
+	@echo "[frontend-test] TBD: vitest sanity — added in BL-SETUP-009."
 
-frontend-lint: ## eslint + prettier + tsc (TBD: BL-SETUP-008)
-	@echo "[frontend-lint] TBD: eslint + prettier + tsc — added in BL-SETUP-008."
+frontend-eslint: ## eslint check (requires frontend container up)
+	$(DOCKER_COMPOSE) exec -T frontend pnpm lint
+
+frontend-prettier: ## prettier --check (requires frontend container up)
+	$(DOCKER_COMPOSE) exec -T frontend pnpm format:check
+
+frontend-typecheck: ## tsc --noEmit (requires frontend container up)
+	$(DOCKER_COMPOSE) exec -T frontend pnpm typecheck
+
+frontend-lint: frontend-eslint frontend-prettier frontend-typecheck ## Full frontend static analysis pipeline
+
+frontend-lint-fix: ## Auto-fix eslint + prettier (requires frontend container up)
+	$(DOCKER_COMPOSE) exec -T frontend pnpm lint:fix
+	$(DOCKER_COMPOSE) exec -T frontend pnpm format
 
 ## ---- Aggregates -----------------------------------------------------------
 
