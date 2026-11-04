@@ -64,13 +64,22 @@ backend-test: ## phpunit (TBD: BL-SETUP-009)
 backend-lint: ## phpstan + deptrac + cs-fixer (TBD: BL-SETUP-007)
 	@echo "[backend-lint] TBD: phpstan + deptrac + php-cs-fixer — added in BL-SETUP-007."
 
-## ---- Frontend (React/Vite) — TBD after BL-SETUP-004/005 ------------------
+## ---- Frontend (React/Vite) -----------------------------------------------
 
-frontend-install: ## pnpm install (TBD: BL-SETUP-004)
-	@echo "[frontend-install] TBD: pnpm install — added in BL-SETUP-004."
+frontend-install: ## pnpm install (uses node:22-alpine image until frontend container is wired in BL-SETUP-005)
+	docker run --rm \
+		-v "$(PWD)/$(FRONTEND_DIR):/app" \
+		-w /app \
+		node:22-alpine sh -c "corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm install --frozen-lockfile && chown -R $(shell id -u):$(shell id -g) /app"
 
-frontend-dev: ## pnpm dev (TBD: BL-SETUP-004)
-	@echo "[frontend-dev] TBD: pnpm dev — added in BL-SETUP-004."
+frontend-build: ## Build production bundle (uses node:22-alpine image)
+	docker run --rm \
+		-v "$(PWD)/$(FRONTEND_DIR):/app" \
+		-w /app \
+		node:22-alpine sh -c "corepack enable && pnpm build && chown -R $(shell id -u):$(shell id -g) /app"
+
+frontend-dev: ## pnpm dev (TBD: BL-SETUP-005, requires frontend container + port mapping)
+	@echo "[frontend-dev] TBD: pnpm dev — frontend container is wired in BL-SETUP-005."
 
 frontend-test: ## vitest (TBD: BL-SETUP-009)
 	@echo "[frontend-test] TBD: vitest — added in BL-SETUP-009."
@@ -90,8 +99,7 @@ test: backend-test frontend-test ## Run all tests (backend + frontend)
 
 lint: backend-lint frontend-lint ## Run all linters
 
-build: ## Build production bundles (TBD: BL-SETUP-004/005)
-	@echo "[build] TBD: frontend production build — added in BL-SETUP-005."
+build: frontend-build ## Build production bundles (frontend bundle; backend has no build step)
 
 clean: ## Stop containers + remove volumes (DESTRUCTIVE)
 	$(DOCKER_COMPOSE) down -v
@@ -99,8 +107,10 @@ clean: ## Stop containers + remove volumes (DESTRUCTIVE)
 
 ## ---- Smoke ----------------------------------------------------------------
 
-smoke: ## Validate docker-compose + composer.json
+smoke: ## Validate docker-compose + composer.json + frontend build
 	$(DOCKER_COMPOSE) config --quiet
 	@echo "[smoke] docker-compose.yml is valid."
 	docker run --rm -v "$(PWD)/$(BACKEND_DIR):/app" -w /app composer:2 validate --no-check-publish
 	@echo "[smoke] backend/composer.json is valid."
+	$(MAKE) frontend-build
+	@echo "[smoke] frontend builds successfully."
