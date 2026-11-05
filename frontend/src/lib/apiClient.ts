@@ -16,11 +16,13 @@ export async function apiFetch<TResponse>(
   init: RequestInit = {},
 ): Promise<TResponse> {
   const url = `${API_BASE_URL}${path}`;
+  const body = init.body;
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
   const response = await fetch(url, {
     ...init,
     headers: {
       Accept: 'application/json',
-      ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(body && !isFormData ? { 'Content-Type': 'application/json' } : {}),
       ...(init.headers ?? {}),
     },
   });

@@ -155,10 +155,13 @@ describe('InstallWizard', () => {
     const installCall = vi.mocked(fetch).mock.calls[1];
     const requestInit = installCall[1] as RequestInit;
     expect(requestInit.method).toBe('POST');
-    expect(JSON.parse(String(requestInit.body))).toEqual({
-      email: 'admin@example.com',
-      password: 'supersecret1',
-    });
+    expect(requestInit.body).toBeInstanceOf(FormData);
+    const sentForm = requestInit.body as FormData;
+    expect(sentForm.get('email')).toBe('admin@example.com');
+    expect(sentForm.get('password')).toBe('supersecret1');
+    expect(sentForm.get('display_name')).toBe('Tomek');
+    expect(sentForm.get('workspace_name')).toBe('Acme HQ');
+    expect(sentForm.get('locale')).toBe('en');
   });
 
   it('should show a server error message when the install endpoint returns 400', async () => {

@@ -50,9 +50,14 @@ final class InstallCommand extends Command
         });
 
         $password = $this->askPassword($io);
+        $displayName = $io->ask('Display name (how should we address the admin?)');
 
         try {
-            ($this->install)(new InstallSystemCommand($email, $password));
+            ($this->install)(new InstallSystemCommand(
+                adminEmail: $email,
+                adminPlaintextPassword: $password,
+                adminDisplayName: $displayName === null ? null : (string) $displayName,
+            ));
         } catch (SystemAlreadyInstalledException $systemAlreadyInstalledException) {
             $io->error($systemAlreadyInstalledException->getMessage());
 

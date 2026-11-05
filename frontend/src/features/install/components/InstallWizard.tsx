@@ -139,6 +139,12 @@ export function InstallWizard() {
       mutation.mutate({
         email: formState.admin.email,
         password: formState.admin.password,
+        displayName: formState.admin.displayName || undefined,
+        instanceName: formState.branding.instanceName || undefined,
+        locale: formState.branding.locale,
+        workspaceName: formState.workspace.name,
+        selectedAgentSlugs: formState.selectedAgentSlugs,
+        logo: formState.logo.file,
       });
       return;
     }

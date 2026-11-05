@@ -12,17 +12,25 @@ use Symfony\Component\Uid\Uuid;
 
 final class SpyAuthApi implements AuthApi
 {
-    /** @var list<array{email: string, password: string}> */
+    /** @var list<array{email: string, password: string, displayName: ?string}> */
     public array $calls = [];
 
-    public function createAdmin(string $email, string $plaintextPassword): AuthUser
-    {
-        $this->calls[] = ['email' => $email, 'password' => $plaintextPassword];
+    public function createAdmin(
+        string $email,
+        string $plaintextPassword,
+        ?string $displayName = null,
+    ): AuthUser {
+        $this->calls[] = [
+            'email' => $email,
+            'password' => $plaintextPassword,
+            'displayName' => $displayName,
+        ];
 
         return new AuthUser(
             new UserId(Uuid::v7()),
             $email,
             new DateTimeImmutable('2026-11-05T09:00:00+00:00'),
+            $displayName,
         );
     }
 }
