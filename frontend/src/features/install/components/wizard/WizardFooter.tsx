@@ -47,7 +47,7 @@ export function WizardFooter({
           type="button"
           onClick={onContinue}
           disabled={!canContinue || isSubmitting}
-          className="inline-flex items-center gap-2 rounded-md bg-sc-text px-4 py-2 text-sm font-medium text-sc-bg transition-opacity disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-md bg-sc-primary px-4 py-2 text-sm font-semibold text-sc-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {isSubmitting ? (
             <>

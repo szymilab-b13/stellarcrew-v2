@@ -1,5 +1,7 @@
 import { Shield } from 'lucide-react';
 
+import { Logo } from '@/features/branding/Logo';
+
 interface SidebarProps {
   currentStepIndex: number;
   totalSteps: number;
@@ -12,9 +14,7 @@ export function Sidebar({ currentStepIndex, totalSteps }: SidebarProps) {
     <aside className="hidden flex-col justify-between border-r border-sc-border bg-sc-bg-secondary p-8 lg:flex lg:w-80">
       <div>
         <div className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-sc-border bg-sc-bg-card text-sm font-bold">
-            SC
-          </span>
+          <Logo size={36} />
           <span>StellarCrew</span>
         </div>
 
@@ -45,7 +45,7 @@ export function Sidebar({ currentStepIndex, totalSteps }: SidebarProps) {
           className="mt-3 h-1.5 overflow-hidden rounded-full bg-sc-border"
         >
           <span
-            className="block h-full rounded-full bg-sc-text transition-[width] duration-300"
+            className="block h-full rounded-full bg-sc-primary transition-[width] duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>

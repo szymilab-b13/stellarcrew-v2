@@ -22,7 +22,7 @@ export function InstallCompleteScreen({ displayName }: InstallCompleteScreenProp
         </p>
         <a
           href="/"
-          className="mt-2 inline-flex items-center gap-2 rounded-md bg-sc-text px-4 py-2 text-sm font-medium text-sc-bg transition-opacity hover:opacity-90"
+          className="mt-2 inline-flex items-center gap-2 rounded-md bg-sc-primary px-4 py-2 text-sm font-semibold text-sc-primary-foreground shadow-sm transition-opacity hover:opacity-90"
         >
           Open StellarCrew
         </a>

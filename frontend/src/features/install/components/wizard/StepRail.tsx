@@ -9,39 +9,66 @@ interface StepRailProps {
 }
 
 export function StepRail({ steps, currentIndex, onJumpBack }: StepRailProps) {
+  const progressPercent =
+    steps.length <= 1 ? 100 : Math.min(100, Math.max(0, (currentIndex / (steps.length - 1)) * 100));
+
   return (
-    <nav aria-label="Installation steps" className="flex flex-row gap-8 lg:flex-col lg:gap-10">
+    <nav
+      aria-label="Installation steps"
+      className="relative flex flex-row items-center gap-0 lg:flex-col lg:items-stretch lg:gap-0"
+    >
+      {/* vertical rail (lg): background track */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute top-5 bottom-5 left-[17px] hidden w-0.5 rounded-full bg-sc-border lg:block"
+      />
+      {/* vertical rail (lg): progress fill, primary opacity 0.8 */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-[17px] top-5 hidden w-0.5 rounded-full bg-sc-primary-muted lg:block"
+        style={{ height: `calc((100% - 40px) * ${progressPercent / 100})` }}
+      />
+
       {steps.map((step, index) => {
         const isActive = index === currentIndex;
         const isDone = index < currentIndex;
         const isUpcoming = index > currentIndex;
+        const isClickable = isDone;
 
         return (
           <button
             type="button"
             key={step.key}
-            onClick={() => (isDone ? onJumpBack(index) : undefined)}
-            disabled={!isDone}
+            onClick={() => (isClickable ? onJumpBack(index) : undefined)}
+            disabled={!isClickable}
             aria-current={isActive ? 'step' : undefined}
             aria-label={`Step ${index + 1}: ${step.label}`}
-            className={`flex items-center gap-3 text-left transition-opacity ${isUpcoming ? 'opacity-40' : ''} ${isDone ? 'cursor-pointer hover:opacity-100' : 'cursor-default'}`}
+            className={`relative z-10 flex items-center gap-3 text-left transition-opacity lg:my-3 ${
+              isClickable ? 'cursor-pointer' : 'cursor-default'
+            } ${isUpcoming ? 'opacity-70' : ''}`}
           >
             <span
-              className={`inline-flex h-9 w-9 flex-none items-center justify-center rounded-full border text-sm font-semibold ${
+              className={`inline-flex h-9 w-9 flex-none items-center justify-center rounded-full border text-sm font-semibold transition-colors ${
                 isActive
-                  ? 'border-sc-text bg-sc-text text-sc-bg'
+                  ? 'border-sc-primary bg-sc-primary text-sc-primary-foreground shadow-[0_0_0_4px_rgba(89,213,136,0.18)]'
                   : isDone
-                    ? 'border-sc-text bg-sc-bg-card text-sc-text'
+                    ? 'border-sc-primary-muted bg-sc-primary-muted text-sc-primary-foreground'
                     : 'border-sc-border bg-sc-bg-card text-sc-text-muted'
               }`}
             >
               {isDone ? <Check size={16} strokeWidth={2.5} aria-hidden /> : index + 1}
             </span>
             <span className="hidden flex-col lg:flex">
-              <span className="text-xs font-semibold uppercase tracking-wider text-sc-text-muted">
+              <span
+                className={`text-xs font-semibold uppercase tracking-wider ${isActive ? 'text-sc-text' : 'text-sc-text-muted'}`}
+              >
                 Step {String(index + 1).padStart(2, '0')}
               </span>
-              <span className="text-sm font-medium text-sc-text">{step.short}</span>
+              <span
+                className={`text-sm font-medium ${isActive ? 'text-sc-text' : 'text-sc-text-muted'}`}
+              >
+                {step.short}
+              </span>
             </span>
           </button>
         );
