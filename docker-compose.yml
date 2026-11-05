@@ -106,7 +106,7 @@ services:
     working_dir: /app
     environment:
       FRONTEND_PORT: ${FRONTEND_PORT:-5173}
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+      VITE_API_URL: ${VITE_API_URL:-}
     command: sh -c "corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm install --frozen-lockfile && pnpm dev --host 0.0.0.0 --port $${FRONTEND_PORT}"
     ports:
       - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"

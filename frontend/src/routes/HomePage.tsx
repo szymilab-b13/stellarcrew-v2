@@ -1,13 +1,34 @@
+import { Navigate } from 'react-router-dom';
+
+import { useInstallStatus } from '@/features/install/api/useInstallStatus';
 import { ThemeToggle } from '@/features/theme';
 
 export function HomePage() {
+  const { data, isPending, isError } = useInstallStatus();
+
+  if (isPending) {
+    return <p className="text-sm text-sc-text-muted">Loading…</p>;
+  }
+
+  if (isError) {
+    return (
+      <p className="text-sm text-sc-text-muted">
+        Could not reach the API. Make sure the backend is running.
+      </p>
+    );
+  }
+
+  if (!data?.isInstalled) {
+    return <Navigate to="/install" replace />;
+  }
+
   return (
     <>
       <header className="flex items-start justify-between gap-6">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">StellarCrew</h1>
           <p className="mt-2 text-sm text-sc-text-muted">
-            Frontend baseline wired up. Tokens, Inter font and light-first theme toggle are live.
+            Frontend baseline wired up. Tokens, Geist font and light-first theme toggle are live.
           </p>
         </div>
         <ThemeToggle />
