@@ -30,13 +30,13 @@ deptrac:
         - name: Vendor
           collectors:
               - type: classLike
-                value: 'Symfony\\.*'
+                value: '^Symfony\\.*'
               - type: classLike
-                value: 'Doctrine\\.*'
+                value: '^Doctrine\\.*'
               - type: classLike
-                value: 'Psr\\.*'
+                value: '^Psr\\.*'
               - type: classLike
-                value: 'OpenApi\\.*'
+                value: '^OpenApi\\.*'
 
     ruleset:
         # Domain is pure: no outward dependencies on other layers
@@ -48,11 +48,13 @@ deptrac:
             - Domain
             - SharedKernel
             - Vendor
-        # Infrastructure wires Application + Domain + SharedKernel and implements Api contracts
+        # Infrastructure wires Application + Domain + SharedKernel and implements Api contracts.
+        # Cross-module Infrastructure deps are allowed (e.g. DBAL types, bundle wiring).
         Infrastructure:
             - Application
             - Domain
             - Api
+            - Infrastructure
             - SharedKernel
             - Vendor
         # Api exposes DTO + adapter over Application

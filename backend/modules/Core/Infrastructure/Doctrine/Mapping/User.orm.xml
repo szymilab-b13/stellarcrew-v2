@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Core\Domain\User" table="users" schema="core">
+
+        <id name="id" type="user_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="email" type="string" column="email" length="254" nullable="false"/>
+        <field name="passwordHash" type="string" column="password_hash" length="255" nullable="false"/>
+        <field name="role" type="string" column="role" length="20" nullable="false" enum-type="Modules\Core\Domain\UserRole"/>
+        <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+
+        <unique-constraints>
+            <unique-constraint name="uniq_core_users_email" columns="email"/>
+        </unique-constraints>
+
+    </entity>
+
+</doctrine-mapping>
