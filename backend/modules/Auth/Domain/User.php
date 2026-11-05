@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Core\Domain;
+namespace Modules\Auth\Domain;
 
 use DateTimeImmutable;
 use Modules\Shared\Kernel\UserId;

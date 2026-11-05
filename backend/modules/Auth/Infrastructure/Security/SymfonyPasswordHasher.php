@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Modules\Core\Infrastructure\Security;
+namespace Modules\Auth\Infrastructure\Security;
 
-use Modules\Core\Application\Install\PasswordHasher;
+use Modules\Auth\Application\PasswordHasher;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final readonly class SymfonyPasswordHasher implements PasswordHasher

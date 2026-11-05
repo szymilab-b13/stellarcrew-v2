@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Core\Application\Install;
+namespace Modules\Auth\Application;
 
 interface PasswordHasher
 {

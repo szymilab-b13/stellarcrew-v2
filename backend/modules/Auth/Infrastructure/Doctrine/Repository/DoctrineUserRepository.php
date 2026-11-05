@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Modules\Core\Infrastructure\Doctrine\Repository;
+namespace Modules\Auth\Infrastructure\Doctrine\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Modules\Core\Domain\User;
-use Modules\Core\Domain\UserRepository;
+use Modules\Auth\Domain\User;
+use Modules\Auth\Domain\UserRepository;
 
 final readonly class DoctrineUserRepository implements UserRepository
 {

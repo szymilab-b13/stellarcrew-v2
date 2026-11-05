@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Core\Infrastructure\Security;
+namespace Modules\Auth\Infrastructure\Security;
 
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 

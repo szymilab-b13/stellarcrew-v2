@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Modules\Core\Domain\User;
+namespace App\Tests\Modules\Auth\Domain;
 
 use DateTimeImmutable;
-use Modules\Core\Domain\User;
-use Modules\Core\Domain\UserRole;
+use Modules\Auth\Domain\User;
+use Modules\Auth\Domain\UserRole;
 use Modules\Shared\Kernel\UserId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;

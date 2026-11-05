@@ -47,14 +47,18 @@ services:
         alias: Modules\Core\Infrastructure\HealthCheck\TcpRabbitConnectionProbe
 
     # Core install bindings
-    Modules\Core\Domain\UserRepository:
-        alias: Modules\Core\Infrastructure\Doctrine\Repository\DoctrineUserRepository
-
     Modules\Core\Domain\SystemSettingRepository:
         alias: Modules\Core\Infrastructure\Doctrine\Repository\DoctrineSystemSettingRepository
 
-    Modules\Core\Application\Install\PasswordHasher:
-        alias: Modules\Core\Infrastructure\Security\SymfonyPasswordHasher
+    # Auth module bindings
+    Modules\Auth\Domain\UserRepository:
+        alias: Modules\Auth\Infrastructure\Doctrine\Repository\DoctrineUserRepository
+
+    Modules\Auth\Application\PasswordHasher:
+        alias: Modules\Auth\Infrastructure\Security\SymfonyPasswordHasher
+
+    Modules\Auth\Api\AuthApi:
+        alias: Modules\Auth\Infrastructure\DefaultAuthApi
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

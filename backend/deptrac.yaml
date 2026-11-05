@@ -43,9 +43,10 @@ deptrac:
         Domain:
             - SharedKernel
             - Vendor
-        # Application orchestrates Domain + SharedKernel
+        # Application orchestrates Domain + SharedKernel. Cross-module consumption via Module API (never direct Domain/Application of another module).
         Application:
             - Domain
+            - Api
             - SharedKernel
             - Vendor
         # Infrastructure wires Application + Domain + SharedKernel and implements Api contracts.

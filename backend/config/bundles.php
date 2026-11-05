@@ -9,4 +9,5 @@ return [
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Modules\Core\Infrastructure\Bundle\CoreBundle::class => ['all' => true],
+    Modules\Auth\Infrastructure\Bundle\AuthBundle::class => ['all' => true],
 ];

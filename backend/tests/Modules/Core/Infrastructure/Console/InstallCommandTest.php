@@ -4,32 +4,25 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Core\Infrastructure\Console;
 
-use function count;
-
+use App\Tests\Fixtures\Auth\SpyAuthApi;
 use DateTimeImmutable;
 use Modules\Core\Application\Install\InstallSystemCommandHandler;
 use Modules\Core\Application\Install\IsInstalledQueryHandler;
-use Modules\Core\Application\Install\PasswordHasher;
 use Modules\Core\Domain\SystemSetting;
 use Modules\Core\Domain\SystemSettingRepository;
-use Modules\Core\Domain\User;
-use Modules\Core\Domain\UserRepository;
 use Modules\Core\Infrastructure\Console\InstallCommand;
 use Modules\Shared\Kernel\FrozenClock;
-use Modules\Shared\Kernel\UuidGenerator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Uid\UuidV7;
 
 final class InstallCommandTest extends TestCase
 {
     public function testShouldCreateAdminAndMarkSystemInstalledWhenNotInstalled(): void
     {
-        $users = $this->userRepository();
+        $auth = new SpyAuthApi();
         $settings = $this->settingRepository([]);
-        $tester = $this->tester($users, $settings);
+        $tester = $this->tester($auth, $settings);
 
         $tester->setInputs(['admin@example.com', 'secret-pass-long-enough', 'secret-pass-long-enough']);
 
@@ -37,7 +30,8 @@ final class InstallCommandTest extends TestCase
 
         self::assertSame(0, $exitCode);
         self::assertStringContainsString('Admin admin@example.com created', $tester->getDisplay());
-        self::assertNotNull($users->findByEmail('admin@example.com'));
+        self::assertCount(1, $auth->calls);
+        self::assertSame('admin@example.com', $auth->calls[0]['email']);
         $flag = $settings->get(IsInstalledQueryHandler::FLAG_NAME);
         self::assertNotNull($flag);
         self::assertSame(IsInstalledQueryHandler::TRUE_VALUE, $flag->value());
@@ -52,7 +46,7 @@ final class InstallCommandTest extends TestCase
                 new DateTimeImmutable('2026-11-04T09:00:00+00:00'),
             ),
         ]);
-        $tester = $this->tester($this->userRepository(), $settings);
+        $tester = $this->tester(new SpyAuthApi(), $settings);
 
         $exitCode = $tester->execute([]);
 
@@ -62,7 +56,7 @@ final class InstallCommandTest extends TestCase
 
     public function testShouldRejectWhenPasswordAndConfirmationDoNotMatch(): void
     {
-        $tester = $this->tester($this->userRepository(), $this->settingRepository([]));
+        $tester = $this->tester(new SpyAuthApi(), $this->settingRepository([]));
 
         $tester->setInputs(['admin@example.com', 'secret-pass-long-enough', 'different-pass-also-long']);
 
@@ -73,7 +67,7 @@ final class InstallCommandTest extends TestCase
 
     public function testShouldRejectShortPassword(): void
     {
-        $tester = $this->tester($this->userRepository(), $this->settingRepository([]));
+        $tester = $this->tester(new SpyAuthApi(), $this->settingRepository([]));
 
         $tester->setInputs(['admin@example.com', 'short', 'short', 'short', 'short']);
 
@@ -82,14 +76,12 @@ final class InstallCommandTest extends TestCase
         $tester->execute([]);
     }
 
-    private function tester(UserRepository $users, SystemSettingRepository $settings): CommandTester
+    private function tester(SpyAuthApi $auth, SystemSettingRepository $settings): CommandTester
     {
         $isInstalled = new IsInstalledQueryHandler($settings);
         $install = new InstallSystemCommandHandler(
-            $users,
+            $auth,
             $settings,
-            $this->passwordHasher(),
-            $this->uuidGenerator(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
         $command = new InstallCommand($isInstalled, $install);
@@ -97,29 +89,6 @@ final class InstallCommandTest extends TestCase
         $application->addCommand($command);
 
         return new CommandTester($application->find('stellarcrew:install'));
-    }
-
-    private function userRepository(): UserRepository
-    {
-        return new class () implements UserRepository {
-            /** @var array<string, User> */
-            private array $byEmail = [];
-
-            public function save(User $user): void
-            {
-                $this->byEmail[$user->email()] = $user;
-            }
-
-            public function findByEmail(string $email): ?User
-            {
-                return $this->byEmail[$email] ?? null;
-            }
-
-            public function count(): int
-            {
-                return count($this->byEmail);
-            }
-        };
     }
 
     /**
@@ -145,23 +114,4 @@ final class InstallCommandTest extends TestCase
         };
     }
 
-    private function passwordHasher(): PasswordHasher
-    {
-        return new class () implements PasswordHasher {
-            public function hash(string $plaintext): string
-            {
-                return 'hashed:' . $plaintext;
-            }
-        };
-    }
-
-    private function uuidGenerator(): UuidGenerator
-    {
-        return new class () implements UuidGenerator {
-            public function generate(): UuidV7
-            {
-                return Uuid::v7();
-            }
-        };
-    }
 }
