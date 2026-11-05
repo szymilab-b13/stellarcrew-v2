@@ -28,9 +28,9 @@ final readonly class InstallWizardController
     ) {
     }
 
-    #[Route('/install/status', name: 'core_install_status', methods: ['GET'])]
+    #[Route('/api/install/status', name: 'core_install_status', methods: ['GET'])]
     #[OA\Get(
-        path: '/install/status',
+        path: '/api/install/status',
         summary: 'Install wizard — read is_installed flag (used by frontend to decide wizard vs login).',
         tags: ['core'],
         responses: [
@@ -42,9 +42,9 @@ final readonly class InstallWizardController
         return new JsonResponse(['is_installed' => ($this->isInstalled)()]);
     }
 
-    #[Route('/install', name: 'core_install', methods: ['POST'])]
+    #[Route('/api/install', name: 'core_install', methods: ['POST'])]
     #[OA\Post(
-        path: '/install',
+        path: '/api/install',
         summary: 'Install wizard — seed first admin and mark system as installed.',
         tags: ['core'],
         responses: [

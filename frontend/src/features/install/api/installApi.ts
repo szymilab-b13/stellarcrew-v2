@@ -14,12 +14,12 @@ interface InstallStatusResponse {
 }
 
 export async function fetchInstallStatus(): Promise<InstallStatus> {
-  const response = await apiFetch<InstallStatusResponse>('/install/status');
+  const response = await apiFetch<InstallStatusResponse>('/api/install/status');
   return { isInstalled: response.is_installed };
 }
 
 export async function install(payload: InstallPayload): Promise<void> {
-  await apiFetch<unknown>('/install', {
+  await apiFetch<unknown>('/api/install', {
     method: 'POST',
     body: JSON.stringify(payload),
   });

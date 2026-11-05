@@ -19,7 +19,7 @@ final class HealthEndpointTest extends WebTestCase
 
     public function testShouldReturn200AndStatusOkWhenAllServicesReachable(): void
     {
-        $this->client->request('GET', '/health');
+        $this->client->request('GET', '/api/health');
 
         $response = $this->client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -34,7 +34,7 @@ final class HealthEndpointTest extends WebTestCase
 
     public function testShouldReturn200OnReadinessWhenDatabaseReachable(): void
     {
-        $this->client->request('GET', '/ready');
+        $this->client->request('GET', '/api/ready');
 
         self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }

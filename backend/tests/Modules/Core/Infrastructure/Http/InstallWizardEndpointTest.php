@@ -25,7 +25,7 @@ final class InstallWizardEndpointTest extends WebTestCase
 
     public function testShouldReturnIsInstalledFalseWhenFlagMissing(): void
     {
-        $this->client->request('GET', '/install/status');
+        $this->client->request('GET', '/api/install/status');
 
         $response = $this->client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -37,7 +37,7 @@ final class InstallWizardEndpointTest extends WebTestCase
     {
         $this->settings()->markInstalled();
 
-        $this->client->request('GET', '/install/status');
+        $this->client->request('GET', '/api/install/status');
 
         $response = $this->client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -93,7 +93,7 @@ final class InstallWizardEndpointTest extends WebTestCase
     {
         $this->client->request(
             'POST',
-            '/install',
+            '/api/install',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: '{not-json',
         );
@@ -108,7 +108,7 @@ final class InstallWizardEndpointTest extends WebTestCase
     {
         $this->client->request(
             'POST',
-            '/install',
+            '/api/install',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($payload, JSON_THROW_ON_ERROR),
         );
