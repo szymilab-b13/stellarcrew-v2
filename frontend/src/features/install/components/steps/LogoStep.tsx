@@ -1,5 +1,6 @@
 import { ImagePlus, X } from 'lucide-react';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { LogoState } from '../../types';
 
@@ -10,6 +11,7 @@ interface LogoStepProps {
 
 export function LogoStep({ value, onChange }: LogoStepProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
   function handleFile(file: File | null) {
     if (value.previewUrl) {
@@ -31,10 +33,8 @@ export function LogoStep({ value, onChange }: LogoStepProps) {
           <ImagePlus size={18} aria-hidden />
         </span>
         <div>
-          <h3 className="text-base font-semibold text-sc-text">Logo</h3>
-          <p className="text-xs text-sc-text-muted">
-            PNG or SVG works best. You can replace it any time from the admin panel.
-          </p>
+          <h3 className="text-base font-semibold text-sc-text">{t('steps.logo.sectionHeading')}</h3>
+          <p className="text-xs text-sc-text-muted">{t('steps.logo.sectionSubheading')}</p>
         </div>
       </div>
 
@@ -51,7 +51,7 @@ export function LogoStep({ value, onChange }: LogoStepProps) {
               onClick={() => handleFile(null)}
               className="inline-flex items-center gap-1 rounded-md border border-sc-border bg-sc-bg px-3 py-1.5 text-xs font-medium text-sc-text transition-colors hover:bg-sc-bg-secondary"
             >
-              <X size={14} aria-hidden /> Remove
+              <X size={14} aria-hidden /> {t('steps.logo.remove')}
             </button>
           </div>
         ) : null}
@@ -61,7 +61,7 @@ export function LogoStep({ value, onChange }: LogoStepProps) {
           className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-sc-border bg-sc-bg-secondary px-4 py-2 text-sm font-medium text-sc-text transition-colors hover:bg-sc-bg"
         >
           <ImagePlus size={16} aria-hidden />
-          {value.file ? 'Pick a different file' : 'Choose logo file'}
+          {value.file ? t('steps.logo.pickerReplace') : t('steps.logo.picker')}
         </label>
         <input
           ref={inputRef}
@@ -73,13 +73,13 @@ export function LogoStep({ value, onChange }: LogoStepProps) {
         />
         {value.file ? (
           <p className="text-xs text-sc-text-muted">
-            Selected: <strong className="text-sc-text">{value.file.name}</strong> (
-            {Math.round(value.file.size / 1024)} KB)
+            {t('steps.logo.selected', {
+              name: value.file.name,
+              size: Math.round(value.file.size / 1024),
+            })}
           </p>
         ) : (
-          <p className="text-xs text-sc-text-muted">
-            You can also skip this step — a generic mark will be used until you upload one.
-          </p>
+          <p className="text-xs text-sc-text-muted">{t('steps.logo.skipHint')}</p>
         )}
       </div>
     </section>

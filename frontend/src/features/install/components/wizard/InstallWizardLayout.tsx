@@ -1,4 +1,8 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { LanguageSwitcher } from '@/features/settings/LanguageSwitcher';
+import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 import type { InstallStepDescriptor } from '../../types';
 
@@ -33,6 +37,7 @@ export function InstallWizardLayout({
   onJumpBack,
   children,
 }: InstallWizardLayoutProps) {
+  const { t } = useTranslation();
   const isLastStep = currentIndex === steps.length - 1;
 
   return (
@@ -42,12 +47,13 @@ export function InstallWizardLayout({
       <main className="flex min-h-screen flex-1 flex-col">
         <div className="flex items-center justify-between border-b border-sc-border px-6 py-4 lg:px-10">
           <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-sc-text-muted">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-sc-text" />
-            StellarCrew / Install
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-sc-primary" />
+            {t('topbar.breadcrumb')}
           </span>
-          <span className="rounded-full border border-sc-border bg-sc-bg-card px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-sc-text-muted">
-            Installation
-          </span>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
 
         <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-6 py-10 lg:flex-row lg:px-10">
@@ -58,7 +64,7 @@ export function InstallWizardLayout({
           <div className="flex min-w-0 flex-1 flex-col gap-8">
             <header className="flex flex-col gap-3">
               <span className="text-xs font-semibold uppercase tracking-widest text-sc-text-muted">
-                Step {String(currentIndex + 1).padStart(2, '0')} /{' '}
+                {t('common.stepPrefix')} {String(currentIndex + 1).padStart(2, '0')} /{' '}
                 {String(steps.length).padStart(2, '0')} · {eyebrow}
               </span>
               <h2 className="text-3xl font-semibold tracking-tight text-sc-text">{title}</h2>

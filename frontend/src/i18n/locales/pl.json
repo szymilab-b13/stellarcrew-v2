@@ -1,0 +1,164 @@
+{
+  "common": {
+    "back": "Wstecz",
+    "continue": "Dalej",
+    "finish": "Zakończ instalację",
+    "installing": "Instalowanie…",
+    "shieldNote": "Nic nie opuszcza Twojej instancji.",
+    "ofSteps": "{{current}} z {{total}}",
+    "loadingStatus": "Sprawdzam stan instalacji…",
+    "goToApp": "Przejdź do aplikacji",
+    "openApp": "Otwórz StellarCrew",
+    "stepPrefix": "Krok"
+  },
+  "topbar": {
+    "breadcrumb": "StellarCrew / Instalacja",
+    "pill": "Instalacja",
+    "language": "Język",
+    "theme": "Motyw",
+    "themeLight": "Jasny",
+    "themeDark": "Ciemny",
+    "switchLang": "Zmień język",
+    "switchTheme": "Zmień motyw"
+  },
+  "sidebar": {
+    "setupGuide": "Przewodnik instalacji",
+    "headlineLead": "Twoja instalacja.",
+    "headlineTail": "Prostsza niż myślisz.",
+    "subline": "Przejdź przez kilka krótkich kroków, aby dokończyć konfigurację swojej instancji StellarCrew.",
+    "progressLabel": "Postęp konfiguracji",
+    "localPreview": "Lokalny podgląd — nic nie wychodzi poza Twoją instancję."
+  },
+  "api": {
+    "unreachableTitle": "Nie udało się połączyć z API",
+    "unreachableBody": "Endpoint statusu instalacji jest niedostępny. Upewnij się, że backend działa i jest osiągalny.",
+    "homeApiHint": "Nie udało się połączyć z API. Upewnij się, że backend działa.",
+    "serverRejected": "Serwer odrzucił przesłane dane. Sprawdź adres e-mail i hasło administratora.",
+    "alreadyInstalledMessage": "System został już zainstalowany.",
+    "genericError": "Coś poszło nie tak. Spróbuj ponownie."
+  },
+  "alreadyInstalled": {
+    "heading": "System jest już zainstalowany",
+    "body": "Administrator został już skonfigurowany. Wróć do aplikacji, aby się zalogować."
+  },
+  "complete": {
+    "heading": "Gotowe{{greeting}}.",
+    "body": "Twoja instancja StellarCrew jest zainstalowana. Przejdź do aplikacji, aby zalogować się i poznać swoją załogę."
+  },
+  "eyebrow": {
+    "startHere": "Zacznij tutaj",
+    "finalCheck": "Ostatni krok",
+    "setup": "Konfiguracja"
+  },
+  "steps": {
+    "admin": {
+      "label": "Administrator i profil",
+      "short": "Administrator",
+      "title": "Utwórz konto administratora",
+      "description": "Dane logowania pierwszego administratora i to, jak mamy się do Ciebie zwracać.",
+      "sectionHeading": "Konto administratora",
+      "sectionSubheading": "To konto może się logować i zarządzać każdym workspace’em w Twojej instancji.",
+      "email": "E-mail",
+      "emailHint": "Używany do logowania.",
+      "emailPlaceholder": "admin@przykład.pl",
+      "password": "Hasło",
+      "passwordHint": "Co najmniej 10 znaków.",
+      "confirmPassword": "Powtórz hasło",
+      "displayName": "Jak mamy się do Ciebie zwracać?",
+      "displayNameHint": "Pokazywane w powitaniach w aplikacji, np. „Cześć, Tomek”.",
+      "displayNamePlaceholder": "Tomek",
+      "errors": {
+        "email": "Podaj poprawny adres e-mail",
+        "password": "Hasło musi mieć co najmniej 10 znaków",
+        "passwordConfirm": "Hasła się różnią"
+      }
+    },
+    "branding": {
+      "label": "Branding",
+      "short": "Branding",
+      "title": "Dostosuj wygląd",
+      "description": "Ustaw nazwę instancji, kolory i język, by Twoja załoga czuła się u siebie.",
+      "sectionHeading": "Branding",
+      "sectionSubheading": "Nazwa instancji, domyślny język i akcenty kolorystyczne.",
+      "placeholderBody": "Pola <strong>nazwa instancji</strong> i <strong>domyślny język</strong> trafią tutaj. Na razie możesz pominąć ten krok — zostaną użyte wartości domyślne."
+    },
+    "logo": {
+      "label": "Logo",
+      "short": "Logo",
+      "title": "Dodaj swoje logo",
+      "description": "Logo pojawia się w górnym pasku oraz w mailach. W każdej chwili możesz je zmienić.",
+      "sectionHeading": "Logo",
+      "sectionSubheading": "Najlepiej działa PNG lub SVG. Logo możesz podmienić w panelu administratora.",
+      "picker": "Wybierz plik logo",
+      "pickerReplace": "Wybierz inny plik",
+      "remove": "Usuń",
+      "selected": "Wybrano: {{name}} ({{size}} KB)",
+      "skipHint": "Możesz pominąć ten krok — do czasu wgrania pliku użyjemy znaku domyślnego."
+    },
+    "workspace": {
+      "label": "Pierwszy workspace",
+      "short": "Workspace",
+      "title": "Skonfiguruj pierwszy workspace",
+      "description": "Workspace’y to miejsca, w których żyją projekty, agenci i wiedza. Zacznij od jednego.",
+      "sectionHeading": "Pierwszy workspace",
+      "sectionSubheading": "Workspace grupuje projekt, jego dane i agentów. W każdej chwili możesz dodać kolejne.",
+      "name": "Nazwa workspace’u",
+      "nameHint": "W każdej chwili możesz zmienić nazwę w ustawieniach workspace’u.",
+      "namePlaceholder": "np. Acme HQ",
+      "nameError": "Nadaj swojemu workspace’owi nazwę",
+      "agentsHeading": "Agenci w tym workspace",
+      "agentsSubheading": "Wybierz, kto dołącza na start. Kolejnych agentów i własne role dodasz później — to placeholder, nic nie jest jeszcze tworzone.",
+      "includeAgent": "Dodaj {{name}}",
+      "agents": {
+        "maja": {
+          "name": "Maja",
+          "role": "Project managerka"
+        },
+        "viktor": {
+          "name": "Viktor",
+          "role": "Tech lead"
+        },
+        "luna": {
+          "name": "Luna",
+          "role": "Badaczka"
+        },
+        "kacper": {
+          "name": "Kacper",
+          "role": "Inżynier"
+        },
+        "patryk": {
+          "name": "Patryk",
+          "role": "Analityk"
+        },
+        "hefajstos": {
+          "name": "Hefajstos",
+          "role": "Autonomiczny builder"
+        }
+      }
+    },
+    "review": {
+      "label": "Podsumowanie",
+      "short": "Podsumowanie",
+      "title": "Sprawdź i zakończ",
+      "description": "Szybki rzut oka przed przygotowaniem instancji. W każdej chwili możesz wrócić do dowolnego kroku.",
+      "sectionHeading": "Podsumowanie",
+      "sectionSubheading": "Szybkie sprawdzenie przed finalizacją. W każdej chwili możesz wrócić do zakończonego kroku po lewej.",
+      "fields": {
+        "adminEmail": "E-mail administratora",
+        "displayName": "Nazwa do zwrotu",
+        "password": "Hasło",
+        "instanceName": "Nazwa instancji",
+        "locale": "Domyślny język",
+        "logo": "Logo",
+        "workspaceName": "Nazwa workspace’u",
+        "agents": "Agenci"
+      },
+      "defaults": {
+        "instanceName": "StellarCrew (domyślna)",
+        "noLogo": "Znak domyślny",
+        "noAgents": "Brak",
+        "dash": "—"
+      }
+    }
+  }
+}

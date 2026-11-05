@@ -1,4 +1,6 @@
 import { AtSign, KeyRound, UserRound } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { AdminProfileState } from '../../types';
 
@@ -9,6 +11,8 @@ interface AdminProfileStepProps {
 }
 
 export function AdminProfileStep({ value, errors, onChange }: AdminProfileStepProps) {
+  const { t } = useTranslation();
+
   return (
     <section className="rounded-lg border border-sc-border bg-sc-bg-card p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-sc-border pb-5">
@@ -16,19 +20,19 @@ export function AdminProfileStep({ value, errors, onChange }: AdminProfileStepPr
           <UserRound size={18} aria-hidden />
         </span>
         <div>
-          <h3 className="text-base font-semibold text-sc-text">Administrator account</h3>
-          <p className="text-xs text-sc-text-muted">
-            This account can sign in and manage every workspace in your instance.
-          </p>
+          <h3 className="text-base font-semibold text-sc-text">
+            {t('steps.admin.sectionHeading')}
+          </h3>
+          <p className="text-xs text-sc-text-muted">{t('steps.admin.sectionSubheading')}</p>
         </div>
       </div>
 
       <div className="mt-6 grid gap-5">
         <Field
           id="admin-email"
-          label="Email"
+          label={t('steps.admin.email')}
           required
-          hint="Used to sign in."
+          hint={t('steps.admin.emailHint')}
           error={errors.email}
           icon={<AtSign size={16} aria-hidden />}
         >
@@ -36,7 +40,7 @@ export function AdminProfileStep({ value, errors, onChange }: AdminProfileStepPr
             id="admin-email"
             type="email"
             autoComplete="username"
-            placeholder="admin@example.com"
+            placeholder={t('steps.admin.emailPlaceholder')}
             aria-invalid={Boolean(errors.email)}
             value={value.email}
             onChange={(event) => onChange('email', event.target.value)}
@@ -46,9 +50,9 @@ export function AdminProfileStep({ value, errors, onChange }: AdminProfileStepPr
 
         <Field
           id="admin-password"
-          label="Password"
+          label={t('steps.admin.password')}
           required
-          hint="At least 10 characters."
+          hint={t('steps.admin.passwordHint')}
           error={errors.password}
           icon={<KeyRound size={16} aria-hidden />}
         >
@@ -65,7 +69,7 @@ export function AdminProfileStep({ value, errors, onChange }: AdminProfileStepPr
 
         <Field
           id="admin-password-confirm"
-          label="Confirm password"
+          label={t('steps.admin.confirmPassword')}
           required
           error={errors.passwordConfirm}
           icon={<KeyRound size={16} aria-hidden />}
@@ -83,8 +87,8 @@ export function AdminProfileStep({ value, errors, onChange }: AdminProfileStepPr
 
         <Field
           id="admin-display-name"
-          label="How should we address you?"
-          hint="Shown in greetings across the app, e.g. “Welcome, Tomek”."
+          label={t('steps.admin.displayName')}
+          hint={t('steps.admin.displayNameHint')}
           error={errors.displayName}
           icon={<UserRound size={16} aria-hidden />}
         >
@@ -92,7 +96,7 @@ export function AdminProfileStep({ value, errors, onChange }: AdminProfileStepPr
             id="admin-display-name"
             type="text"
             autoComplete="nickname"
-            placeholder="Tomek"
+            placeholder={t('steps.admin.displayNamePlaceholder')}
             aria-invalid={Boolean(errors.displayName)}
             value={value.displayName}
             onChange={(event) => onChange('displayName', event.target.value)}
@@ -110,8 +114,8 @@ interface FieldProps {
   required?: boolean;
   hint?: string;
   error?: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
+  icon: ReactNode;
+  children: ReactNode;
 }
 
 function Field({ id, label, required, hint, error, icon, children }: FieldProps) {

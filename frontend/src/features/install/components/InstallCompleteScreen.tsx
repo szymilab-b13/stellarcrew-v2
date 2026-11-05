@@ -1,10 +1,14 @@
 import { CheckCircle2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface InstallCompleteScreenProps {
   displayName: string;
 }
 
 export function InstallCompleteScreen({ displayName }: InstallCompleteScreenProps) {
+  const { t } = useTranslation();
+  const greeting = displayName ? `, ${displayName}` : '';
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-sc-bg px-6 py-12 text-center">
       <section
@@ -15,16 +19,14 @@ export function InstallCompleteScreen({ displayName }: InstallCompleteScreenProp
           <CheckCircle2 size={36} strokeWidth={2.2} aria-hidden />
         </span>
         <h2 id="install-complete-heading" className="text-2xl font-semibold tracking-tight">
-          You are all set{displayName ? `, ${displayName}` : ''}.
+          {t('complete.heading', { greeting })}
         </h2>
-        <p className="text-sm text-sc-text-muted">
-          Your StellarCrew instance is installed. Head to the app to sign in and meet your crew.
-        </p>
+        <p className="text-sm text-sc-text-muted">{t('complete.body')}</p>
         <a
           href="/"
           className="mt-2 inline-flex items-center gap-2 rounded-md bg-sc-primary px-4 py-2 text-sm font-semibold text-sc-primary-foreground shadow-sm transition-opacity hover:opacity-90"
         >
-          Open StellarCrew
+          {t('common.openApp')}
         </a>
       </section>
     </div>

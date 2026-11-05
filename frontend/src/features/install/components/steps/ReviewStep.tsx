@@ -1,4 +1,5 @@
 import { ClipboardList } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import type { InstallFormState } from '../../types';
 
@@ -7,6 +8,9 @@ interface ReviewStepProps {
 }
 
 export function ReviewStep({ value }: ReviewStepProps) {
+  const { t } = useTranslation();
+  const dash = t('steps.review.defaults.dash');
+
   return (
     <section className="rounded-lg border border-sc-border bg-sc-bg-card p-6 shadow-sm">
       <div className="flex items-center gap-3 border-b border-sc-border pb-5">
@@ -14,27 +18,43 @@ export function ReviewStep({ value }: ReviewStepProps) {
           <ClipboardList size={18} aria-hidden />
         </span>
         <div>
-          <h3 className="text-base font-semibold text-sc-text">Review</h3>
-          <p className="text-xs text-sc-text-muted">
-            Quick look before we finalise. You can jump back to any completed step on the left.
-          </p>
+          <h3 className="text-base font-semibold text-sc-text">
+            {t('steps.review.sectionHeading')}
+          </h3>
+          <p className="text-xs text-sc-text-muted">{t('steps.review.sectionSubheading')}</p>
         </div>
       </div>
 
       <dl className="mt-6 divide-y divide-sc-border text-sm">
-        <ReviewRow label="Admin email" value={value.admin.email || '—'} />
-        <ReviewRow label="Display name" value={value.admin.displayName || '—'} />
-        <ReviewRow label="Password" value={'•'.repeat(Math.max(value.admin.password.length, 6))} />
+        <ReviewRow label={t('steps.review.fields.adminEmail')} value={value.admin.email || dash} />
         <ReviewRow
-          label="Instance name"
-          value={value.branding.instanceName || 'StellarCrew (default)'}
+          label={t('steps.review.fields.displayName')}
+          value={value.admin.displayName || dash}
         />
-        <ReviewRow label="Default locale" value={value.branding.locale} />
-        <ReviewRow label="Logo" value={value.logo.file?.name ?? 'Using generic mark'} />
-        <ReviewRow label="Workspace name" value={value.workspace.name || '—'} />
         <ReviewRow
-          label="Agents"
-          value={value.selectedAgentSlugs.length > 0 ? value.selectedAgentSlugs.join(', ') : 'None'}
+          label={t('steps.review.fields.password')}
+          value={'•'.repeat(Math.max(value.admin.password.length, 6))}
+        />
+        <ReviewRow
+          label={t('steps.review.fields.instanceName')}
+          value={value.branding.instanceName || t('steps.review.defaults.instanceName')}
+        />
+        <ReviewRow label={t('steps.review.fields.locale')} value={value.branding.locale} />
+        <ReviewRow
+          label={t('steps.review.fields.logo')}
+          value={value.logo.file?.name ?? t('steps.review.defaults.noLogo')}
+        />
+        <ReviewRow
+          label={t('steps.review.fields.workspaceName')}
+          value={value.workspace.name || dash}
+        />
+        <ReviewRow
+          label={t('steps.review.fields.agents')}
+          value={
+            value.selectedAgentSlugs.length > 0
+              ? value.selectedAgentSlugs.join(', ')
+              : t('steps.review.defaults.noAgents')
+          }
         />
       </dl>
     </section>
