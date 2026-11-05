@@ -20,13 +20,13 @@ export function StepRail({ steps, currentIndex, onJumpBack }: StepRailProps) {
       {/* vertical rail (lg): background track */}
       <span
         aria-hidden
-        className="pointer-events-none absolute top-5 bottom-5 left-[17px] hidden w-0.5 rounded-full bg-sc-border lg:block"
+        className="pointer-events-none absolute top-6 bottom-6 left-[23px] hidden w-0.5 rounded-full bg-sc-border lg:block"
       />
       {/* vertical rail (lg): progress fill, primary opacity 0.8 */}
       <span
         aria-hidden
-        className="pointer-events-none absolute left-[17px] top-5 hidden w-0.5 rounded-full bg-sc-primary-muted lg:block"
-        style={{ height: `calc((100% - 40px) * ${progressPercent / 100})` }}
+        className="pointer-events-none absolute left-[23px] top-6 hidden w-0.5 rounded-full bg-sc-primary-muted lg:block"
+        style={{ height: `calc((100% - 48px) * ${progressPercent / 100})` }}
       />
 
       {steps.map((step, index) => {
@@ -43,12 +43,12 @@ export function StepRail({ steps, currentIndex, onJumpBack }: StepRailProps) {
             disabled={!isClickable}
             aria-current={isActive ? 'step' : undefined}
             aria-label={`Step ${index + 1}: ${step.label}`}
-            className={`relative z-10 flex items-center gap-3 text-left transition-opacity lg:my-3 ${
+            className={`relative z-10 flex items-center gap-4 text-left transition-opacity lg:my-6 ${
               isClickable ? 'cursor-pointer' : 'cursor-default'
             } ${isUpcoming ? 'opacity-70' : ''}`}
           >
             <span
-              className={`inline-flex h-9 w-9 flex-none items-center justify-center rounded-full border text-sm font-semibold transition-colors ${
+              className={`inline-flex h-12 w-12 flex-none items-center justify-center rounded-full border text-base font-semibold transition-colors ${
                 isActive
                   ? 'border-sc-primary bg-sc-primary text-sc-primary-foreground shadow-[0_0_0_4px_rgba(89,213,136,0.18)]'
                   : isDone
@@ -56,16 +56,16 @@ export function StepRail({ steps, currentIndex, onJumpBack }: StepRailProps) {
                     : 'border-sc-border bg-sc-bg-card text-sc-text-muted'
               }`}
             >
-              {isDone ? <Check size={16} strokeWidth={2.5} aria-hidden /> : index + 1}
+              {isDone ? <Check size={20} strokeWidth={2.5} aria-hidden /> : index + 1}
             </span>
-            <span className="hidden flex-col lg:flex">
+            <span className="hidden flex-col gap-0.5 lg:flex">
               <span
-                className={`text-xs font-semibold uppercase tracking-wider ${isActive ? 'text-sc-text' : 'text-sc-text-muted'}`}
+                className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${isActive ? 'text-sc-text-muted' : 'text-sc-text-muted'}`}
               >
                 Step {String(index + 1).padStart(2, '0')}
               </span>
               <span
-                className={`text-sm font-medium ${isActive ? 'text-sc-text' : 'text-sc-text-muted'}`}
+                className={`text-base font-semibold tracking-tight ${isActive ? 'text-sc-text' : 'text-sc-text-muted'}`}
               >
                 {step.short}
               </span>
