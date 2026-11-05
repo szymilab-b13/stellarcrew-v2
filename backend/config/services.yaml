@@ -62,3 +62,20 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+when@test:
+    services:
+        _defaults:
+            autowire: true
+            autoconfigure: true
+
+        # swap doctrine-backed install adapters with in-memory fakes for endpoint tests
+        App\Tests\Fixtures\Core\InMemorySystemSettingRepository: ~
+        App\Tests\Fixtures\Auth\SpyAuthApi: ~
+
+        Modules\Core\Domain\SystemSettingRepository:
+            alias: App\Tests\Fixtures\Core\InMemorySystemSettingRepository
+
+        Modules\Auth\Api\AuthApi:
+            alias: App\Tests\Fixtures\Auth\SpyAuthApi
+

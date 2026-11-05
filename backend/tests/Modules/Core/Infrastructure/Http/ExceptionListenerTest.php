@@ -6,6 +6,8 @@ namespace App\Tests\Modules\Core\Infrastructure\Http;
 
 use function count;
 
+use Modules\Core\Application\Install\InvalidInstallInputException;
+use Modules\Core\Application\Install\SystemAlreadyInstalledException;
 use Modules\Core\Infrastructure\Http\ExceptionListener;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -108,6 +110,35 @@ final class ExceptionListenerTest extends TestCase
         $payload = $this->decode($response);
         self::assertSame('UNAUTHORIZED', $payload['error']['code']);
         self::assertSame('Invalid credentials', $payload['error']['message']);
+    }
+
+    public function testShouldReturn400JsonWhenInvalidInstallInputException(): void
+    {
+        $event = $this->makeEvent(InvalidInstallInputException::invalidEmail('not-an-email'));
+        $sut = new ExceptionListener(debug: false);
+
+        $sut($event);
+
+        $response = $event->getResponse();
+        self::assertInstanceOf(JsonResponse::class, $response);
+        self::assertSame(400, $response->getStatusCode());
+        $payload = $this->decode($response);
+        self::assertSame('INVALID_INPUT', $payload['error']['code']);
+        self::assertSame('Invalid admin email address "not-an-email".', $payload['error']['message']);
+    }
+
+    public function testShouldReturn404JsonWhenSystemAlreadyInstalledException(): void
+    {
+        $event = $this->makeEvent(SystemAlreadyInstalledException::create());
+        $sut = new ExceptionListener(debug: false);
+
+        $sut($event);
+
+        $response = $event->getResponse();
+        self::assertInstanceOf(JsonResponse::class, $response);
+        self::assertSame(404, $response->getStatusCode());
+        $payload = $this->decode($response);
+        self::assertSame('NOT_FOUND', $payload['error']['code']);
     }
 
     public function testShouldReturnMappedHttpStatusWhenGenericHttpException(): void

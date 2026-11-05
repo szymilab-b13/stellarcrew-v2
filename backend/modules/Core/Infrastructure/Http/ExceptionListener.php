@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Modules\Core\Infrastructure\Http;
 
 use function array_slice;
+
+use Modules\Core\Application\Install\InvalidInstallInputException;
+use Modules\Core\Application\Install\SystemAlreadyInstalledException;
+
 use function sprintf;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -58,6 +62,14 @@ final readonly class ExceptionListener
     {
         if ($throwable instanceof ValidationFailedException) {
             return [Response::HTTP_UNPROCESSABLE_ENTITY, 'VALIDATION_ERROR', $this->mapViolations($throwable)];
+        }
+
+        if ($throwable instanceof InvalidInstallInputException) {
+            return [Response::HTTP_BAD_REQUEST, 'INVALID_INPUT', null];
+        }
+
+        if ($throwable instanceof SystemAlreadyInstalledException) {
+            return [Response::HTTP_NOT_FOUND, 'NOT_FOUND', null];
         }
 
         if ($throwable instanceof AuthenticationException) {
