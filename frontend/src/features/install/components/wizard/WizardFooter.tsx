@@ -1,0 +1,67 @@
+import { ArrowLeft, ArrowRight, Check, Loader2, Shield } from 'lucide-react';
+
+interface WizardFooterProps {
+  currentIndex: number;
+  totalSteps: number;
+  isLastStep: boolean;
+  isSubmitting: boolean;
+  canContinue: boolean;
+  onBack(): void;
+  onContinue(): void;
+}
+
+export function WizardFooter({
+  currentIndex,
+  totalSteps,
+  isLastStep,
+  isSubmitting,
+  canContinue,
+  onBack,
+  onContinue,
+}: WizardFooterProps) {
+  return (
+    <footer className="flex items-center justify-between gap-4 border-t border-sc-border pt-6">
+      <div className="flex items-center gap-4">
+        {currentIndex > 0 ? (
+          <button
+            type="button"
+            onClick={onBack}
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 rounded-md border border-sc-border bg-sc-bg-card px-4 py-2 text-sm font-medium text-sc-text transition-colors hover:bg-sc-bg-secondary disabled:opacity-60"
+          >
+            <ArrowLeft size={16} aria-hidden />
+            Back
+          </button>
+        ) : (
+          <span className="inline-flex items-center gap-2 text-xs text-sc-text-muted">
+            <Shield size={14} aria-hidden /> Nothing leaves your instance.
+          </span>
+        )}
+      </div>
+
+      <div className="flex items-center gap-4">
+        <span className="hidden text-xs text-sc-text-muted sm:inline">
+          {currentIndex + 1} of {totalSteps}
+        </span>
+        <button
+          type="button"
+          onClick={onContinue}
+          disabled={!canContinue || isSubmitting}
+          className="inline-flex items-center gap-2 rounded-md bg-sc-text px-4 py-2 text-sm font-medium text-sc-bg transition-opacity disabled:opacity-60"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="animate-spin" size={16} aria-hidden />
+              <span>Installing…</span>
+            </>
+          ) : (
+            <>
+              <span>{isLastStep ? 'Finish setup' : 'Continue'}</span>
+              {isLastStep ? <Check size={16} aria-hidden /> : <ArrowRight size={16} aria-hidden />}
+            </>
+          )}
+        </button>
+      </div>
+    </footer>
+  );
+}
