@@ -79,3 +79,16 @@ when@test:
         Modules\Auth\Api\AuthApi:
             alias: App\Tests\Fixtures\Auth\SpyAuthApi
 
+        # swap real health checks with always-healthy fakes so endpoint tests do not require live infrastructure
+        Modules\Core\Infrastructure\HealthCheck\DbHealthCheck:
+            class: App\Tests\Fixtures\Core\FakeHealthyCheck
+            arguments: ['db']
+
+        Modules\Core\Infrastructure\HealthCheck\RedisHealthCheck:
+            class: App\Tests\Fixtures\Core\FakeHealthyCheck
+            arguments: ['redis']
+
+        Modules\Core\Infrastructure\HealthCheck\RabbitHealthCheck:
+            class: App\Tests\Fixtures\Core\FakeHealthyCheck
+            arguments: ['rabbitmq']
+
