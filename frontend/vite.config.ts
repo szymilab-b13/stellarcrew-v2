@@ -15,6 +15,10 @@ export default defineConfig({
     host: '0.0.0.0',
     port: Number(process.env.FRONTEND_PORT ?? 5173),
     strictPort: true,
+    proxy: {
+      '/install': { target: 'http://sc_backend_web:8000', changeOrigin: true },
+      '/health': { target: 'http://sc_backend_web:8000', changeOrigin: true },
+    },
   },
   preview: {
     host: '0.0.0.0',

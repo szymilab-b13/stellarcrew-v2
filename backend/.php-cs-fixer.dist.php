@@ -20,6 +20,9 @@ return (new PhpCsFixer\Config())
         '@PSR12' => true,
         '@PSR12:risky' => true,
         '@PHP8x4Migration' => true,
+        // deptrac's PHP parser does not accept `new X(...)->method()` yet; keep explicit parentheses.
+        'new_with_parentheses' => ['anonymous_class' => true, 'named_class' => true],
+        'new_expression_parentheses' => false,
         'declare_strict_types' => true,
         'ordered_imports' => ['sort_algorithm' => 'alpha'],
         'no_unused_imports' => true,

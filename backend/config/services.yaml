@@ -19,5 +19,76 @@ services:
     App\:
         resource: '../src/'
 
+    # registers every module class as a service (DDD + CQRS, bundle per module)
+    Modules\:
+        resource: '../modules/'
+
+    # shared kernel bindings: clock + uuid generator defaults for all consumers
+    Modules\Shared\Kernel\Clock:
+        alias: Modules\Shared\Kernel\SystemClock
+
+    Modules\Shared\Kernel\UuidGenerator:
+        alias: Modules\Shared\Kernel\Uuid7Generator
+
+    # Redis client built from REDIS_URL (DSN parsed by symfony/cache's Redis adapter)
+    Redis:
+        class: Redis
+        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', 'createConnection']
+        arguments:
+            $dsn: '%env(REDIS_URL)%'
+
+    # Rabbit probe wired to the broker host+port (DSN not required: health check is a TCP ping)
+    Modules\Core\Infrastructure\HealthCheck\TcpRabbitConnectionProbe:
+        arguments:
+            $host: '%env(RABBITMQ_HOST)%'
+            $port: '%env(int:RABBITMQ_PORT)%'
+
+    Modules\Core\Infrastructure\HealthCheck\RabbitConnectionProbe:
+        alias: Modules\Core\Infrastructure\HealthCheck\TcpRabbitConnectionProbe
+
+    # Core install bindings
+    Modules\Core\Domain\SystemSettingRepository:
+        alias: Modules\Core\Infrastructure\Doctrine\Repository\DoctrineSystemSettingRepository
+
+    # Auth module bindings
+    Modules\Auth\Domain\UserRepository:
+        alias: Modules\Auth\Infrastructure\Doctrine\Repository\DoctrineUserRepository
+
+    Modules\Auth\Application\PasswordHasher:
+        alias: Modules\Auth\Infrastructure\Security\SymfonyPasswordHasher
+
+    Modules\Auth\Api\AuthApi:
+        alias: Modules\Auth\Infrastructure\DefaultAuthApi
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+when@test:
+    services:
+        _defaults:
+            autowire: true
+            autoconfigure: true
+
+        # swap doctrine-backed install adapters with in-memory fakes for endpoint tests
+        App\Tests\Fixtures\Core\InMemorySystemSettingRepository: ~
+        App\Tests\Fixtures\Auth\SpyAuthApi: ~
+
+        Modules\Core\Domain\SystemSettingRepository:
+            alias: App\Tests\Fixtures\Core\InMemorySystemSettingRepository
+
+        Modules\Auth\Api\AuthApi:
+            alias: App\Tests\Fixtures\Auth\SpyAuthApi
+
+        # swap real health checks with always-healthy fakes so endpoint tests do not require live infrastructure
+        Modules\Core\Infrastructure\HealthCheck\DbHealthCheck:
+            class: App\Tests\Fixtures\Core\FakeHealthyCheck
+            arguments: ['db']
+
+        Modules\Core\Infrastructure\HealthCheck\RedisHealthCheck:
+            class: App\Tests\Fixtures\Core\FakeHealthyCheck
+            arguments: ['redis']
+
+        Modules\Core\Infrastructure\HealthCheck\RabbitHealthCheck:
+            class: App\Tests\Fixtures\Core\FakeHealthyCheck
+            arguments: ['rabbitmq']
+

@@ -27,24 +27,44 @@ deptrac:
           collectors:
               - type: classLike
                 value: 'Modules\\Shared\\Kernel\\.*'
+        - name: Vendor
+          collectors:
+              - type: classLike
+                value: '^Symfony\\.*'
+              - type: classLike
+                value: '^Doctrine\\.*'
+              - type: classLike
+                value: '^Psr\\.*'
+              - type: classLike
+                value: '^OpenApi\\.*'
 
     ruleset:
         # Domain is pure: no outward dependencies on other layers
         Domain:
             - SharedKernel
-        # Application orchestrates Domain + SharedKernel
+            - Vendor
+        # Application orchestrates Domain + SharedKernel. Cross-module consumption via Module API (never direct Domain/Application of another module).
         Application:
             - Domain
+            - Api
             - SharedKernel
-        # Infrastructure wires Application + Domain + SharedKernel
+            - Vendor
+        # Infrastructure wires Application + Domain + SharedKernel and implements Api contracts.
+        # Cross-module Infrastructure deps are allowed (e.g. DBAL types, bundle wiring).
         Infrastructure:
             - Application
             - Domain
+            - Api
+            - Infrastructure
             - SharedKernel
+            - Vendor
         # Api exposes DTO + adapter over Application
         Api:
             - Application
             - SharedKernel
-        SharedKernel: ~
+            - Vendor
+        SharedKernel:
+            - Vendor
+        Vendor: ~
 
     skip_violations: []

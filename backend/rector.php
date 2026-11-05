@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\Php84\Rector\MethodCall\NewMethodCallWithoutParenthesesRector;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -14,6 +15,8 @@ return RectorConfig::configure()
         __DIR__ . '/src/Kernel.php',
         __DIR__ . '/var',
         __DIR__ . '/vendor',
+        // deptrac's PHP parser does not accept `new X(...)->method()` yet; keep explicit parentheses.
+        NewMethodCallWithoutParenthesesRector::class,
     ])
     ->withPhpSets(php84: true)
     ->withPreparedSets(
