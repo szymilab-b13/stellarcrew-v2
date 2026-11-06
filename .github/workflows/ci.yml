@@ -52,10 +52,10 @@ jobs:
         run: vendor/bin/rector process --dry-run --no-progress-bar
 
       - name: Generate JWT keypair for tests
-        env:
-          JWT_PASSPHRASE: a7bdeec1f83eb08b40da272eb231e4bacac8945c467b8d0162119f9caaf45204
         run: |
           mkdir -p config/jwt
+          # The test passphrase lives in backend/.env.test (public by design — test keys only).
+          JWT_PASSPHRASE=$(grep -E '^JWT_PASSPHRASE=' .env.test | cut -d= -f2-)
           openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -aes-256-cbc -pass "pass:${JWT_PASSPHRASE}" -out config/jwt/private.pem
           openssl pkey -in config/jwt/private.pem -passin "pass:${JWT_PASSPHRASE}" -pubout -out config/jwt/public.pem
 
