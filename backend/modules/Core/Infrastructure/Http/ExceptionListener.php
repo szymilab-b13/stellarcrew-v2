@@ -8,6 +8,8 @@ use function array_slice;
 
 use Modules\Core\Application\Install\InvalidInstallInputException;
 use Modules\Core\Application\Install\SystemAlreadyInstalledException;
+use Modules\Workspaces\Domain\WorkspaceNotFoundException;
+use Modules\Workspaces\Domain\WorkspacePermissionDeniedException;
 
 use function sprintf;
 
@@ -70,6 +72,14 @@ final readonly class ExceptionListener
 
         if ($throwable instanceof SystemAlreadyInstalledException) {
             return [Response::HTTP_NOT_FOUND, 'NOT_FOUND', null];
+        }
+
+        if ($throwable instanceof WorkspaceNotFoundException) {
+            return [Response::HTTP_NOT_FOUND, 'NOT_FOUND', null];
+        }
+
+        if ($throwable instanceof WorkspacePermissionDeniedException) {
+            return [Response::HTTP_FORBIDDEN, 'FORBIDDEN', null];
         }
 
         if ($throwable instanceof AuthenticationException) {

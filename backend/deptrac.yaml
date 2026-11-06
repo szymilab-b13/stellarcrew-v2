@@ -37,6 +37,8 @@ deptrac:
                 value: '^Psr\\.*'
               - type: classLike
                 value: '^OpenApi\\.*'
+              - type: classLike
+                value: '^Lexik\\.*'
 
     ruleset:
         # Domain is pure: no outward dependencies on other layers

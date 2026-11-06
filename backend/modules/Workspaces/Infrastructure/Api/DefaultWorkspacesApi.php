@@ -15,8 +15,8 @@ use Modules\Workspaces\Api\WorkspacesApi;
 use Modules\Workspaces\Application\CreateWorkspaceCommand;
 use Modules\Workspaces\Application\CreateWorkspaceCommandHandler;
 use Modules\Workspaces\Domain\Workspace;
+use Modules\Workspaces\Domain\WorkspaceMember;
 use Modules\Workspaces\Domain\WorkspaceRepository;
-use Modules\Workspaces\Domain\WorkspaceRole;
 
 final readonly class DefaultWorkspacesApi implements WorkspacesApi
 {
@@ -46,7 +46,7 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
     public function listForUser(UserId $userId): array
     {
         return array_values(array_map(
-            fn (Workspace $w): WorkspaceView => $this->toView($w),
+            $this->toView(...),
             $this->workspaces->listForUser($userId),
         ));
     }
@@ -54,7 +54,7 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
     public function getMembership(WorkspaceId $workspaceId, UserId $userId): ?MembershipView
     {
         $member = $this->workspaces->findMembership($workspaceId, $userId);
-        if ($member === null) {
+        if (!$member instanceof WorkspaceMember) {
             return null;
         }
 
@@ -68,7 +68,7 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
     public function hasPermission(WorkspaceId $workspaceId, UserId $userId, string $permission): bool
     {
         $member = $this->workspaces->findMembership($workspaceId, $userId);
-        if ($member === null) {
+        if (!$member instanceof WorkspaceMember) {
             return false;
         }
 

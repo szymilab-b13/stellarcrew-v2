@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Workspaces\Domain;
 
 use DateTimeImmutable;
-
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Symfony\Component\Uid\Uuid;

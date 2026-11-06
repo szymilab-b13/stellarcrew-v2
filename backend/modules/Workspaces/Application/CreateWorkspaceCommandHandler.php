@@ -50,7 +50,7 @@ final readonly class CreateWorkspaceCommandHandler
     {
         $base = SlugGenerator::fromName($name);
         $slug = $base;
-        while ($this->workspaces->findBySlug($slug) !== null) {
+        while ($this->workspaces->findBySlug($slug) instanceof Workspace) {
             $slug = SlugGenerator::withRandomSuffix($base);
         }
 

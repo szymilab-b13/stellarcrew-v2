@@ -5,19 +5,22 @@ declare(strict_types=1);
 namespace Modules\Workspaces\Domain;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 
 use function in_array;
+
+use InvalidArgumentException;
+
 use function mb_strlen;
 use function mb_strtoupper;
 use function mb_substr;
+
+use Modules\Shared\Kernel\UserId;
+use Modules\Shared\Kernel\WorkspaceId;
+
 use function preg_match;
 use function sprintf;
 use function strtolower;
 use function trim;
-
-use Modules\Shared\Kernel\UserId;
-use Modules\Shared\Kernel\WorkspaceId;
 
 class Workspace
 {
@@ -124,7 +127,7 @@ class Workspace
 
     public function isDeleted(): bool
     {
-        return $this->deletedAt !== null;
+        return $this->deletedAt instanceof DateTimeImmutable;
     }
 
     public function rename(string $name, DateTimeImmutable $now): void
@@ -145,9 +148,10 @@ class Workspace
 
     public function softDelete(DateTimeImmutable $now): void
     {
-        if ($this->deletedAt !== null) {
+        if ($this->deletedAt instanceof DateTimeImmutable) {
             return;
         }
+
         $this->deletedAt = $now;
         $this->updatedAt = $now;
     }
@@ -158,6 +162,7 @@ class Workspace
         if ($trimmed === '') {
             throw new InvalidArgumentException('Workspace name cannot be empty.');
         }
+
         if (mb_strlen($trimmed) > self::NAME_MAX) {
             throw new InvalidArgumentException(sprintf('Workspace name cannot exceed %d characters.', self::NAME_MAX));
         }
@@ -168,9 +173,11 @@ class Workspace
         if ($slug === '') {
             throw new InvalidArgumentException('Workspace slug cannot be empty.');
         }
+
         if (mb_strlen($slug) > self::SLUG_MAX) {
             throw new InvalidArgumentException(sprintf('Workspace slug cannot exceed %d characters.', self::SLUG_MAX));
         }
+
         if (preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $slug) !== 1) {
             throw new InvalidArgumentException(sprintf('Workspace slug must be kebab-case: "%s".', $slug));
         }
@@ -189,6 +196,7 @@ class Workspace
         if ($trimmed === '') {
             throw new InvalidArgumentException('Workspace initials cannot be empty.');
         }
+
         if (mb_strlen($trimmed) > self::INITIALS_MAX) {
             throw new InvalidArgumentException(
                 sprintf('Workspace initials cannot exceed %d characters.', self::INITIALS_MAX),

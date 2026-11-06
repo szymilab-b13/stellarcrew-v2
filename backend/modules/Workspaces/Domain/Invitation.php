@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Modules\Workspaces\Domain;
 
-use DateTimeImmutable;
-use InvalidArgumentException;
-
 use function bin2hex;
-use function filter_var;
-use function random_bytes;
 
+use DateTimeImmutable;
+
+use function filter_var;
+
+use InvalidArgumentException;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 
+use function random_bytes;
 use function sprintf;
 
 use Symfony\Component\Uid\Uuid;
@@ -97,7 +98,7 @@ class Invitation
 
     public function isAccepted(): bool
     {
-        return $this->acceptedAt !== null;
+        return $this->acceptedAt instanceof DateTimeImmutable;
     }
 
     public function isExpired(DateTimeImmutable $now): bool
@@ -107,12 +108,14 @@ class Invitation
 
     public function accept(DateTimeImmutable $now): void
     {
-        if ($this->acceptedAt !== null) {
+        if ($this->acceptedAt instanceof DateTimeImmutable) {
             throw new InvalidArgumentException('Invitation already accepted.');
         }
+
         if ($this->isExpired($now)) {
             throw new InvalidArgumentException('Invitation has expired.');
         }
+
         $this->acceptedAt = $now;
     }
 

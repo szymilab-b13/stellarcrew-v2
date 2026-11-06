@@ -53,6 +53,7 @@ final class InMemoryWorkspaceRepository implements WorkspaceRepository
                 return;
             }
         }
+
         $this->members[] = $member;
     }
 
@@ -81,9 +82,11 @@ final class InMemoryWorkspaceRepository implements WorkspaceRepository
             if (!isset($ids[(string) $workspace->id()])) {
                 continue;
             }
+
             if ($workspace->isDeleted()) {
                 continue;
             }
+
             $result[] = $workspace;
         }
 

@@ -18,7 +18,8 @@ final class SlugGenerator
         if ($ascii === false) {
             $ascii = $name;
         }
-        $slug = strtolower((string) $ascii);
+
+        $slug = strtolower($ascii);
         $slug = (string) preg_replace('/[^a-z0-9]+/', '-', $slug);
         $slug = trim($slug, '-');
 
@@ -31,6 +32,6 @@ final class SlugGenerator
 
     public static function withRandomSuffix(string $base): string
     {
-        return $base . '-' . (string) random_int(1000, 9999);
+        return $base . '-' . random_int(1000, 9999);
     }
 }
