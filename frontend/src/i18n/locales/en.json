@@ -19,7 +19,8 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "switchLang": "Switch language",
-    "switchTheme": "Switch theme"
+    "switchTheme": "Switch theme",
+    "signOut": "Sign out"
   },
   "sidebar": {
     "setupGuide": "Setup guide",

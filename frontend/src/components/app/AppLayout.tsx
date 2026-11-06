@@ -4,6 +4,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useMe } from '@/features/auth/api/useMe';
 import { readAuthToken } from '@/lib/authToken';
 
+import { AppTopbar } from './AppTopbar';
 import { Sidebar } from './Sidebar';
 
 export function AppLayout() {
@@ -33,10 +34,13 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-screen bg-sc-bg text-sc-text">
-      <Sidebar user={me.data} />
-      <main className="flex-1 overflow-y-auto">
-        <Outlet />
-      </main>
+      <Sidebar />
+      <div className="flex flex-1 flex-col">
+        <AppTopbar user={me.data} />
+        <main className="flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

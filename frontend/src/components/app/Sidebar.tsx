@@ -1,38 +1,21 @@
-import { ChevronDown, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import { Logo } from '@/features/branding/Logo';
-import { useLogout } from '@/features/auth/api/useLogout';
-import type { AuthUser } from '@/features/auth/types';
 import { useMenu } from '@/features/menu/api/useMenu';
-import { LanguageSwitcher } from '@/features/settings/LanguageSwitcher';
-import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 import { resolveIcon } from './iconMap';
 import { useCollapsedSections, useSidebarCollapsed } from './useSidebarState';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
 
-interface SidebarProps {
-  user: AuthUser;
-}
-
-export function Sidebar({ user }: SidebarProps) {
+export function Sidebar() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useSidebarCollapsed();
   const sections = useCollapsedSections();
   const menu = useMenu();
-  const logout = useLogout();
 
   const widthClass = collapsed ? 'w-16' : 'w-64';
-  const displayName = user.displayName ?? user.email;
-
-  function handleLogout() {
-    logout.mutate(undefined, {
-      onSettled: () => navigate('/login', { replace: true }),
-    });
-  }
 
   return (
     <aside
@@ -122,34 +105,6 @@ export function Sidebar({ user }: SidebarProps) {
           );
         })}
       </nav>
-
-      <div className="flex flex-col gap-2 border-t border-sc-border px-3 py-3">
-        {!collapsed ? (
-          <div className="flex items-center justify-between gap-2 text-xs text-sc-text-muted">
-            <span className="truncate" title={displayName}>
-              {t('sidebar.greeting', { name: displayName })}
-            </span>
-          </div>
-        ) : null}
-        <div
-          className={`flex ${collapsed ? 'flex-col items-center gap-2' : 'items-center justify-between gap-2'}`}
-        >
-          {!collapsed ? <LanguageSwitcher /> : null}
-          <ThemeToggle />
-        </div>
-        <button
-          type="button"
-          onClick={handleLogout}
-          disabled={logout.isPending}
-          aria-label={t('sidebar.logout')}
-          className={`inline-flex items-center gap-2 rounded-md border border-sc-border bg-sc-bg-card px-3 py-1.5 text-xs font-semibold text-sc-text transition-colors hover:bg-sc-bg disabled:opacity-60 ${
-            collapsed ? 'justify-center' : ''
-          }`}
-        >
-          <LogOut size={14} aria-hidden />
-          {!collapsed ? <span>{t('sidebar.logout')}</span> : null}
-        </button>
-      </div>
     </aside>
   );
 }

@@ -19,7 +19,8 @@
     "themeLight": "Jasny",
     "themeDark": "Ciemny",
     "switchLang": "Zmień język",
-    "switchTheme": "Zmień motyw"
+    "switchTheme": "Zmień motyw",
+    "signOut": "Wyloguj się"
   },
   "sidebar": {
     "setupGuide": "Przewodnik instalacji",
