@@ -13,6 +13,7 @@ use Modules\Auth\Api\AuthApi;
 use Modules\Core\Domain\SystemSetting;
 use Modules\Core\Domain\SystemSettingRepository;
 use Modules\Shared\Kernel\Clock;
+use Modules\Workspaces\Api\WorkspacesApi;
 
 use function strlen;
 use function trim;
@@ -31,11 +32,14 @@ final readonly class InstallSystemCommandHandler
 
     public const string KEY_WORKSPACE_AGENTS = 'workspace.first_agents';
 
+    public const string DEFAULT_WORKSPACE_NAME = 'Default';
+
     private const array SUPPORTED_LOCALES = ['en', 'pl'];
 
     public function __construct(
         private AuthApi $auth,
         private SystemSettingRepository $settings,
+        private WorkspacesApi $workspaces,
         private Clock $clock,
     ) {
     }
@@ -47,11 +51,14 @@ final readonly class InstallSystemCommandHandler
         $this->validatePassword($command->adminPlaintextPassword);
         $this->validateLocale($command->locale);
 
-        $this->auth->createAdmin(
+        $admin = $this->auth->createAdmin(
             $command->adminEmail,
             $command->adminPlaintextPassword,
             $command->adminDisplayName,
         );
+
+        $workspaceName = $this->normalise($command->workspaceName) ?? self::DEFAULT_WORKSPACE_NAME;
+        $this->workspaces->createForOwner($admin->id, $workspaceName);
 
         $now = $this->clock->now();
 

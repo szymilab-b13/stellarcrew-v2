@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Modules\Core\Application\Install;
 
 use App\Tests\Fixtures\Auth\SpyAuthApi;
+use App\Tests\Fixtures\Workspaces\SpyWorkspacesApi;
 use DateTimeImmutable;
 use Modules\Core\Application\Install\InstallSystemCommand;
 use Modules\Core\Application\Install\InstallSystemCommandHandler;
@@ -24,6 +25,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
         $sut = new InstallSystemCommandHandler(
             $auth,
             $this->settingRepository([]),
+            new SpyWorkspacesApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
 
@@ -42,6 +44,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
         $sut = new InstallSystemCommandHandler(
             new SpyAuthApi(),
             $settings,
+            new SpyWorkspacesApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
 
@@ -64,6 +67,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
         $sut = new InstallSystemCommandHandler(
             new SpyAuthApi(),
             $settings,
+            new SpyWorkspacesApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
 
@@ -77,6 +81,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
         $sut = new InstallSystemCommandHandler(
             new SpyAuthApi(),
             $this->settingRepository([]),
+            new SpyWorkspacesApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
 
@@ -90,6 +95,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
         $sut = new InstallSystemCommandHandler(
             new SpyAuthApi(),
             $this->settingRepository([]),
+            new SpyWorkspacesApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
 
@@ -105,6 +111,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
         $sut = new InstallSystemCommandHandler(
             $auth,
             $settings,
+            new SpyWorkspacesApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
 
@@ -127,11 +134,52 @@ final class InstallSystemCommandHandlerTest extends TestCase
         self::assertSame('["maja","viktor"]', $settings->get(InstallSystemCommandHandler::KEY_WORKSPACE_AGENTS)?->value());
     }
 
+    public function testShouldCreateDefaultWorkspaceOwnedByAdminWhenInstalling(): void
+    {
+        $auth = new SpyAuthApi();
+        $workspaces = new SpyWorkspacesApi();
+        $sut = new InstallSystemCommandHandler(
+            $auth,
+            $this->settingRepository([]),
+            $workspaces,
+            new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+        );
+
+        $sut(new InstallSystemCommand(
+            adminEmail: 'admin@example.com',
+            adminPlaintextPassword: 'secret-pass-long-enough',
+            workspaceName: 'Acme HQ',
+        ));
+
+        self::assertCount(1, $workspaces->createCalls);
+        self::assertSame('Acme HQ', $workspaces->createCalls[0]['name']);
+    }
+
+    public function testShouldFallBackToDefaultWorkspaceNameWhenWorkspaceNameMissing(): void
+    {
+        $workspaces = new SpyWorkspacesApi();
+        $sut = new InstallSystemCommandHandler(
+            new SpyAuthApi(),
+            $this->settingRepository([]),
+            $workspaces,
+            new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+        );
+
+        $sut(new InstallSystemCommand('admin@example.com', 'secret-pass-long-enough'));
+
+        self::assertCount(1, $workspaces->createCalls);
+        self::assertSame(
+            InstallSystemCommandHandler::DEFAULT_WORKSPACE_NAME,
+            $workspaces->createCalls[0]['name'],
+        );
+    }
+
     public function testShouldRejectUnsupportedLocale(): void
     {
         $sut = new InstallSystemCommandHandler(
             new SpyAuthApi(),
             $this->settingRepository([]),
+            new SpyWorkspacesApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
 
