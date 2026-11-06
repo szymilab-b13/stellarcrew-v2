@@ -4,8 +4,6 @@ import { NavLink } from 'react-router-dom';
 
 import { Logo } from '@/features/branding/Logo';
 import { useMenu } from '@/features/menu/api/useMenu';
-import { LanguageSwitcher } from '@/features/settings/LanguageSwitcher';
-import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 import { resolveIcon } from './iconMap';
 import { useCollapsedSections, useSidebarCollapsed } from './useSidebarState';
@@ -107,15 +105,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      <div
-        className={`flex items-center gap-2 border-t border-sc-border px-3 py-3 ${
-          collapsed ? 'flex-col' : 'justify-between'
-        }`}
-      >
-        {!collapsed ? <LanguageSwitcher /> : null}
-        <ThemeToggle />
-      </div>
     </aside>
   );
 }
