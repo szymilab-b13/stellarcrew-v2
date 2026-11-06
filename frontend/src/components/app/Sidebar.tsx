@@ -5,6 +5,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useLogout } from '@/features/auth/api/useLogout';
 import { Logo } from '@/features/branding/Logo';
 import { useMenu } from '@/features/menu/api/useMenu';
+import { LanguageSwitcher } from '@/features/settings/LanguageSwitcher';
+import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 import { resolveIcon } from './iconMap';
 import { useCollapsedSections, useSidebarCollapsed } from './useSidebarState';
@@ -115,16 +117,18 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t border-sc-border px-3 py-3">
+      <div className="flex flex-col gap-2 border-t border-sc-border px-3 py-3">
+        <div className={`flex items-center gap-2 ${collapsed ? 'flex-col' : 'justify-between'}`}>
+          {!collapsed ? <LanguageSwitcher /> : null}
+          <ThemeToggle />
+        </div>
         <button
           type="button"
           onClick={handleLogout}
           disabled={logout.isPending}
           aria-label={t('sidebar.logout')}
           title={t('sidebar.logout')}
-          className={`inline-flex items-center gap-2 rounded-md border border-sc-border bg-sc-bg-card px-3 py-1.5 text-xs font-semibold text-sc-text transition-colors hover:bg-sc-bg disabled:opacity-60 ${
-            collapsed ? 'w-full justify-center' : 'w-full justify-center'
-          }`}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-sc-border bg-sc-bg-card px-3 py-1.5 text-xs font-semibold text-sc-text transition-colors hover:bg-sc-bg disabled:opacity-60"
         >
           <LogOut size={14} aria-hidden />
           {!collapsed ? <span>{t('sidebar.logout')}</span> : null}
