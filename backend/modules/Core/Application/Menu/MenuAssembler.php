@@ -57,7 +57,7 @@ final readonly class MenuAssembler
     {
         $visible = [];
         foreach ($items as $item) {
-            if ($item->requiresRole !== null && $role !== UserRole::Admin && $role !== $item->requiresRole) {
+            if ($item->requiresRole !== null && $role !== UserRole::Admin && $role->value !== $item->requiresRole) {
                 continue;
             }
 
