@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Infrastructure\Security;
 
+use function assert;
+
 use Modules\Auth\Domain\User as DomainUser;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,7 +19,7 @@ final readonly class SecurityUser implements UserInterface, PasswordAuthenticate
     public function getUserIdentifier(): string
     {
         $email = $this->user->email();
-        \assert($email !== '');
+        assert($email !== '');
 
         return $email;
     }

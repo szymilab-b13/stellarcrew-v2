@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Infrastructure\Http;
 
-use Modules\Auth\Domain\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use OpenApi\Attributes as OA;
