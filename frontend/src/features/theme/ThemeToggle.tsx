@@ -8,7 +8,7 @@ export function ThemeToggle() {
   const { t } = useTranslation();
   const isDark = theme === 'dark';
   const Icon = isDark ? Sun : Moon;
-  const label = t('topbar.switchTheme');
+  const label = isDark ? t('topbar.themeLight') : t('topbar.themeDark');
 
   return (
     <button
@@ -16,12 +16,9 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="inline-flex items-center gap-2 rounded-md border border-sc-border bg-sc-bg-card px-3 py-1.5 text-xs font-semibold text-sc-text transition-colors hover:bg-sc-bg-secondary"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-sc-text-muted transition-colors hover:bg-sc-bg-card hover:text-sc-text"
     >
-      <Icon size={14} aria-hidden />
-      <span className="hidden sm:inline">
-        {isDark ? t('topbar.themeLight') : t('topbar.themeDark')}
-      </span>
+      <Icon size={16} strokeWidth={1.75} aria-hidden />
     </button>
   );
 }
