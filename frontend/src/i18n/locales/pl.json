@@ -9,7 +9,10 @@
     "loadingStatus": "Sprawdzam stan instalacji…",
     "goToApp": "Przejdź do aplikacji",
     "openApp": "Otwórz StellarCrew",
-    "stepPrefix": "Krok"
+    "stepPrefix": "Krok",
+    "cancel": "Anuluj",
+    "close": "Zamknij",
+    "saving": "Zapisuję…"
   },
   "topbar": {
     "breadcrumb": "StellarCrew / Instalacja",
@@ -74,7 +77,61 @@
     "eyebrow": "Workspace’y",
     "title": "Workspace’y",
     "subtitle": "Zbieraj projekty, agentów i wiedzę w jednym miejscu.",
-    "comingSoon": "Tworzenie, zmiana nazwy i przełączanie workspace’ów dojdą w milestonie WORKSPACES."
+    "loading": "Ładuję workspace’y…",
+    "loadError": "Nie udało się załadować workspace’ów.",
+    "listAria": "Twoje workspace’y",
+    "addTile": {
+      "label": "Dodaj workspace"
+    },
+    "tile": {
+      "aria": "Workspace {{name}}",
+      "edit": "Zmień nazwę",
+      "editAria": "Zmień nazwę workspace’a {{name}}",
+      "delete": "Usuń",
+      "deleteAria": "Usuń workspace {{name}}"
+    },
+    "dialog": {
+      "createTitle": "Utwórz workspace",
+      "editTitle": "Zmień nazwę workspace’a",
+      "previewHint": "Wybierz kolor i maksymalnie 3 litery. Kafelek użyje ich jako ikony.",
+      "nameLabel": "Nazwa",
+      "initialsLabel": "Inicjały",
+      "colorLabel": "Kolor",
+      "submitCreate": "Utwórz",
+      "submitEdit": "Zapisz",
+      "colors": {
+        "purple": "Fiolet",
+        "blue": "Niebieski",
+        "pink": "Róż",
+        "amber": "Bursztyn",
+        "emerald": "Szmaragd",
+        "cyan": "Cyjan",
+        "indigo": "Indygo",
+        "slate": "Grafit"
+      },
+      "errors": {
+        "name.required": "Nazwa jest wymagana.",
+        "name.tooLong": "Nazwa jest za długa (maks. 100 znaków).",
+        "initials.required": "Inicjały są wymagane.",
+        "initials.tooLong": "Inicjały mogą mieć maks. 3 znaki.",
+        "server": {
+          "validation": "Serwer odrzucił przesłane dane.",
+          "forbidden": "Nie masz uprawnień do edycji tego workspace’a.",
+          "generic": "Coś poszło nie tak. Spróbuj ponownie."
+        }
+      }
+    },
+    "delete": {
+      "title": "Usuń workspace",
+      "body": "Usunąć workspace „{{name}}”? Operacja jest nieodwracalna.",
+      "confirm": "Usuń",
+      "deleting": "Usuwam…",
+      "errors": {
+        "forbidden": "Tylko właściciel może usunąć ten workspace.",
+        "notFound": "Ten workspace już nie istnieje.",
+        "generic": "Nie udało się usunąć workspace’a."
+      }
+    }
   },
   "api": {
     "unreachableTitle": "Nie udało się połączyć z API",

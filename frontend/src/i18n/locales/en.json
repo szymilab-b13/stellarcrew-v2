@@ -9,7 +9,10 @@
     "loadingStatus": "Checking install status…",
     "goToApp": "Go to app",
     "openApp": "Open StellarCrew",
-    "stepPrefix": "Step"
+    "stepPrefix": "Step",
+    "cancel": "Cancel",
+    "close": "Close",
+    "saving": "Saving…"
   },
   "topbar": {
     "breadcrumb": "StellarCrew / Install",
@@ -74,7 +77,61 @@
     "eyebrow": "Workspaces",
     "title": "Workspaces",
     "subtitle": "Group projects, agents and knowledge.",
-    "comingSoon": "Create, rename and switch workspaces will land in the WORKSPACES milestone."
+    "loading": "Loading workspaces…",
+    "loadError": "Could not load workspaces.",
+    "listAria": "Your workspaces",
+    "addTile": {
+      "label": "Add workspace"
+    },
+    "tile": {
+      "aria": "Workspace {{name}}",
+      "edit": "Rename",
+      "editAria": "Rename workspace {{name}}",
+      "delete": "Delete",
+      "deleteAria": "Delete workspace {{name}}"
+    },
+    "dialog": {
+      "createTitle": "Create workspace",
+      "editTitle": "Rename workspace",
+      "previewHint": "Pick a color and up to 3 letters. The tile uses them as icon.",
+      "nameLabel": "Name",
+      "initialsLabel": "Initials",
+      "colorLabel": "Color",
+      "submitCreate": "Create",
+      "submitEdit": "Save",
+      "colors": {
+        "purple": "Purple",
+        "blue": "Blue",
+        "pink": "Pink",
+        "amber": "Amber",
+        "emerald": "Emerald",
+        "cyan": "Cyan",
+        "indigo": "Indigo",
+        "slate": "Slate"
+      },
+      "errors": {
+        "name.required": "Name is required.",
+        "name.tooLong": "Name is too long (max 100).",
+        "initials.required": "Initials are required.",
+        "initials.tooLong": "Initials must be at most 3 characters.",
+        "server": {
+          "validation": "The server rejected the submitted values.",
+          "forbidden": "You do not have permission to change this workspace.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
+    },
+    "delete": {
+      "title": "Delete workspace",
+      "body": "Delete workspace \"{{name}}\"? This cannot be undone.",
+      "confirm": "Delete",
+      "deleting": "Deleting…",
+      "errors": {
+        "forbidden": "Only the owner can delete this workspace.",
+        "notFound": "This workspace no longer exists.",
+        "generic": "Could not delete the workspace."
+      }
+    }
   },
   "api": {
     "unreachableTitle": "Could not reach the API",
