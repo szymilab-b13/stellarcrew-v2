@@ -19,7 +19,8 @@
     "themeLight": "Jasny",
     "themeDark": "Ciemny",
     "switchLang": "Zmień język",
-    "switchTheme": "Zmień motyw"
+    "switchTheme": "Zmień motyw",
+    "signOut": "Wyloguj się"
   },
   "sidebar": {
     "setupGuide": "Przewodnik instalacji",
@@ -27,7 +28,53 @@
     "headlineTail": "Prostsza niż myślisz.",
     "subline": "Przejdź przez kilka krótkich kroków, aby dokończyć konfigurację swojej instancji StellarCrew.",
     "progressLabel": "Postęp konfiguracji",
-    "localPreview": "Lokalny podgląd — nic nie wychodzi poza Twoją instancję."
+    "localPreview": "Lokalny podgląd — nic nie wychodzi poza Twoją instancję.",
+    "collapse": "Zwiń menu",
+    "expand": "Rozwiń menu",
+    "loading": "Ładowanie menu…",
+    "loadError": "Nie udało się pobrać menu.",
+    "greeting": "Zalogowano jako {{name}}",
+    "logout": "Wyloguj się"
+  },
+  "menu": {
+    "sections": {
+      "overview": "Przegląd",
+      "workspaces": "Workspace’y",
+      "pinned": "Przypięte"
+    },
+    "items": {
+      "dashboard": "Panel",
+      "workspaces": "Workspace’y"
+    },
+    "pinAdd": "Przypnij na górze",
+    "pinRemove": "Odepnij",
+    "pinLimit": "Maksymalnie {{limit}} przypiętych pozycji"
+  },
+  "workspaceSwitcher": {
+    "label": "Workspace",
+    "default": "Domyślny workspace",
+    "placeholderHint": "Przełączanie workspace’ów dojdzie w milestonie WORKSPACES."
+  },
+  "dashboard": {
+    "eyebrow": "Panel",
+    "greeting": "Cześć, {{name}}",
+    "subtitle": "Twoja załoga jest gotowa. Co teraz zrobimy?",
+    "widgets": {
+      "whatNow": {
+        "title": "Co dalej",
+        "body": "Workspace’y i agenci dojdą wkrótce. Na razie to baza po zalogowaniu."
+      },
+      "roadmap": {
+        "title": "Mapa drogowa",
+        "body": "Milestone UI już jest. Następne: WORKSPACES, potem AGENTS."
+      }
+    }
+  },
+  "workspaces": {
+    "eyebrow": "Workspace’y",
+    "title": "Workspace’y",
+    "subtitle": "Zbieraj projekty, agentów i wiedzę w jednym miejscu.",
+    "comingSoon": "Tworzenie, zmiana nazwy i przełączanie workspace’ów dojdą w milestonie WORKSPACES."
   },
   "api": {
     "unreachableTitle": "Nie udało się połączyć z API",
