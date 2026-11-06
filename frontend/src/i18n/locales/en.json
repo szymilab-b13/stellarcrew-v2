@@ -27,7 +27,49 @@
     "headlineTail": "Simpler than you think.",
     "subline": "Walk through a few short steps to finish setting up your StellarCrew instance.",
     "progressLabel": "Setup progress",
-    "localPreview": "Local preview — nothing is sent outside your instance."
+    "localPreview": "Local preview — nothing is sent outside your instance.",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "loading": "Loading menu…",
+    "loadError": "Could not load the menu.",
+    "greeting": "Signed in as {{name}}",
+    "logout": "Sign out"
+  },
+  "menu": {
+    "sections": {
+      "overview": "Overview",
+      "workspaces": "Workspaces"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "workspaces": "Workspaces"
+    }
+  },
+  "workspaceSwitcher": {
+    "label": "Workspace",
+    "default": "Default workspace",
+    "placeholderHint": "Workspace switching lands with the WORKSPACES milestone."
+  },
+  "dashboard": {
+    "eyebrow": "Dashboard",
+    "greeting": "Welcome, {{name}}",
+    "subtitle": "Your crew is ready. What would you like to do next?",
+    "widgets": {
+      "whatNow": {
+        "title": "What is next",
+        "body": "Workspaces and agents are coming up. For now, this is the home base after signing in."
+      },
+      "roadmap": {
+        "title": "Roadmap",
+        "body": "Milestone UI is live. Next up: WORKSPACES, then AGENTS."
+      }
+    }
+  },
+  "workspaces": {
+    "eyebrow": "Workspaces",
+    "title": "Workspaces",
+    "subtitle": "Group projects, agents and knowledge.",
+    "comingSoon": "Create, rename and switch workspaces will land in the WORKSPACES milestone."
   },
   "api": {
     "unreachableTitle": "Could not reach the API",

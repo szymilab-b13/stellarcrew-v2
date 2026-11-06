@@ -1,8 +1,11 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
+import { AppLayout } from './components/app/AppLayout';
 import { LoginPage } from './features/auth';
 import { HomePage } from './routes/HomePage';
 import { InstallPage } from './routes/InstallPage';
+import { DashboardPage } from './routes/DashboardPage';
+import { WorkspacesPage } from './routes/WorkspacesPage';
 
 export function App() {
   return (
@@ -11,6 +14,11 @@ export function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/install" element={<InstallPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/workspaces" element={<WorkspacesPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
