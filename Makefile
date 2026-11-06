@@ -52,6 +52,9 @@ shell-redis: ## Open redis-cli
 
 ## ---- Backend (Symfony) — TBD after BL-SETUP-002/003 ----------------------
 
+jwt-keys: ## (Re)generate the JWT keypair under backend/config/jwt (uses backend container, see ADR-BE-004)
+	$(DOCKER_COMPOSE) exec -T backend bin/console lexik:jwt:generate-keypair --overwrite
+
 backend-install: ## composer install (uses composer:2 image until backend container is wired in BL-SETUP-003)
 	docker run --rm --user "$(shell id -u):$(shell id -g)" \
 		-e COMPOSER_HOME=/tmp/composer \

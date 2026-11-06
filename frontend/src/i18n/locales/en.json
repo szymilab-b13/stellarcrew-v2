@@ -50,6 +50,33 @@
     "finalCheck": "Final check",
     "setup": "Setup"
   },
+  "home": {
+    "title": "StellarCrew",
+    "subtitle": "Your crew is ready.",
+    "greeting": "Welcome, {{name}}",
+    "logout": "Logout",
+    "youAreIn": {
+      "title": "You are signed in",
+      "body": "Hey {{name}}, this is the home base. Workspaces, agents and chat will live here next."
+    },
+    "nextSteps": {
+      "title": "What is next",
+      "body": "Milestone AUTH is live. Milestone WORKSPACES and AGENTS are up next."
+    }
+  },
+  "login": {
+    "eyebrow": "Welcome back",
+    "title": "Sign in to StellarCrew",
+    "description": "Use the admin account created during installation.",
+    "email": "Email",
+    "emailPlaceholder": "admin@example.com",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in…",
+    "invalidCredentials": "Invalid email or password.",
+    "validationFailed": "Please double-check the submitted values.",
+    "genericError": "Something went wrong. Please try again."
+  },
   "steps": {
     "admin": {
       "label": "Admin & profile",

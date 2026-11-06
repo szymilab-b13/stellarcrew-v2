@@ -50,6 +50,33 @@
     "finalCheck": "Ostatni krok",
     "setup": "Konfiguracja"
   },
+  "home": {
+    "title": "StellarCrew",
+    "subtitle": "Twoja załoga jest gotowa.",
+    "greeting": "Cześć, {{name}}",
+    "logout": "Wyloguj się",
+    "youAreIn": {
+      "title": "Jesteś zalogowany(a)",
+      "body": "Hej {{name}}, tu jest baza. Workspace’y, agenci i czat pojawią się właśnie tutaj."
+    },
+    "nextSteps": {
+      "title": "Co dalej",
+      "body": "Milestone AUTH już jest. Następne: WORKSPACES i AGENTS."
+    }
+  },
+  "login": {
+    "eyebrow": "Witaj ponownie",
+    "title": "Zaloguj się do StellarCrew",
+    "description": "Użyj konta administratora utworzonego podczas instalacji.",
+    "email": "E-mail",
+    "emailPlaceholder": "admin@przykład.pl",
+    "password": "Hasło",
+    "signIn": "Zaloguj się",
+    "signingIn": "Logowanie…",
+    "invalidCredentials": "Nieprawidłowy e-mail lub hasło.",
+    "validationFailed": "Sprawdź wprowadzone dane.",
+    "genericError": "Coś poszło nie tak. Spróbuj ponownie."
+  },
   "steps": {
     "admin": {
       "label": "Administrator i profil",
