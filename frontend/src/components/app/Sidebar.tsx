@@ -1,7 +1,8 @@
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
+import { useLogout } from '@/features/auth/api/useLogout';
 import { Logo } from '@/features/branding/Logo';
 import { useMenu } from '@/features/menu/api/useMenu';
 
@@ -11,11 +12,19 @@ import { WorkspaceSwitcher } from './WorkspaceSwitcher';
 
 export function Sidebar() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useSidebarCollapsed();
   const sections = useCollapsedSections();
   const menu = useMenu();
+  const logout = useLogout();
 
   const widthClass = collapsed ? 'w-16' : 'w-64';
+
+  function handleLogout() {
+    logout.mutate(undefined, {
+      onSettled: () => navigate('/login', { replace: true }),
+    });
+  }
 
   return (
     <aside
@@ -105,6 +114,22 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      <div className="border-t border-sc-border px-3 py-3">
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={logout.isPending}
+          aria-label={t('sidebar.logout')}
+          title={t('sidebar.logout')}
+          className={`inline-flex items-center gap-2 rounded-md border border-sc-border bg-sc-bg-card px-3 py-1.5 text-xs font-semibold text-sc-text transition-colors hover:bg-sc-bg disabled:opacity-60 ${
+            collapsed ? 'w-full justify-center' : 'w-full justify-center'
+          }`}
+        >
+          <LogOut size={14} aria-hidden />
+          {!collapsed ? <span>{t('sidebar.logout')}</span> : null}
+        </button>
+      </div>
     </aside>
   );
 }
