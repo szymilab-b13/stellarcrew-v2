@@ -8,5 +8,9 @@ use Modules\Auth\Api\Dto\AuthUser;
 
 interface AuthApi
 {
-    public function createAdmin(string $email, string $plaintextPassword): AuthUser;
+    public function createAdmin(
+        string $email,
+        string $plaintextPassword,
+        ?string $displayName = null,
+    ): AuthUser;
 }

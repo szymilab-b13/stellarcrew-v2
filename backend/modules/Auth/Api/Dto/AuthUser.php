@@ -13,6 +13,7 @@ final readonly class AuthUser
         public UserId $id,
         public string $email,
         public DateTimeImmutable $createdAt,
+        public ?string $displayName = null,
     ) {
     }
 }

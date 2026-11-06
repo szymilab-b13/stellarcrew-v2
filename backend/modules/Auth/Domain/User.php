@@ -9,8 +9,14 @@ use Modules\Shared\Kernel\UserId;
 
 class User
 {
-    public function __construct(private readonly UserId $id, private readonly string $email, private readonly string $passwordHash, private readonly UserRole $role, private readonly DateTimeImmutable $createdAt)
-    {
+    public function __construct(
+        private readonly UserId $id,
+        private readonly string $email,
+        private readonly string $passwordHash,
+        private readonly UserRole $role,
+        private readonly DateTimeImmutable $createdAt,
+        private readonly ?string $displayName = null,
+    ) {
     }
 
     public static function createAdmin(
@@ -18,8 +24,9 @@ class User
         string $email,
         string $passwordHash,
         DateTimeImmutable $createdAt,
+        ?string $displayName = null,
     ): self {
-        return new self($id, $email, $passwordHash, UserRole::Admin, $createdAt);
+        return new self($id, $email, $passwordHash, UserRole::Admin, $createdAt, $displayName);
     }
 
     public function id(): UserId
@@ -45,5 +52,10 @@ class User
     public function createdAt(): DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function displayName(): ?string
+    {
+        return $this->displayName;
     }
 }

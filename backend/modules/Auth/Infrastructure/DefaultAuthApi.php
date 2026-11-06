@@ -23,17 +23,24 @@ final readonly class DefaultAuthApi implements AuthApi
     ) {
     }
 
-    public function createAdmin(string $email, string $plaintextPassword): AuthUser
-    {
+    public function createAdmin(
+        string $email,
+        string $plaintextPassword,
+        ?string $displayName = null,
+    ): AuthUser {
         $now = $this->clock->now();
+        $trimmedName = $displayName === null ? null : trim($displayName);
+        $effectiveName = $trimmedName === '' ? null : $trimmedName;
+
         $user = User::createAdmin(
             new UserId($this->uuids->generate()),
             $email,
             $this->hasher->hash($plaintextPassword),
             $now,
+            $effectiveName,
         );
         $this->users->save($user);
 
-        return new AuthUser($user->id(), $user->email(), $now);
+        return new AuthUser($user->id(), $user->email(), $now, $user->displayName());
     }
 }

@@ -30,7 +30,10 @@ final class InstallSystemCommandHandlerTest extends TestCase
         $sut(new InstallSystemCommand('admin@example.com', 'secret-pass-long-enough'));
 
         self::assertCount(1, $auth->calls);
-        self::assertSame(['email' => 'admin@example.com', 'password' => 'secret-pass-long-enough'], $auth->calls[0]);
+        self::assertSame(
+            ['email' => 'admin@example.com', 'password' => 'secret-pass-long-enough', 'displayName' => null],
+            $auth->calls[0],
+        );
     }
 
     public function testShouldFlipIsInstalledFlagWhenAdminCreated(): void
@@ -93,6 +96,52 @@ final class InstallSystemCommandHandlerTest extends TestCase
         $this->expectException(InvalidInstallInputException::class);
 
         $sut(new InstallSystemCommand('admin@example.com', 'short'));
+    }
+
+    public function testShouldPassDisplayNameAndPersistBrandingAndWorkspaceSettings(): void
+    {
+        $auth = new SpyAuthApi();
+        $settings = $this->settingRepository([]);
+        $sut = new InstallSystemCommandHandler(
+            $auth,
+            $settings,
+            new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+        );
+
+        $sut(new InstallSystemCommand(
+            adminEmail: 'admin@example.com',
+            adminPlaintextPassword: 'secret-pass-long-enough',
+            adminDisplayName: 'Tomek',
+            instanceName: 'Acme',
+            locale: 'pl',
+            workspaceName: 'Acme HQ',
+            selectedAgentSlugs: ['maja', 'viktor'],
+            logoRelativePath: 'var/uploads/branding/logo.png',
+        ));
+
+        self::assertSame('Tomek', $auth->calls[0]['displayName']);
+        self::assertSame('Acme', $settings->get(InstallSystemCommandHandler::KEY_INSTANCE_NAME)?->value());
+        self::assertSame('pl', $settings->get(InstallSystemCommandHandler::KEY_LOCALE)?->value());
+        self::assertSame('var/uploads/branding/logo.png', $settings->get(InstallSystemCommandHandler::KEY_LOGO_PATH)?->value());
+        self::assertSame('Acme HQ', $settings->get(InstallSystemCommandHandler::KEY_WORKSPACE_NAME)?->value());
+        self::assertSame('["maja","viktor"]', $settings->get(InstallSystemCommandHandler::KEY_WORKSPACE_AGENTS)?->value());
+    }
+
+    public function testShouldRejectUnsupportedLocale(): void
+    {
+        $sut = new InstallSystemCommandHandler(
+            new SpyAuthApi(),
+            $this->settingRepository([]),
+            new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+        );
+
+        $this->expectException(InvalidInstallInputException::class);
+
+        $sut(new InstallSystemCommand(
+            adminEmail: 'admin@example.com',
+            adminPlaintextPassword: 'secret-pass-long-enough',
+            locale: 'fr',
+        ));
     }
 
     /**

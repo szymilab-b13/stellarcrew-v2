@@ -29,9 +29,9 @@ final readonly class HealthController
     ) {
     }
 
-    #[Route('/health', name: 'core_health', methods: ['GET'])]
+    #[Route('/api/health', name: 'core_health', methods: ['GET'])]
     #[OA\Get(
-        path: '/health',
+        path: '/api/health',
         summary: 'Full health check (DB, Redis, RabbitMQ, registered modules).',
         tags: ['core'],
         responses: [
@@ -65,9 +65,9 @@ final readonly class HealthController
         );
     }
 
-    #[Route('/ready', name: 'core_ready', methods: ['GET'])]
+    #[Route('/api/ready', name: 'core_ready', methods: ['GET'])]
     #[OA\Get(
-        path: '/ready',
+        path: '/api/ready',
         summary: 'Kubernetes readiness probe (database reachability).',
         tags: ['core'],
         responses: [

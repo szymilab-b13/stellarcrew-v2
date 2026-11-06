@@ -14,6 +14,7 @@
         <field name="passwordHash" type="string" column="password_hash" length="255" nullable="false"/>
         <field name="role" type="string" column="role" length="20" nullable="false" enum-type="Modules\Auth\Domain\UserRole"/>
         <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+        <field name="displayName" type="string" column="display_name" length="100" nullable="true"/>
 
         <unique-constraints>
             <unique-constraint name="uniq_auth_users_email" columns="email"/>

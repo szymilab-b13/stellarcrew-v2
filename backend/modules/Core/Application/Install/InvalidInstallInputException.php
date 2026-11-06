@@ -19,4 +19,9 @@ final class InvalidInstallInputException extends InvalidArgumentException
     {
         return new self(sprintf('Admin password must be at least %d characters long.', $minLength));
     }
+
+    public static function unsupportedLocale(string $locale): self
+    {
+        return new self(sprintf('Unsupported locale "%s".', $locale));
+    }
 }

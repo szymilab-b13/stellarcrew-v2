@@ -1,0 +1,164 @@
+{
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "finish": "Finish setup",
+    "installing": "Installing…",
+    "shieldNote": "Nothing leaves your instance.",
+    "ofSteps": "{{current}} of {{total}}",
+    "loadingStatus": "Checking install status…",
+    "goToApp": "Go to app",
+    "openApp": "Open StellarCrew",
+    "stepPrefix": "Step"
+  },
+  "topbar": {
+    "breadcrumb": "StellarCrew / Install",
+    "pill": "Installation",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "switchLang": "Switch language",
+    "switchTheme": "Switch theme"
+  },
+  "sidebar": {
+    "setupGuide": "Setup guide",
+    "headlineLead": "Your installation.",
+    "headlineTail": "Simpler than you think.",
+    "subline": "Walk through a few short steps to finish setting up your StellarCrew instance.",
+    "progressLabel": "Setup progress",
+    "localPreview": "Local preview — nothing is sent outside your instance."
+  },
+  "api": {
+    "unreachableTitle": "Could not reach the API",
+    "unreachableBody": "The install status endpoint is unavailable. Make sure the backend is running and reachable.",
+    "homeApiHint": "Could not reach the API. Make sure the backend is running.",
+    "serverRejected": "The server rejected the submitted values. Double-check your admin credentials.",
+    "alreadyInstalledMessage": "The system has already been installed.",
+    "genericError": "Something went wrong. Please try again."
+  },
+  "alreadyInstalled": {
+    "heading": "System already installed",
+    "body": "An administrator has already been provisioned. Head back to the application to sign in."
+  },
+  "complete": {
+    "heading": "You are all set{{greeting}}.",
+    "body": "Your StellarCrew instance is installed. Head to the app to sign in and meet your crew."
+  },
+  "eyebrow": {
+    "startHere": "Start here",
+    "finalCheck": "Final check",
+    "setup": "Setup"
+  },
+  "steps": {
+    "admin": {
+      "label": "Admin & profile",
+      "short": "Admin",
+      "title": "Create your administrator account",
+      "description": "Credentials for the first administrator and how we should greet you in the app.",
+      "sectionHeading": "Administrator account",
+      "sectionSubheading": "This account can sign in and manage every workspace in your instance.",
+      "email": "Email",
+      "emailHint": "Used to sign in.",
+      "emailPlaceholder": "admin@example.com",
+      "password": "Password",
+      "passwordHint": "At least 10 characters.",
+      "confirmPassword": "Confirm password",
+      "displayName": "How should we address you?",
+      "displayNameHint": "Shown in greetings across the app, e.g. “Welcome, Tomek”.",
+      "displayNamePlaceholder": "Tomek",
+      "errors": {
+        "email": "Enter a valid email address",
+        "password": "Password must have at least 10 characters",
+        "passwordConfirm": "Passwords do not match"
+      }
+    },
+    "branding": {
+      "label": "Branding",
+      "short": "Branding",
+      "title": "Make it yours",
+      "description": "Set the instance name, colours and locale so your crew feels at home.",
+      "sectionHeading": "Branding",
+      "sectionSubheading": "Instance name, default locale and colour accents.",
+      "placeholderBody": "Fields for <strong>instance name</strong> and <strong>default locale</strong> will land here. For now you can skip ahead — defaults will be applied."
+    },
+    "logo": {
+      "label": "Logo",
+      "short": "Logo",
+      "title": "Upload your logo",
+      "description": "A logo shown in the top bar and on emails. You can replace it any time.",
+      "sectionHeading": "Logo",
+      "sectionSubheading": "PNG or SVG works best. You can replace it any time from the admin panel.",
+      "picker": "Choose logo file",
+      "pickerReplace": "Pick a different file",
+      "remove": "Remove",
+      "selected": "Selected: {{name}} ({{size}} KB)",
+      "skipHint": "You can also skip this step — a generic mark will be used until you upload one."
+    },
+    "workspace": {
+      "label": "First workspace",
+      "short": "Workspace",
+      "title": "Set up your first workspace",
+      "description": "Workspaces are where projects, agents and knowledge live. Start with one.",
+      "sectionHeading": "First workspace",
+      "sectionSubheading": "Workspaces group a project, its data and its agents. You can always add more later.",
+      "name": "Workspace name",
+      "nameHint": "You can rename it at any time from the workspace settings.",
+      "namePlaceholder": "e.g. Acme HQ",
+      "nameError": "Give your workspace a name",
+      "agentsHeading": "Agents in this workspace",
+      "agentsSubheading": "Pick who joins first. More agents and custom roles can be added later — this is a placeholder, nothing is provisioned yet.",
+      "includeAgent": "Include {{name}}",
+      "agents": {
+        "maja": {
+          "name": "Maja",
+          "role": "Project manager"
+        },
+        "viktor": {
+          "name": "Viktor",
+          "role": "Tech lead"
+        },
+        "luna": {
+          "name": "Luna",
+          "role": "Researcher"
+        },
+        "kacper": {
+          "name": "Kacper",
+          "role": "Engineer"
+        },
+        "patryk": {
+          "name": "Patryk",
+          "role": "Analyst"
+        },
+        "hefajstos": {
+          "name": "Hefajstos",
+          "role": "Autonomous builder"
+        }
+      }
+    },
+    "review": {
+      "label": "Review",
+      "short": "Review",
+      "title": "Review and finish",
+      "description": "Quick look before we provision your instance. Jump back to any step if needed.",
+      "sectionHeading": "Review",
+      "sectionSubheading": "Quick look before we finalise. You can jump back to any completed step on the left.",
+      "fields": {
+        "adminEmail": "Admin email",
+        "displayName": "Display name",
+        "password": "Password",
+        "instanceName": "Instance name",
+        "locale": "Default locale",
+        "logo": "Logo",
+        "workspaceName": "Workspace name",
+        "agents": "Agents"
+      },
+      "defaults": {
+        "instanceName": "StellarCrew (default)",
+        "noLogo": "Using generic mark",
+        "noAgents": "None",
+        "dash": "—"
+      }
+    }
+  }
+}

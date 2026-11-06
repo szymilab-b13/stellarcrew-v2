@@ -24,7 +24,12 @@ final class InstallCommandTest extends TestCase
         $settings = $this->settingRepository([]);
         $tester = $this->tester($auth, $settings);
 
-        $tester->setInputs(['admin@example.com', 'secret-pass-long-enough', 'secret-pass-long-enough']);
+        $tester->setInputs([
+            'admin@example.com',
+            'secret-pass-long-enough',
+            'secret-pass-long-enough',
+            'Tomek',
+        ]);
 
         $exitCode = $tester->execute([]);
 
@@ -32,6 +37,7 @@ final class InstallCommandTest extends TestCase
         self::assertStringContainsString('Admin admin@example.com created', $tester->getDisplay());
         self::assertCount(1, $auth->calls);
         self::assertSame('admin@example.com', $auth->calls[0]['email']);
+        self::assertSame('Tomek', $auth->calls[0]['displayName']);
         $flag = $settings->get(IsInstalledQueryHandler::FLAG_NAME);
         self::assertNotNull($flag);
         self::assertSame(IsInstalledQueryHandler::TRUE_VALUE, $flag->value());
