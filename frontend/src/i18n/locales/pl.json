@@ -55,8 +55,11 @@
   },
   "workspaceSwitcher": {
     "label": "Workspace",
-    "default": "Domyślny workspace",
-    "placeholderHint": "Przełączanie workspace’ów dojdzie w milestonie WORKSPACES."
+    "empty": "Wybierz workspace",
+    "manage": "Zarządzaj workspace’ami",
+    "menuAria": "Menu workspace’ów",
+    "collapsedEmpty": "Brak workspace’a",
+    "loading": "Ładuję…"
   },
   "dashboard": {
     "eyebrow": "Panel",

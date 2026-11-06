@@ -55,8 +55,11 @@
   },
   "workspaceSwitcher": {
     "label": "Workspace",
-    "default": "Default workspace",
-    "placeholderHint": "Workspace switching lands with the WORKSPACES milestone."
+    "empty": "Select workspace",
+    "manage": "Manage workspaces",
+    "menuAria": "Workspaces menu",
+    "collapsedEmpty": "No workspace",
+    "loading": "Loading…"
   },
   "dashboard": {
     "eyebrow": "Dashboard",
