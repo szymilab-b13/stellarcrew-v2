@@ -66,27 +66,27 @@ final class InstallWizardEndpointTest extends WebTestCase
         self::assertCount(0, $this->auth()->calls);
     }
 
-    public function testShouldReturn400WhenEmailInvalid(): void
+    public function testShouldReturn422WhenEmailInvalid(): void
     {
         $this->postInstall(['email' => 'not-an-email', 'password' => 'secret-pass-long-enough']);
 
-        self::assertSame(Response::HTTP_BAD_REQUEST, $this->client->getResponse()->getStatusCode());
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
         self::assertFalse($this->isInstalledInRepo());
     }
 
-    public function testShouldReturn400WhenPasswordTooShort(): void
+    public function testShouldReturn422WhenPasswordTooShort(): void
     {
         $this->postInstall(['email' => 'admin@example.com', 'password' => 'short']);
 
-        self::assertSame(Response::HTTP_BAD_REQUEST, $this->client->getResponse()->getStatusCode());
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
         self::assertFalse($this->isInstalledInRepo());
     }
 
-    public function testShouldReturn400WhenPayloadMissingFields(): void
+    public function testShouldReturn422WhenPayloadMissingFields(): void
     {
         $this->postInstall([]);
 
-        self::assertSame(Response::HTTP_BAD_REQUEST, $this->client->getResponse()->getStatusCode());
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
     }
 
     public function testShouldReturn400WhenPayloadNotJson(): void
