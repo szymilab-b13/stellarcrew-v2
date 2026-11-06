@@ -71,10 +71,11 @@ export function Sidebar({ user }: SidebarProps) {
         {menu.isError ? (
           <p className="px-3 py-2 text-xs text-red-600">{t('sidebar.loadError')}</p>
         ) : null}
-        {menu.data?.map((section) => {
+        {menu.data?.map((section, index) => {
           const isSectionCollapsed = sections.isCollapsed(section.id);
+          const separatorClass = index === 0 ? '' : 'mt-3 border-t border-sc-border pt-3';
           return (
-            <div key={section.id} className="mb-3">
+            <div key={section.id} className={`mb-3 ${separatorClass}`}>
               {!collapsed ? (
                 <button
                   type="button"
