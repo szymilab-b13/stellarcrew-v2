@@ -51,6 +51,14 @@ jobs:
       - name: Rector (dry-run)
         run: vendor/bin/rector process --dry-run --no-progress-bar
 
+      - name: Generate JWT keypair for tests
+        env:
+          JWT_PASSPHRASE: a7bdeec1f83eb08b40da272eb231e4bacac8945c467b8d0162119f9caaf45204
+        run: |
+          mkdir -p config/jwt
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -aes-256-cbc -pass "pass:${JWT_PASSPHRASE}" -out config/jwt/private.pem
+          openssl pkey -in config/jwt/private.pem -passin "pass:${JWT_PASSPHRASE}" -pubout -out config/jwt/public.pem
+
       - name: PHPUnit
         run: vendor/bin/phpunit
 
