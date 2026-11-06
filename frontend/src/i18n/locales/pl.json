@@ -39,12 +39,16 @@
   "menu": {
     "sections": {
       "overview": "Przegląd",
-      "workspaces": "Workspace’y"
+      "workspaces": "Workspace’y",
+      "pinned": "Przypięte"
     },
     "items": {
       "dashboard": "Panel",
       "workspaces": "Workspace’y"
-    }
+    },
+    "pinAdd": "Przypnij na górze",
+    "pinRemove": "Odepnij",
+    "pinLimit": "Maksymalnie {{limit}} przypiętych pozycji"
   },
   "workspaceSwitcher": {
     "label": "Workspace",

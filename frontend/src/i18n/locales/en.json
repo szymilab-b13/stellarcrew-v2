@@ -39,12 +39,16 @@
   "menu": {
     "sections": {
       "overview": "Overview",
-      "workspaces": "Workspaces"
+      "workspaces": "Workspaces",
+      "pinned": "Pinned"
     },
     "items": {
       "dashboard": "Dashboard",
       "workspaces": "Workspaces"
-    }
+    },
+    "pinAdd": "Pin to top",
+    "pinRemove": "Unpin",
+    "pinLimit": "Up to {{limit}} pinned items"
   },
   "workspaceSwitcher": {
     "label": "Workspace",
