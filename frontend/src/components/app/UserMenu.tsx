@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { useLogout } from '@/features/auth/api/useLogout';
 import type { AuthUser } from '@/features/auth/types';
+import { LanguageSwitcher } from '@/features/settings/LanguageSwitcher';
+import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 interface UserMenuProps {
   user: AuthUser;
@@ -57,7 +59,7 @@ export function UserMenu({ user }: UserMenuProps) {
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 top-full z-20 mt-2 w-48 overflow-hidden rounded-md border border-sc-border bg-sc-bg-card shadow-lg"
+          className="absolute right-0 top-full z-20 mt-2 w-60 overflow-hidden rounded-md border border-sc-border bg-sc-bg-card shadow-lg"
         >
           <div className="border-b border-sc-border px-3 py-2">
             <p className="truncate text-sm font-semibold text-sc-text" title={displayName}>
@@ -67,6 +69,16 @@ export function UserMenu({ user }: UserMenuProps) {
               {user.email}
             </p>
           </div>
+
+          <div className="flex items-center justify-between gap-2 border-b border-sc-border px-3 py-2">
+            <span className="text-xs text-sc-text-muted">{t('topbar.language')}</span>
+            <LanguageSwitcher />
+          </div>
+          <div className="flex items-center justify-between gap-2 border-b border-sc-border px-3 py-2">
+            <span className="text-xs text-sc-text-muted">{t('topbar.theme')}</span>
+            <ThemeToggle />
+          </div>
+
           <button
             type="button"
             role="menuitem"
