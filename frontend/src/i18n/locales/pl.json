@@ -50,6 +50,19 @@
     "finalCheck": "Ostatni krok",
     "setup": "Konfiguracja"
   },
+  "login": {
+    "eyebrow": "Witaj ponownie",
+    "title": "Zaloguj się do StellarCrew",
+    "description": "Użyj konta administratora utworzonego podczas instalacji.",
+    "email": "E-mail",
+    "emailPlaceholder": "admin@przykład.pl",
+    "password": "Hasło",
+    "signIn": "Zaloguj się",
+    "signingIn": "Logowanie…",
+    "invalidCredentials": "Nieprawidłowy e-mail lub hasło.",
+    "validationFailed": "Sprawdź wprowadzone dane.",
+    "genericError": "Coś poszło nie tak. Spróbuj ponownie."
+  },
   "steps": {
     "admin": {
       "label": "Administrator i profil",
