@@ -13,6 +13,7 @@ use Modules\Auth\Api\AuthApi;
 use Modules\Core\Domain\SystemSetting;
 use Modules\Core\Domain\SystemSettingRepository;
 use Modules\Shared\Kernel\Clock;
+use Modules\UserManagement\Api\UserManagementApi;
 use Modules\Workspaces\Api\WorkspacesApi;
 
 use function strlen;
@@ -40,6 +41,7 @@ final readonly class InstallSystemCommandHandler
         private AuthApi $auth,
         private SystemSettingRepository $settings,
         private WorkspacesApi $workspaces,
+        private UserManagementApi $userManagement,
         private Clock $clock,
     ) {
     }
@@ -54,6 +56,12 @@ final readonly class InstallSystemCommandHandler
         $admin = $this->auth->createAdmin(
             $command->adminEmail,
             $command->adminPlaintextPassword,
+            $command->adminDisplayName,
+        );
+
+        $this->userManagement->createProfileForUser(
+            $admin->id,
+            $command->adminEmail,
             $command->adminDisplayName,
         );
 
