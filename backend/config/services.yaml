@@ -89,13 +89,17 @@ when@test:
 
         # swap doctrine-backed install adapters with in-memory fakes for endpoint tests
         App\Tests\Fixtures\Core\InMemorySystemSettingRepository: ~
+        App\Tests\Fixtures\Core\SpyAuditLogger: ~
         App\Tests\Fixtures\Auth\SpyAuthApi: ~
         App\Tests\Fixtures\Auth\InMemoryUserRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~
-        App\Tests\Fixtures\UserManagement\SpyUserManagementApi: ~
+        App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository: ~
 
         Modules\Core\Domain\SystemSettingRepository:
             alias: App\Tests\Fixtures\Core\InMemorySystemSettingRepository
+
+        Modules\Core\Api\AuditLoggerInterface:
+            alias: App\Tests\Fixtures\Core\SpyAuditLogger
 
         Modules\Auth\Api\AuthApi:
             alias: App\Tests\Fixtures\Auth\SpyAuthApi
@@ -106,8 +110,8 @@ when@test:
         Modules\Workspaces\Domain\WorkspaceRepository:
             alias: App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository
 
-        Modules\UserManagement\Api\UserManagementApi:
-            alias: App\Tests\Fixtures\UserManagement\SpyUserManagementApi
+        Modules\UserManagement\Domain\UserProfileRepository:
+            alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository
 
         # swap real health checks with always-healthy fakes so endpoint tests do not require live infrastructure
         Modules\Core\Infrastructure\HealthCheck\DbHealthCheck:

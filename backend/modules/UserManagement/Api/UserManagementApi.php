@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\UserManagement\Api;
 
-use Modules\UserManagement\Api\Exception\EmailTakenException;
 use Modules\Shared\Kernel\UserId;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
+use Modules\UserManagement\Api\Exception\EmailTakenException;
 
 interface UserManagementApi
 {

@@ -8,6 +8,7 @@ use function array_slice;
 
 use Modules\Core\Application\Install\InvalidInstallInputException;
 use Modules\Core\Application\Install\SystemAlreadyInstalledException;
+use Modules\UserManagement\Api\Exception\EmailTakenException as UserManagementEmailTakenException;
 use Modules\Workspaces\Domain\WorkspaceNotFoundException;
 use Modules\Workspaces\Domain\WorkspacePermissionDeniedException;
 
@@ -80,6 +81,10 @@ final readonly class ExceptionListener
 
         if ($throwable instanceof WorkspacePermissionDeniedException) {
             return [Response::HTTP_FORBIDDEN, 'FORBIDDEN', null];
+        }
+
+        if ($throwable instanceof UserManagementEmailTakenException) {
+            return [Response::HTTP_UNPROCESSABLE_ENTITY, 'EMAIL_TAKEN', null];
         }
 
         if ($throwable instanceof AuthenticationException) {
