@@ -79,7 +79,7 @@ export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
     {
       id: 'BL-UM-013',
       description:
-        'List row actions burger menu on /admin/users: MoreHorizontal trigger + dropdown role="menu" (styled as UserMenu from topbar) with two actions — Details (Eye icon, navigates to /admin/users/{id}) and Deactivate/Reactivate (UserX/UserCheck icon, opens reused DeactivationConfirmDialog). FT-UM-002 reopened to in-progress.',
+        'List row actions burger menu on /admin/users: MoreHorizontal trigger + dropdown role="menu" (styled as UserMenu from topbar) with three actions — Details (Eye icon, navigates to /admin/users/{id}), Deactivate/Reactivate (UserX/UserCheck icon, opens reused DeactivationConfirmDialog) and Reset password (KeyRound icon, opens reused ResetPasswordDialog). FT-UM-002 reopened to in-progress.',
       status: 'planned',
     },
   ],
