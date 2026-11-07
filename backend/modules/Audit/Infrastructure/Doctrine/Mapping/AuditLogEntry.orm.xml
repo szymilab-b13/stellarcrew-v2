@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Audit\Domain\AuditLogEntry" table="audit_log" schema="audit">
+
+        <id name="id" type="audit_entry_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="actorUserId" type="user_id_vo" column="actor_user_id" nullable="false"/>
+        <field name="action" type="string" column="action" length="100" nullable="false"/>
+        <field name="resourceType" type="string" column="resource_type" length="50" nullable="true"/>
+        <field name="resourceId" type="string" column="resource_id" length="50" nullable="true"/>
+        <field name="beforeState" type="json" column="before_state" nullable="true"/>
+        <field name="afterState" type="json" column="after_state" nullable="true"/>
+        <field name="metadata" type="json" column="metadata" nullable="false"/>
+        <field name="occurredAt" type="datetimetz_immutable" column="occurred_at" nullable="false"/>
+        <field name="undoneAt" type="datetimetz_immutable" column="undone_at" nullable="true"/>
+        <field name="undoneBy" type="user_id_vo" column="undone_by" nullable="true"/>
+        <field name="revertsEntryId" type="audit_entry_id_vo" column="reverts_entry_id" nullable="true"/>
+
+    </entity>
+
+</doctrine-mapping>
