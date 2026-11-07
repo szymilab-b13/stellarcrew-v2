@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\UserManagement\Application;
+
+use Modules\Shared\Kernel\UserId;
+
+final readonly class ResetUserPasswordCommand
+{
+    public function __construct(
+        public UserId $userId,
+        public string $newPassword,
+    ) {
+    }
+}

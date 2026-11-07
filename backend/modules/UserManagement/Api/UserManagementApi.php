@@ -10,6 +10,7 @@ use Modules\UserManagement\Api\Dto\UserListItemDto;
 use Modules\UserManagement\Api\Dto\UserListPage;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
 use Modules\UserManagement\Api\Exception\EmailTakenException;
+use Modules\UserManagement\Api\Exception\PasswordTooShortException;
 use Modules\UserManagement\Api\Exception\UserProfileNotFoundException;
 use Modules\UserManagement\Application\Query\UserListFilters;
 
@@ -53,4 +54,12 @@ interface UserManagementApi
      * @throws UserProfileNotFoundException
      */
     public function reactivateUser(UserId $userId): void;
+
+    /**
+     * Super-admin password reset. Non-reversible (no before_state in audit).
+     *
+     * @throws UserProfileNotFoundException
+     * @throws PasswordTooShortException
+     */
+    public function resetUserPassword(UserId $userId, string $newPassword): void;
 }

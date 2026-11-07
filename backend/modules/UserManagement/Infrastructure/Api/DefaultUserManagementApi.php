@@ -25,6 +25,8 @@ use Modules\UserManagement\Application\Query\ListVisibleUsersQueryHandler;
 use Modules\UserManagement\Application\Query\UserListFilters;
 use Modules\UserManagement\Application\ReactivateUserCommand;
 use Modules\UserManagement\Application\ReactivateUserCommandHandler;
+use Modules\UserManagement\Application\ResetUserPasswordCommand;
+use Modules\UserManagement\Application\ResetUserPasswordCommandHandler;
 use Modules\UserManagement\Domain\AvatarColorPicker;
 use Modules\UserManagement\Domain\UserProfile;
 use Modules\UserManagement\Domain\UserProfileRepository;
@@ -39,6 +41,7 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
         private GetUserDetailQueryHandler $getUserDetail,
         private DeactivateUserCommandHandler $deactivateUser,
         private ReactivateUserCommandHandler $reactivateUser,
+        private ResetUserPasswordCommandHandler $resetUserPassword,
         private Clock $clock,
     ) {
     }
@@ -108,6 +111,11 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
     public function reactivateUser(UserId $userId): void
     {
         ($this->reactivateUser)(new ReactivateUserCommand($userId));
+    }
+
+    public function resetUserPassword(UserId $userId, string $newPassword): void
+    {
+        ($this->resetUserPassword)(new ResetUserPasswordCommand($userId, $newPassword));
     }
 
     private function toDto(UserProfile $profile): UserProfileDto

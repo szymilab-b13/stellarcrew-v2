@@ -26,6 +26,9 @@ final class SpyUserManagementApi implements UserManagementApi
     /** @var list<UserId> */
     public array $reactivateCalls = [];
 
+    /** @var list<array{userId: UserId, newPassword: string}> */
+    public array $resetPasswordCalls = [];
+
     public function createProfileForUser(UserId $userId, string $email, ?string $displayName = null): UserProfileDto
     {
         $this->createProfileCalls[] = [
@@ -97,5 +100,10 @@ final class SpyUserManagementApi implements UserManagementApi
     public function reactivateUser(UserId $userId): void
     {
         $this->reactivateCalls[] = $userId;
+    }
+
+    public function resetUserPassword(UserId $userId, string $newPassword): void
+    {
+        $this->resetPasswordCalls[] = ['userId' => $userId, 'newPassword' => $newPassword];
     }
 }
