@@ -128,4 +128,15 @@ describe('RoadmapPanel', () => {
     expect(description).not.toHaveClass('line-through');
     expect(screen.queryByRole('link', { name: /BL-AGENTS-/i })).not.toBeInTheDocument();
   });
+
+  it('should render the AI ENGINE milestone as tbd with a discuss-with-Szef note and no tasks', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/AI ENGINE — model orchestration, memory strategy/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText(/discuss with Szef/i)).toBeInTheDocument();
+    expect(screen.queryByText(/BL-AI-/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /BL-AI-/i })).not.toBeInTheDocument();
+  });
 });

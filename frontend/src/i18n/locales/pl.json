@@ -108,6 +108,9 @@
       },
       "agents": {
         "title": "AGENTS — katalog, user agenty, przypisania, pamięć"
+      },
+      "aiEngine": {
+        "title": "AI ENGINE — model orchestration, memory strategy"
       }
     }
   },

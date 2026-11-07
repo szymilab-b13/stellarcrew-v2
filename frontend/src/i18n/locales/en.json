@@ -108,6 +108,9 @@
       },
       "agents": {
         "title": "AGENTS — catalog, user agents, assignments, memory"
+      },
+      "aiEngine": {
+        "title": "AI ENGINE — model orchestration, memory strategy"
       }
     }
   },
