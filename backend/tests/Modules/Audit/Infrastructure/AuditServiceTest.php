@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Modules\Audit\Api\AuditEntryWithState;
 use Modules\Audit\Infrastructure\Doctrine\Repository\DoctrineAuditLogEntryRepository;
+use Modules\Audit\Infrastructure\ReadModel\DbalAuditEntriesReadModel;
 use Modules\Audit\Infrastructure\Service\AuditService;
 use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Shared\Kernel\UserId;
@@ -31,11 +32,12 @@ final class AuditServiceTest extends KernelTestCase
         $em->clear();
 
         $repository = new DoctrineAuditLogEntryRepository($em);
-        $this->service = new AuditService($repository, new Uuid7Generator());
 
         /** @var Connection $connection */
         $connection = self::getContainer()->get('doctrine.dbal.default_connection');
         $this->connection = $connection;
+        $readModel = new DbalAuditEntriesReadModel($connection);
+        $this->service = new AuditService($repository, $readModel, new Uuid7Generator());
 
         $this->connection->executeStatement('TRUNCATE audit.audit_log');
     }

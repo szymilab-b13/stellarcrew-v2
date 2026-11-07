@@ -13,6 +13,7 @@ use Modules\Audit\Api\AuditEntryWithState;
 use Modules\Audit\Api\Dto\AuditEntryDto;
 use Modules\Audit\Api\Dto\AuditPage;
 use Modules\Audit\Api\Dto\AuditQuery;
+use Modules\Audit\Application\ReadModel\AuditEntriesReadModel;
 use Modules\Audit\Domain\AuditLogEntry;
 use Modules\Audit\Domain\AuditLogEntryRepository;
 use Modules\Core\Api\AuditLoggerInterface;
@@ -25,6 +26,7 @@ final readonly class AuditService implements AuditApi, AuditLoggerInterface
 {
     public function __construct(
         private AuditLogEntryRepository $repository,
+        private AuditEntriesReadModel $readModel,
         private UuidGenerator $uuidGenerator,
     ) {
     }
@@ -76,12 +78,12 @@ final readonly class AuditService implements AuditApi, AuditLoggerInterface
 
     public function search(AuditQuery $query): AuditPage
     {
-        throw new LogicException('Audit search is not implemented yet (BL-AUDIT-003).');
+        return $this->readModel->search($query);
     }
 
     public function get(AuditEntryId $id): ?AuditEntryDto
     {
-        throw new LogicException('Audit get is not implemented yet (BL-AUDIT-003).');
+        return $this->readModel->find($id);
     }
 
     public function undo(AuditEntryId $id, UserId $performedBy): AuditEntryId

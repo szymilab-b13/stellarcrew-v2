@@ -54,6 +54,9 @@ services:
     Modules\Audit\Domain\AuditLogEntryRepository:
         alias: Modules\Audit\Infrastructure\Doctrine\Repository\DoctrineAuditLogEntryRepository
 
+    Modules\Audit\Application\ReadModel\AuditEntriesReadModel:
+        alias: Modules\Audit\Infrastructure\ReadModel\DbalAuditEntriesReadModel
+
     Modules\Audit\Api\AuditApi:
         alias: Modules\Audit\Infrastructure\Service\AuditService
 
