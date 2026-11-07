@@ -65,4 +65,39 @@ interface WorkspacesApi
      * audit undo of {@code user_management.user.created}, not for end-user flows.
      */
     public function removeAllMembershipsOf(UserId $userId): void;
+
+    /**
+     * System-level membership removal that bypasses the admin-downgrade guard.
+     * Intended for audit undo of {@code workspace_member.assigned}; does not emit audit.
+     *
+     * @throws MemberNotFoundException
+     * @throws CannotRemoveOwnerException
+     */
+    public function removeMembershipAsSystem(WorkspaceId $workspaceId, UserId $userId): void;
+
+    /**
+     * System-level membership restoration that bypasses audit emission.
+     * Intended for audit undo of {@code workspace_member.removed}.
+     *
+     * @throws MemberAlreadyExistsException
+     * @throws InvalidMemberRoleException
+     */
+    public function restoreMembershipAsSystem(
+        WorkspaceId $workspaceId,
+        UserId $userId,
+        string $role,
+    ): void;
+
+    /**
+     * System-level role change that bypasses audit emission.
+     * Intended for audit undo of {@code workspace_member.role_changed}.
+     *
+     * @throws MemberNotFoundException
+     * @throws InvalidMemberRoleException
+     */
+    public function setMembershipRoleAsSystem(
+        WorkspaceId $workspaceId,
+        UserId $userId,
+        string $role,
+    ): void;
 }

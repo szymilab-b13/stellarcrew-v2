@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Modules\Workspaces\Infrastructure\Api;
 
+use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Api\Dto\MembershipView;
 use Modules\Workspaces\Api\Dto\WorkspaceView;
+use Modules\Workspaces\Api\Exception\CannotRemoveOwnerException;
 use Modules\Workspaces\Api\Exception\InvalidMemberRoleException;
+use Modules\Workspaces\Api\Exception\MemberAlreadyExistsException;
+use Modules\Workspaces\Api\Exception\MemberNotFoundException;
 use Modules\Workspaces\Api\WorkspacesApi;
 use Modules\Workspaces\Application\AssignMemberCommand;
 use Modules\Workspaces\Application\AssignMemberCommandHandler;
@@ -31,6 +35,7 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
         private ChangeMemberRoleCommandHandler $changeMemberRole,
         private RemoveMemberCommandHandler $removeMember,
         private WorkspaceRepository $workspaces,
+        private Clock $clock,
     ) {
     }
 
@@ -142,6 +147,62 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
     public function removeAllMembershipsOf(UserId $userId): void
     {
         $this->workspaces->removeAllMembershipsOf($userId);
+    }
+
+    public function removeMembershipAsSystem(WorkspaceId $workspaceId, UserId $userId): void
+    {
+        $member = $this->workspaces->findMembership($workspaceId, $userId);
+        if (!$member instanceof WorkspaceMember) {
+            throw MemberNotFoundException::forPair($workspaceId, $userId);
+        }
+
+        if ($member->role() === WorkspaceRole::Owner) {
+            throw CannotRemoveOwnerException::forPair($workspaceId, $userId);
+        }
+
+        $this->workspaces->removeMembership($member);
+    }
+
+    public function restoreMembershipAsSystem(
+        WorkspaceId $workspaceId,
+        UserId $userId,
+        string $role,
+    ): void {
+        $workspaceRole = $this->toRole($role);
+        if ($workspaceRole === WorkspaceRole::Owner) {
+            throw InvalidMemberRoleException::ownerNotAssignable();
+        }
+
+        if ($this->workspaces->findMembership($workspaceId, $userId) instanceof WorkspaceMember) {
+            throw MemberAlreadyExistsException::forPair($workspaceId, $userId);
+        }
+
+        $member = WorkspaceMember::join(
+            $workspaceId,
+            $userId,
+            $workspaceRole,
+            $this->clock->now(),
+        );
+        $this->workspaces->saveMembership($member);
+    }
+
+    public function setMembershipRoleAsSystem(
+        WorkspaceId $workspaceId,
+        UserId $userId,
+        string $role,
+    ): void {
+        $workspaceRole = $this->toRole($role);
+        if ($workspaceRole === WorkspaceRole::Owner) {
+            throw InvalidMemberRoleException::ownerNotAssignable();
+        }
+
+        $member = $this->workspaces->findMembership($workspaceId, $userId);
+        if (!$member instanceof WorkspaceMember) {
+            throw MemberNotFoundException::forPair($workspaceId, $userId);
+        }
+
+        $member->changeRole($workspaceRole);
+        $this->workspaces->saveMembership($member);
     }
 
     private function toMembershipView(WorkspaceMember $member): MembershipView

@@ -8,6 +8,7 @@ use App\Tests\Fixtures\Auth\SpyAuthApi;
 use App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository;
 use App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository;
 use App\Tests\Fixtures\Workspaces\SpyWorkspacesApi;
+use App\Tests\Fixtures\Workspaces\ThrowingWorkspacesApi;
 use DateTimeImmutable;
 use Modules\Audit\Api\Dto\AuditEntryDto;
 use Modules\Audit\Api\Exception\UndoConflictException;
@@ -20,6 +21,11 @@ use Modules\UserManagement\Application\DeactivateUserCommandHandler;
 use Modules\UserManagement\Application\ReactivateUserCommandHandler;
 use Modules\UserManagement\Domain\UserProfile;
 use Modules\UserManagement\Infrastructure\Audit\UserManagementUndoer;
+use Modules\Workspaces\Api\Exception\MemberAlreadyExistsException;
+use Modules\Workspaces\Api\Exception\MemberNotFoundException;
+use Modules\Workspaces\Application\AssignMemberCommandHandler;
+use Modules\Workspaces\Application\ChangeMemberRoleCommandHandler;
+use Modules\Workspaces\Application\RemoveMemberCommandHandler;
 use Modules\Workspaces\Domain\WorkspaceMember;
 use Modules\Workspaces\Domain\WorkspaceRole;
 use PHPUnit\Framework\TestCase;
@@ -27,15 +33,18 @@ use Symfony\Component\Uid\Uuid;
 
 final class UserManagementUndoerTest extends TestCase
 {
-    public function testShouldSupportUserCreatedDeactivatedAndReactivatedActions(): void
+    public function testShouldSupportAllSixUserManagementUndoableActions(): void
     {
         $sut = $this->buildUndoer();
 
         self::assertTrue($sut->supports(CreateUserCommandHandler::AUDIT_ACTION));
         self::assertTrue($sut->supports(DeactivateUserCommandHandler::AUDIT_ACTION));
         self::assertTrue($sut->supports(ReactivateUserCommandHandler::AUDIT_ACTION));
-        self::assertFalse($sut->supports('workspace_member.assigned'));
+        self::assertTrue($sut->supports(AssignMemberCommandHandler::AUDIT_ACTION));
+        self::assertTrue($sut->supports(RemoveMemberCommandHandler::AUDIT_ACTION));
+        self::assertTrue($sut->supports(ChangeMemberRoleCommandHandler::AUDIT_ACTION));
         self::assertFalse($sut->supports('user_management.user.password_reset'));
+        self::assertFalse($sut->supports('user_management.user.profile_updated'));
     }
 
     public function testShouldDeactivateUserAndClearMembershipsWhenUndoingUserCreated(): void
@@ -221,6 +230,195 @@ final class UserManagementUndoerTest extends TestCase
         self::assertNotNull($repository->findMembership($workspaceA, $otherUserId));
     }
 
+    public function testShouldRemoveMembershipAsSystemWhenUndoingMemberAssigned(): void
+    {
+        $workspaceId = new WorkspaceId(Uuid::v7());
+        $userId = new UserId(Uuid::v7());
+        $workspaces = new SpyWorkspacesApi();
+        $sut = new UserManagementUndoer(
+            new SpyAuthApi(),
+            new InMemoryUserProfileRepository(),
+            $workspaces,
+            new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')),
+        );
+
+        $sut->undo(
+            $this->membershipEntry(
+                AssignMemberCommandHandler::AUDIT_ACTION,
+                afterState: [
+                    'workspace_id' => (string) $workspaceId,
+                    'user_id' => (string) $userId,
+                    'role' => WorkspaceRole::Admin->value,
+                ],
+            ),
+            $this->actor(),
+        );
+
+        self::assertCount(1, $workspaces->removeMembershipAsSystemCalls);
+        self::assertSame((string) $workspaceId, (string) $workspaces->removeMembershipAsSystemCalls[0]['workspaceId']);
+        self::assertSame((string) $userId, (string) $workspaces->removeMembershipAsSystemCalls[0]['userId']);
+    }
+
+    public function testShouldThrowNotAMemberAnymoreConflictWhenUndoingMemberAssignedButMemberIsGone(): void
+    {
+        $workspaceId = new WorkspaceId(Uuid::v7());
+        $userId = new UserId(Uuid::v7());
+        $workspaces = new ThrowingWorkspacesApi();
+        $workspaces->throwOnRemoveMembershipAsSystem = MemberNotFoundException::forPair($workspaceId, $userId);
+
+        $sut = new UserManagementUndoer(
+            new SpyAuthApi(),
+            new InMemoryUserProfileRepository(),
+            $workspaces,
+            new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')),
+        );
+
+        try {
+            $sut->undo(
+                $this->membershipEntry(
+                    AssignMemberCommandHandler::AUDIT_ACTION,
+                    afterState: [
+                        'workspace_id' => (string) $workspaceId,
+                        'user_id' => (string) $userId,
+                        'role' => WorkspaceRole::Member->value,
+                    ],
+                ),
+                $this->actor(),
+            );
+            self::fail('Expected UndoConflictException');
+        } catch (UndoConflictException $undoConflictException) {
+            self::assertSame('not_a_member_anymore', $undoConflictException->conflictCode());
+        }
+    }
+
+    public function testShouldRestoreMembershipAsSystemWhenUndoingMemberRemoved(): void
+    {
+        $workspaceId = new WorkspaceId(Uuid::v7());
+        $userId = new UserId(Uuid::v7());
+        $workspaces = new SpyWorkspacesApi();
+        $sut = new UserManagementUndoer(
+            new SpyAuthApi(),
+            new InMemoryUserProfileRepository(),
+            $workspaces,
+            new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')),
+        );
+
+        $sut->undo(
+            $this->membershipEntry(
+                RemoveMemberCommandHandler::AUDIT_ACTION,
+                beforeState: [
+                    'workspace_id' => (string) $workspaceId,
+                    'user_id' => (string) $userId,
+                    'role' => WorkspaceRole::Guest->value,
+                ],
+            ),
+            $this->actor(),
+        );
+
+        self::assertCount(1, $workspaces->restoreMembershipAsSystemCalls);
+        $call = $workspaces->restoreMembershipAsSystemCalls[0];
+        self::assertSame((string) $workspaceId, (string) $call['workspaceId']);
+        self::assertSame((string) $userId, (string) $call['userId']);
+        self::assertSame(WorkspaceRole::Guest->value, $call['role']);
+    }
+
+    public function testShouldThrowAlreadyMemberAgainConflictWhenUndoingMemberRemovedButUserAlreadyAssigned(): void
+    {
+        $workspaceId = new WorkspaceId(Uuid::v7());
+        $userId = new UserId(Uuid::v7());
+        $workspaces = new ThrowingWorkspacesApi();
+        $workspaces->throwOnRestoreMembershipAsSystem = MemberAlreadyExistsException::forPair($workspaceId, $userId);
+
+        $sut = new UserManagementUndoer(
+            new SpyAuthApi(),
+            new InMemoryUserProfileRepository(),
+            $workspaces,
+            new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')),
+        );
+
+        try {
+            $sut->undo(
+                $this->membershipEntry(
+                    RemoveMemberCommandHandler::AUDIT_ACTION,
+                    beforeState: [
+                        'workspace_id' => (string) $workspaceId,
+                        'user_id' => (string) $userId,
+                        'role' => WorkspaceRole::Member->value,
+                    ],
+                ),
+                $this->actor(),
+            );
+            self::fail('Expected UndoConflictException');
+        } catch (UndoConflictException $undoConflictException) {
+            self::assertSame('already_member_again', $undoConflictException->conflictCode());
+        }
+    }
+
+    public function testShouldSetMembershipRoleAsSystemWhenUndoingRoleChanged(): void
+    {
+        $workspaceId = new WorkspaceId(Uuid::v7());
+        $userId = new UserId(Uuid::v7());
+        $workspaces = new SpyWorkspacesApi();
+        $sut = new UserManagementUndoer(
+            new SpyAuthApi(),
+            new InMemoryUserProfileRepository(),
+            $workspaces,
+            new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')),
+        );
+
+        $sut->undo(
+            $this->membershipEntry(
+                ChangeMemberRoleCommandHandler::AUDIT_ACTION,
+                beforeState: ['role' => WorkspaceRole::Member->value],
+                afterState: ['role' => WorkspaceRole::Admin->value],
+                metadata: [
+                    'workspace_id' => (string) $workspaceId,
+                    'user_id' => (string) $userId,
+                ],
+            ),
+            $this->actor(),
+        );
+
+        self::assertCount(1, $workspaces->setMembershipRoleAsSystemCalls);
+        $call = $workspaces->setMembershipRoleAsSystemCalls[0];
+        self::assertSame((string) $workspaceId, (string) $call['workspaceId']);
+        self::assertSame((string) $userId, (string) $call['userId']);
+        self::assertSame(WorkspaceRole::Member->value, $call['role']);
+    }
+
+    public function testShouldThrowMemberNotFoundConflictWhenUndoingRoleChangedButMemberGone(): void
+    {
+        $workspaceId = new WorkspaceId(Uuid::v7());
+        $userId = new UserId(Uuid::v7());
+        $workspaces = new ThrowingWorkspacesApi();
+        $workspaces->throwOnSetMembershipRoleAsSystem = MemberNotFoundException::forPair($workspaceId, $userId);
+
+        $sut = new UserManagementUndoer(
+            new SpyAuthApi(),
+            new InMemoryUserProfileRepository(),
+            $workspaces,
+            new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')),
+        );
+
+        try {
+            $sut->undo(
+                $this->membershipEntry(
+                    ChangeMemberRoleCommandHandler::AUDIT_ACTION,
+                    beforeState: ['role' => WorkspaceRole::Member->value],
+                    afterState: ['role' => WorkspaceRole::Admin->value],
+                    metadata: [
+                        'workspace_id' => (string) $workspaceId,
+                        'user_id' => (string) $userId,
+                    ],
+                ),
+                $this->actor(),
+            );
+            self::fail('Expected UndoConflictException');
+        } catch (UndoConflictException $undoConflictException) {
+            self::assertSame('member_not_found', $undoConflictException->conflictCode());
+        }
+    }
+
     private function buildUndoer(): UserManagementUndoer
     {
         return new UserManagementUndoer(
@@ -243,6 +441,35 @@ final class UserManagementUndoerTest extends TestCase
             beforeState: null,
             afterState: null,
             metadata: [],
+            occurredAt: new DateTimeImmutable('2026-11-07T15:00:00+00:00'),
+            undoneAt: null,
+            undoneBy: null,
+            undoneByEmail: null,
+            revertsEntryId: null,
+        );
+    }
+
+    /**
+     * @param array<string, mixed>|null $beforeState
+     * @param array<string, mixed>|null $afterState
+     * @param array<string, mixed>      $metadata
+     */
+    private function membershipEntry(
+        string $action,
+        ?array $beforeState = null,
+        ?array $afterState = null,
+        array $metadata = [],
+    ): AuditEntryDto {
+        return new AuditEntryDto(
+            id: AuditEntryId::generate(),
+            actorUserId: $this->actor(),
+            actorEmail: null,
+            action: $action,
+            resourceType: 'workspace_member',
+            resourceId: (string) Uuid::v7(),
+            beforeState: $beforeState,
+            afterState: $afterState,
+            metadata: $metadata,
             occurredAt: new DateTimeImmutable('2026-11-07T15:00:00+00:00'),
             undoneAt: null,
             undoneBy: null,
