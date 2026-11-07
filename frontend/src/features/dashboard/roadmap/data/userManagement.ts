@@ -2,7 +2,7 @@ import type { RoadmapMilestone } from '../types';
 
 export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
   key: 'userManagement',
-  status: 'inProgress',
+  status: 'done',
   tasks: [
     {
       id: 'BL-UM-001',
@@ -84,8 +84,9 @@ export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
     {
       id: 'BL-UM-012',
       description:
-        'Reset password (super admin): endpoint + AuthApi::setPassword + UI modal with password+confirm fields + audit log (non-reversible, no password in before_state).',
-      status: 'planned',
+        'Reset password (super admin): endpoint + AuthApi::setPassword + UI modal with password+confirm fields + audit log (non-reversible, no password in before_state). (Split: Auth side fb84a7f, UM command 09e81a0, FE ResetPasswordDialog 2160915.)',
+      status: 'done',
+      commit: '2160915',
     },
   ],
 };
