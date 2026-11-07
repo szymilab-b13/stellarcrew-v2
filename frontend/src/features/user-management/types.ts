@@ -35,6 +35,108 @@ export interface CreatedUser {
   isSuperAdmin: boolean;
 }
 
+export interface UserWorkspaceAssignment {
+  workspaceId: string;
+  workspaceName: string;
+  workspaceSlug: string;
+  iconColor: string;
+  iconInitials: string;
+  role: string;
+  joinedAt: string;
+}
+
+export interface UserDetail {
+  id: string;
+  email: string;
+  isSuperAdmin: boolean;
+  displayName: string | null;
+  avatarColor: string;
+  createdAt: string;
+  deactivatedAt: string | null;
+  workspaceAssignments: UserWorkspaceAssignment[];
+}
+
+interface UserWorkspaceAssignmentPayload {
+  workspace_id: string;
+  workspace_name: string;
+  workspace_slug: string;
+  icon_color: string;
+  icon_initials: string;
+  role: string;
+  joined_at: string;
+}
+
+interface UserDetailPayload {
+  id: string;
+  email: string;
+  is_super_admin: boolean;
+  display_name: string | null;
+  avatar_color: string;
+  created_at: string;
+  deactivated_at: string | null;
+  workspace_assignments: UserWorkspaceAssignmentPayload[];
+}
+
+export interface UserAuditEntry {
+  id: string;
+  actorUserId: string;
+  actorEmail: string | null;
+  action: string;
+  resourceType: string | null;
+  resourceId: string | null;
+  occurredAt: string;
+  undoneAt: string | null;
+}
+
+interface UserAuditEntryPayload {
+  id: string;
+  actor_user_id: string;
+  actor_email: string | null;
+  action: string;
+  resource_type: string | null;
+  resource_id: string | null;
+  occurred_at: string;
+  undone_at: string | null;
+}
+
+export function mapUserDetail(payload: UserDetailPayload): UserDetail {
+  return {
+    id: payload.id,
+    email: payload.email,
+    isSuperAdmin: payload.is_super_admin,
+    displayName: payload.display_name,
+    avatarColor: payload.avatar_color,
+    createdAt: payload.created_at,
+    deactivatedAt: payload.deactivated_at,
+    workspaceAssignments: payload.workspace_assignments.map(mapAssignment),
+  };
+}
+
+function mapAssignment(a: UserWorkspaceAssignmentPayload): UserWorkspaceAssignment {
+  return {
+    workspaceId: a.workspace_id,
+    workspaceName: a.workspace_name,
+    workspaceSlug: a.workspace_slug,
+    iconColor: a.icon_color,
+    iconInitials: a.icon_initials,
+    role: a.role,
+    joinedAt: a.joined_at,
+  };
+}
+
+export function mapUserAuditEntry(payload: UserAuditEntryPayload): UserAuditEntry {
+  return {
+    id: payload.id,
+    actorUserId: payload.actor_user_id,
+    actorEmail: payload.actor_email,
+    action: payload.action,
+    resourceType: payload.resource_type,
+    resourceId: payload.resource_id,
+    occurredAt: payload.occurred_at,
+    undoneAt: payload.undone_at,
+  };
+}
+
 interface UserListItemPayload {
   id: string;
   email: string;

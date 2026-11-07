@@ -2,10 +2,14 @@ import { apiFetch } from '@/lib/apiClient';
 
 import {
   mapCreatedUser,
+  mapUserAuditEntry,
+  mapUserDetail,
   mapUserListPage,
   type CreateUserInput,
   type CreatedUser,
   type CreatedUserPayload,
+  type UserAuditEntry,
+  type UserDetail,
   type UserListFilters,
   type UserListPage,
   type UserListPagePayload,
@@ -26,6 +30,22 @@ export async function createUser(input: CreateUserInput): Promise<CreatedUser> {
     }),
   });
   return mapCreatedUser(payload);
+}
+
+export async function fetchUserDetail(id: string): Promise<UserDetail> {
+  const payload = await apiFetch<Parameters<typeof mapUserDetail>[0]>(
+    `/api/user-management/users/${id}`,
+  );
+  return mapUserDetail(payload);
+}
+
+interface UserAuditPayload {
+  items: Parameters<typeof mapUserAuditEntry>[0][];
+}
+
+export async function fetchUserAudit(id: string): Promise<UserAuditEntry[]> {
+  const payload = await apiFetch<UserAuditPayload>(`/api/user-management/users/${id}/audit`);
+  return payload.items.map(mapUserAuditEntry);
 }
 
 function buildListPath(filters: UserListFilters): string {

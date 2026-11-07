@@ -185,6 +185,30 @@
     "myWorkspacesHeading": "Moje workspace’y",
     "noWorkspaces": "Brak workspace’ów."
   },
+  "adminUserDetail": {
+    "loading": "Ładuję użytkownika…",
+    "loadError": "Nie udało się załadować użytkownika.",
+    "breadcrumb": { "users": "Użytkownicy" },
+    "pills": { "superAdmin": "Super admin", "deactivated": "Deaktywowany" },
+    "sections": {
+      "workspaces": "Workspace’y",
+      "account": "Konto",
+      "audit": "Historia zmian"
+    },
+    "workspaces": { "empty": "Ten użytkownik nie ma przypisań do workspace." },
+    "account": {
+      "deactivate": "Deaktywuj",
+      "reactivate": "Reaktywuj",
+      "resetPassword": "Reset hasła",
+      "pendingTooltip": "Dostępne po BL-UM-011/012."
+    },
+    "audit": {
+      "loading": "Ładuję wpisy…",
+      "empty": "Brak wpisów audytu dla tego użytkownika.",
+      "undone": "cofnięte",
+      "seeAll": "Zobacz wszystkie wpisy"
+    }
+  },
   "dashboard": {
     "eyebrow": "Panel",
     "greeting": "Cześć, {{name}}",

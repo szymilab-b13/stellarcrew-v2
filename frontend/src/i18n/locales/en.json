@@ -185,6 +185,30 @@
     "myWorkspacesHeading": "My workspaces",
     "noWorkspaces": "No workspaces yet."
   },
+  "adminUserDetail": {
+    "loading": "Loading user…",
+    "loadError": "Could not load user.",
+    "breadcrumb": { "users": "Users" },
+    "pills": { "superAdmin": "Super admin", "deactivated": "Deactivated" },
+    "sections": {
+      "workspaces": "Workspaces",
+      "account": "Account",
+      "audit": "Change history"
+    },
+    "workspaces": { "empty": "This user has no workspace assignments." },
+    "account": {
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "resetPassword": "Reset password",
+      "pendingTooltip": "Available after BL-UM-011/012."
+    },
+    "audit": {
+      "loading": "Loading audit entries…",
+      "empty": "No audit entries for this user.",
+      "undone": "undone",
+      "seeAll": "See all entries"
+    }
+  },
   "dashboard": {
     "eyebrow": "Dashboard",
     "greeting": "Welcome, {{name}}",
