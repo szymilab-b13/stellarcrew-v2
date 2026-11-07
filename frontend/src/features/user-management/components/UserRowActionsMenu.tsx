@@ -1,5 +1,6 @@
 import { Eye, KeyRound, MoreHorizontal, UserCheck, UserX } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,11 +15,20 @@ interface UserRowActionsMenuProps {
   isDeactivated: boolean;
 }
 
+interface MenuPosition {
+  top: number;
+  right: number;
+}
+
+const MENU_OFFSET = 4;
+
 export function UserRowActionsMenu({ userId, email, isDeactivated }: UserRowActionsMenuProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<MenuPosition | null>(null);
   const [activationDialogOpen, setActivationDialogOpen] = useState(false);
   const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
 
@@ -28,12 +38,35 @@ export function UserRowActionsMenu({ userId, email, isDeactivated }: UserRowActi
 
   const activationMutation = isDeactivated ? reactivate : deactivate;
 
+  useLayoutEffect(() => {
+    if (!open) {
+      setMenuPosition(null);
+      return;
+    }
+    function updatePosition() {
+      const rect = triggerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setMenuPosition({
+        top: rect.bottom + MENU_OFFSET,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    updatePosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     function handleClickOutside(event: MouseEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
+      const target = event.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setOpen(false);
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -78,9 +111,50 @@ export function UserRowActionsMenu({ userId, email, isDeactivated }: UserRowActi
     });
   }
 
+  const menu =
+    open && menuPosition ? (
+      <div
+        ref={menuRef}
+        role="menu"
+        style={{ position: 'fixed', top: menuPosition.top, right: menuPosition.right }}
+        className="z-50 w-56 overflow-hidden rounded-md border border-sc-border bg-sc-bg-card shadow-lg"
+      >
+        <button
+          type="button"
+          role="menuitem"
+          onClick={openDetails}
+          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-sc-text transition-colors hover:bg-sc-bg-secondary"
+        >
+          <Eye size={14} aria-hidden />
+          {t('userManagement.row.actionDetails')}
+        </button>
+        <button
+          type="button"
+          role="menuitem"
+          onClick={openActivationDialog}
+          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-sc-text transition-colors hover:bg-sc-bg-secondary"
+        >
+          {isDeactivated ? <UserCheck size={14} aria-hidden /> : <UserX size={14} aria-hidden />}
+          {isDeactivated
+            ? t('userManagement.row.actionReactivate')
+            : t('userManagement.row.actionDeactivate')}
+        </button>
+        <button
+          type="button"
+          role="menuitem"
+          onClick={openResetPasswordDialog}
+          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-sc-text transition-colors hover:bg-sc-bg-secondary"
+        >
+          <KeyRound size={14} aria-hidden />
+          {t('userManagement.row.actionResetPassword')}
+        </button>
+      </div>
+    ) : null;
+
   return (
-    <div ref={containerRef} className="relative inline-flex">
+    <>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((previous) => !previous)}
         className="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-sc-bg-card"
@@ -91,42 +165,7 @@ export function UserRowActionsMenu({ userId, email, isDeactivated }: UserRowActi
         <MoreHorizontal size={16} className="text-sc-text-muted" aria-hidden />
       </button>
 
-      {open ? (
-        <div
-          role="menu"
-          className="absolute right-0 top-full z-20 mt-2 w-56 overflow-hidden rounded-md border border-sc-border bg-sc-bg-card shadow-lg"
-        >
-          <button
-            type="button"
-            role="menuitem"
-            onClick={openDetails}
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-sc-text transition-colors hover:bg-sc-bg-secondary"
-          >
-            <Eye size={14} aria-hidden />
-            {t('userManagement.row.actionDetails')}
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={openActivationDialog}
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-sc-text transition-colors hover:bg-sc-bg-secondary"
-          >
-            {isDeactivated ? <UserCheck size={14} aria-hidden /> : <UserX size={14} aria-hidden />}
-            {isDeactivated
-              ? t('userManagement.row.actionReactivate')
-              : t('userManagement.row.actionDeactivate')}
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            onClick={openResetPasswordDialog}
-            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-sc-text transition-colors hover:bg-sc-bg-secondary"
-          >
-            <KeyRound size={14} aria-hidden />
-            {t('userManagement.row.actionResetPassword')}
-          </button>
-        </div>
-      ) : null}
+      {menu ? createPortal(menu, document.body) : null}
 
       {activationDialogOpen ? (
         <DeactivationConfirmDialog
@@ -148,6 +187,6 @@ export function UserRowActionsMenu({ userId, email, isDeactivated }: UserRowActi
           onSubmit={submitResetPassword}
         />
       ) : null}
-    </div>
+    </>
   );
 }

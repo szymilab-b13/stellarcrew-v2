@@ -169,6 +169,19 @@ describe('UserRowActionsMenu', () => {
     });
   });
 
+  it('renders the dropdown in document.body via portal, not inside the trigger container', async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <UserRowActionsMenu userId="abc" email="target@example.com" isDeactivated={false} />,
+      { wrapper: makeWrapper() },
+    );
+
+    await user.click(screen.getByRole('button', { name: /actions for user target@example.com/i }));
+
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(container.querySelector('[role="menu"]')).toBeNull();
+  });
+
   it('closes the dropdown when clicking outside', async () => {
     const user = userEvent.setup();
     render(
