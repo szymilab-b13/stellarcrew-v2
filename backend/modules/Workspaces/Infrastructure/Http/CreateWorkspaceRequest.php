@@ -13,7 +13,7 @@ final readonly class CreateWorkspaceRequest
         #[Assert\NotBlank(message: 'name is required')]
         #[Assert\Length(max: Workspace::NAME_MAX, maxMessage: 'name cannot exceed {{ limit }} characters')]
         public string $name,
-        #[Assert\Choice(choices: Workspace::ICON_COLORS, message: 'iconColor must be one of the supported palette values')]
+        #[Assert\Regex(pattern: Workspace::ICON_COLOR_PATTERN, message: 'iconColor must be a hex color (#RRGGBB)')]
         public ?string $iconColor = null,
         #[Assert\Length(max: Workspace::INITIALS_MAX, maxMessage: 'iconInitials cannot exceed {{ limit }} characters')]
         public ?string $iconInitials = null,

@@ -26,7 +26,7 @@ const sampleWorkspaces: Workspace[] = [
     id: '11111111-1111-1111-1111-111111111111',
     name: 'Default',
     slug: 'default',
-    iconColor: 'purple',
+    iconColor: '#8B5CF6',
     iconInitials: 'DE',
     ownerId: '00000000-0000-0000-0000-000000000001',
   },
@@ -34,7 +34,7 @@ const sampleWorkspaces: Workspace[] = [
     id: '22222222-2222-2222-2222-222222222222',
     name: 'TalentBridge',
     slug: 'talentbridge',
-    iconColor: 'blue',
+    iconColor: '#3B82F6',
     iconInitials: 'TA',
     ownerId: '00000000-0000-0000-0000-000000000001',
   },
@@ -95,7 +95,7 @@ describe('WorkspacesLandingPage', () => {
             id: '33333333-3333-3333-3333-333333333333',
             name: 'Sport',
             slug: 'sport',
-            iconColor: 'emerald',
+            iconColor: '#10B981',
             iconInitials: 'SP',
             ownerId: '00000000-0000-0000-0000-000000000001',
           },
@@ -108,7 +108,7 @@ describe('WorkspacesLandingPage', () => {
               id: '33333333-3333-3333-3333-333333333333',
               name: 'Sport',
               slug: 'sport',
-              iconColor: 'emerald',
+              iconColor: '#10B981',
               iconInitials: 'SP',
               ownerId: '00000000-0000-0000-0000-000000000001',
             },
@@ -136,7 +136,7 @@ describe('WorkspacesLandingPage', () => {
     expect(JSON.parse(String(init.body))).toMatchObject({
       name: 'Sport',
       iconInitials: 'SP',
-      iconColor: 'purple',
+      iconColor: '#8B5CF6',
     });
   });
 

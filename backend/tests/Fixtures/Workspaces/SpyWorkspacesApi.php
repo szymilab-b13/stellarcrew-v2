@@ -25,7 +25,7 @@ final class SpyWorkspacesApi implements WorkspacesApi
             id: (string) Uuid::v7(),
             name: $name,
             slug: 'spy-slug',
-            iconColor: 'purple',
+            iconColor: '#8B5CF6',
             iconInitials: 'SP',
             ownerId: (string) $ownerId,
         );

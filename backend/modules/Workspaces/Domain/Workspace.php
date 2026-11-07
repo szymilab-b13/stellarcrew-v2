@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Modules\Workspaces\Domain;
 
 use DateTimeImmutable;
-
-use function in_array;
-
 use InvalidArgumentException;
 
 use function mb_strlen;
@@ -19,7 +16,6 @@ use Modules\Shared\Kernel\WorkspaceId;
 
 use function preg_match;
 use function sprintf;
-use function strtolower;
 use function trim;
 
 class Workspace
@@ -30,7 +26,7 @@ class Workspace
 
     public const int INITIALS_MAX = 3;
 
-    public const array ICON_COLORS = ['purple', 'blue', 'pink', 'amber', 'emerald', 'cyan', 'indigo', 'slate'];
+    public const string ICON_COLOR_PATTERN = '/^#[0-9A-Fa-f]{6}$/';
 
     public function __construct(
         private readonly WorkspaceId $id,
@@ -185,8 +181,8 @@ class Workspace
 
     private function guardIconColor(string $color): void
     {
-        if (!in_array(strtolower($color), self::ICON_COLORS, true)) {
-            throw new InvalidArgumentException(sprintf('Unsupported workspace icon color: "%s".', $color));
+        if (preg_match(self::ICON_COLOR_PATTERN, $color) !== 1) {
+            throw new InvalidArgumentException(sprintf('Workspace icon color must be a hex color (#RRGGBB): "%s".', $color));
         }
     }
 

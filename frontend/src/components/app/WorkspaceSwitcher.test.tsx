@@ -27,7 +27,7 @@ const workspaceAlpha: Workspace = {
   id: '11111111-1111-1111-1111-111111111111',
   name: 'Alpha',
   slug: 'alpha',
-  iconColor: 'purple',
+  iconColor: '#8B5CF6',
   iconInitials: 'AL',
   ownerId: '00000000-0000-0000-0000-000000000001',
 };
@@ -36,7 +36,7 @@ const workspaceBeta: Workspace = {
   id: '22222222-2222-2222-2222-222222222222',
   name: 'Beta',
   slug: 'beta',
-  iconColor: 'blue',
+  iconColor: '#3B82F6',
   iconInitials: 'BE',
   ownerId: '00000000-0000-0000-0000-000000000001',
 };

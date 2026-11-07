@@ -23,14 +23,14 @@ final class WorkspaceTest extends TestCase
             WorkspaceId::generate(),
             'Acme Corp',
             'acme-corp',
-            'blue',
+            '#3B82F6',
             $owner,
             $now,
         );
 
         self::assertSame('Acme Corp', $sut->name());
         self::assertSame('acme-corp', $sut->slug());
-        self::assertSame('blue', $sut->iconColor());
+        self::assertSame('#3B82F6', $sut->iconColor());
         self::assertSame('AC', $sut->iconInitials());
         self::assertSame($owner, $sut->ownerId());
         self::assertEquals($now, $sut->createdAt());
@@ -46,7 +46,7 @@ final class WorkspaceTest extends TestCase
             WorkspaceId::generate(),
             '  ',
             'slug-x',
-            'blue',
+            '#3B82F6',
             new UserId(Uuid::v7()),
             new DateTimeImmutable('2026-11-06T10:00:00+00:00'),
         );
@@ -66,6 +66,20 @@ final class WorkspaceTest extends TestCase
         );
     }
 
+    public function testShouldRejectShorthandHexIconColorWhenCreated(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Workspace::create(
+            WorkspaceId::generate(),
+            'Acme',
+            'acme',
+            '#FFF',
+            new UserId(Uuid::v7()),
+            new DateTimeImmutable('2026-11-06T10:00:00+00:00'),
+        );
+    }
+
     public function testShouldRejectNonKebabSlugWhenCreated(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -74,7 +88,7 @@ final class WorkspaceTest extends TestCase
             WorkspaceId::generate(),
             'Acme',
             'Acme HQ',
-            'blue',
+            '#3B82F6',
             new UserId(Uuid::v7()),
             new DateTimeImmutable('2026-11-06T10:00:00+00:00'),
         );
@@ -106,9 +120,9 @@ final class WorkspaceTest extends TestCase
     {
         $sut = $this->makeWorkspace('2026-11-06T10:00:00+00:00');
 
-        $sut->changeIcon('emerald', 'AC', new DateTimeImmutable('2026-11-09T10:00:00+00:00'));
+        $sut->changeIcon('#10B981', 'AC', new DateTimeImmutable('2026-11-09T10:00:00+00:00'));
 
-        self::assertSame('emerald', $sut->iconColor());
+        self::assertSame('#10B981', $sut->iconColor());
         self::assertSame('AC', $sut->iconInitials());
     }
 
@@ -118,7 +132,7 @@ final class WorkspaceTest extends TestCase
             WorkspaceId::generate(),
             'Acme Corp',
             'acme-corp',
-            'blue',
+            '#3B82F6',
             new UserId(Uuid::v7()),
             new DateTimeImmutable($isoDate),
         );

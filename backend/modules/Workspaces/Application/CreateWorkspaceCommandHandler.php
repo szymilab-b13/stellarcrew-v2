@@ -14,7 +14,7 @@ use Modules\Workspaces\Domain\WorkspaceRole;
 
 final readonly class CreateWorkspaceCommandHandler
 {
-    public const string DEFAULT_ICON_COLOR = 'purple';
+    public const string DEFAULT_ICON_COLOR = '#8B5CF6';
 
     public function __construct(
         private WorkspaceRepository $workspaces,

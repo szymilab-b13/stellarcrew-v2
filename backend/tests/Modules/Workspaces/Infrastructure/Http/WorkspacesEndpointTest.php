@@ -63,7 +63,7 @@ final class WorkspacesEndpointTest extends WebTestCase
         self::assertCount(1, $payload);
         self::assertSame('Private', $payload[0]['name']);
         self::assertSame('private', $payload[0]['slug']);
-        self::assertSame('purple', $payload[0]['iconColor']);
+        self::assertSame('#8B5CF6', $payload[0]['iconColor']);
         self::assertSame((string) $userId, $payload[0]['ownerId']);
     }
 
@@ -90,7 +90,7 @@ final class WorkspacesEndpointTest extends WebTestCase
         self::assertSame('Private', $payload['name']);
         self::assertSame('private', $payload['slug']);
         self::assertSame('PR', $payload['iconInitials']);
-        self::assertSame('purple', $payload['iconColor']);
+        self::assertSame('#8B5CF6', $payload['iconColor']);
         self::assertSame((string) $userId, $payload['ownerId']);
     }
 
@@ -100,13 +100,13 @@ final class WorkspacesEndpointTest extends WebTestCase
 
         $this->postJson('/api/workspaces', [
             'name' => 'Sport',
-            'iconColor' => 'emerald',
+            'iconColor' => '#10B981',
             'iconInitials' => 'SP',
         ], $token);
 
         self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
         $payload = $this->decode();
-        self::assertSame('emerald', $payload['iconColor']);
+        self::assertSame('#10B981', $payload['iconColor']);
         self::assertSame('SP', $payload['iconInitials']);
     }
 
@@ -157,13 +157,13 @@ final class WorkspacesEndpointTest extends WebTestCase
         $ws = $this->seedWorkspaceWithOwner($userId, 'Private', 'private');
 
         $this->patchJson("/api/workspaces/{$ws->id()}", [
-            'iconColor' => 'cyan',
+            'iconColor' => '#06B6D4',
             'iconInitials' => 'XX',
         ], $token);
 
         self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         $payload = $this->decode();
-        self::assertSame('cyan', $payload['iconColor']);
+        self::assertSame('#06B6D4', $payload['iconColor']);
         self::assertSame('XX', $payload['iconInitials']);
     }
 
@@ -304,7 +304,7 @@ final class WorkspacesEndpointTest extends WebTestCase
     private function seedWorkspaceWithOwner(UserId $ownerId, string $name, string $slug): Workspace
     {
         $now = $this->now();
-        $workspace = Workspace::create(WorkspaceId::generate(), $name, $slug, 'purple', $ownerId, $now);
+        $workspace = Workspace::create(WorkspaceId::generate(), $name, $slug, '#8B5CF6', $ownerId, $now);
         $repo = $this->workspaces();
         $repo->saveWorkspace($workspace);
         $repo->saveMembership(WorkspaceMember::join($workspace->id(), $ownerId, WorkspaceRole::Owner, $now));
