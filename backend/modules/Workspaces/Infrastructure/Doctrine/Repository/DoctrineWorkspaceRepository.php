@@ -39,6 +39,12 @@ final readonly class DoctrineWorkspaceRepository implements WorkspaceRepository
         $this->em->flush();
     }
 
+    public function removeMembership(WorkspaceMember $member): void
+    {
+        $this->em->remove($member);
+        $this->em->flush();
+    }
+
     public function findMembership(WorkspaceId $workspaceId, UserId $userId): ?WorkspaceMember
     {
         return $this->em->getRepository(WorkspaceMember::class)->findOneBy([
