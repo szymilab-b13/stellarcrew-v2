@@ -9,6 +9,8 @@ use Modules\Shared\Kernel\UserId;
 
 class User
 {
+    private ?DateTimeImmutable $deactivatedAt = null;
+
     public function __construct(
         private readonly UserId $id,
         private readonly string $email,
@@ -68,5 +70,29 @@ class User
     public function displayName(): ?string
     {
         return $this->displayName;
+    }
+
+    public function deactivatedAt(): ?DateTimeImmutable
+    {
+        return $this->deactivatedAt;
+    }
+
+    public function isDeactivated(): bool
+    {
+        return $this->deactivatedAt instanceof DateTimeImmutable;
+    }
+
+    public function deactivate(DateTimeImmutable $now): void
+    {
+        if ($this->deactivatedAt instanceof DateTimeImmutable) {
+            return;
+        }
+
+        $this->deactivatedAt = $now;
+    }
+
+    public function reactivate(): void
+    {
+        $this->deactivatedAt = null;
     }
 }

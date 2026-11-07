@@ -58,6 +58,19 @@ final class AuthEndpointTest extends WebTestCase
         self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
     }
 
+    public function testShouldReturn403WithAccountDeactivatedWhenUserDeactivated(): void
+    {
+        $this->seedAdmin('admin@example.com', 'secret-pass-long-enough');
+        $this->deactivate('admin@example.com');
+
+        $this->postJson('/api/auth/login', ['email' => 'admin@example.com', 'password' => 'secret-pass-long-enough']);
+
+        $response = $this->client->getResponse();
+        self::assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+        $payload = $this->decode($response->getContent());
+        self::assertSame('account_deactivated', $payload['error']);
+    }
+
     public function testShouldReturn422OnMissingEmail(): void
     {
         $this->postJson('/api/auth/login', ['password' => 'secret-pass-long-enough']);
@@ -108,6 +121,16 @@ final class AuthEndpointTest extends WebTestCase
 
         /** @var UserRepository $users */
         $users = self::getContainer()->get(UserRepository::class);
+        $users->save($user);
+    }
+
+    private function deactivate(string $email): void
+    {
+        /** @var UserRepository $users */
+        $users = self::getContainer()->get(UserRepository::class);
+        $user = $users->findByEmail($email);
+        self::assertInstanceOf(User::class, $user);
+        $user->deactivate(new DateTimeImmutable('2026-11-07T18:00:00+00:00'));
         $users->save($user);
     }
 
