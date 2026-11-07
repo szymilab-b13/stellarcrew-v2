@@ -104,6 +104,9 @@
       "workspaces": {
         "title": "WORKSPACES — wielo-workspace’owość"
       },
+      "userManagement": {
+        "title": "USER MANAGEMENT — panel admina dla userów + przypisania do workspace"
+      },
       "permissions": {
         "title": "PERMISSIONS — uprawnienia per workspace"
       },

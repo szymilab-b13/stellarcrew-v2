@@ -140,12 +140,28 @@ describe('RoadmapPanel', () => {
     expect(screen.queryByRole('link', { name: /BL-AI-/i })).not.toBeInTheDocument();
   });
 
+  it('should render the USER MANAGEMENT milestone as tbd with a Needs discussion pill, a spec note and no tasks', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(
+      /USER MANAGEMENT — admin panel for users \+ workspace assignments/i,
+    );
+    const summary = header.closest('summary');
+    expect(summary).not.toBeNull();
+    expect(summary).toHaveTextContent(/needs discussion/i);
+
+    await userEvent.click(header);
+
+    expect(screen.getByText(/knowledge\/briefs\/1c-user-management\.md/i)).toBeInTheDocument();
+    expect(screen.queryByText(/BL-UM-/i)).not.toBeInTheDocument();
+  });
+
   it('should flag the AI ENGINE milestone with a Needs discussion pill next to the status', () => {
     render(<RoadmapPanel />);
 
-    const summary = screen.getByText(/AI ENGINE — model orchestration, memory strategy/i).closest(
-      'summary',
-    );
+    const summary = screen
+      .getByText(/AI ENGINE — model orchestration, memory strategy/i)
+      .closest('summary');
     expect(summary).not.toBeNull();
     expect(summary).toHaveTextContent(/needs discussion/i);
   });
@@ -153,9 +169,7 @@ describe('RoadmapPanel', () => {
   it('should NOT render the Needs discussion pill on milestones without the flag', () => {
     render(<RoadmapPanel />);
 
-    const coreSummary = screen
-      .getByText(/CORE — platform foundation/i)
-      .closest('summary');
+    const coreSummary = screen.getByText(/CORE — platform foundation/i).closest('summary');
     expect(coreSummary).not.toBeNull();
     expect(coreSummary).not.toHaveTextContent(/needs discussion/i);
   });

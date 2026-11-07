@@ -104,6 +104,9 @@
       "workspaces": {
         "title": "WORKSPACES — multi-tenant workspaces"
       },
+      "userManagement": {
+        "title": "USER MANAGEMENT — admin panel for users + workspace assignments"
+      },
       "permissions": {
         "title": "PERMISSIONS — fine-grained per-workspace access"
       },

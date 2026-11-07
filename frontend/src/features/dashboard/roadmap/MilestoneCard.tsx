@@ -99,10 +99,34 @@ function TaskRow({ task }: { task: RoadmapTask }) {
 function TaskCheckbox({ status }: { status: MilestoneStatus }) {
   const common = 'mt-0.5 h-4 w-4 flex-none';
   if (status === 'done')
-    return <SquareCheck className={`${common} text-sc-primary`} aria-hidden data-testid="task-checkbox-done" />;
+    return (
+      <SquareCheck
+        className={`${common} text-sc-primary`}
+        aria-hidden
+        data-testid="task-checkbox-done"
+      />
+    );
   if (status === 'inProgress')
-    return <SquareDot className={`${common} text-amber-500`} aria-hidden data-testid="task-checkbox-in-progress" />;
+    return (
+      <SquareDot
+        className={`${common} text-amber-500`}
+        aria-hidden
+        data-testid="task-checkbox-in-progress"
+      />
+    );
   if (status === 'tbd')
-    return <SquareDashed className={`${common} text-slate-400`} aria-hidden data-testid="task-checkbox-tbd" />;
-  return <Square className={`${common} text-sc-text-muted`} aria-hidden data-testid="task-checkbox-planned" />;
+    return (
+      <SquareDashed
+        className={`${common} text-slate-400`}
+        aria-hidden
+        data-testid="task-checkbox-tbd"
+      />
+    );
+  return (
+    <Square
+      className={`${common} text-sc-text-muted`}
+      aria-hidden
+      data-testid="task-checkbox-planned"
+    />
+  );
 }

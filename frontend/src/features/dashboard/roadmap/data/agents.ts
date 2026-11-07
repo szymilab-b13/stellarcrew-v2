@@ -2,7 +2,9 @@ import type { RoadmapMilestone } from '../types';
 
 export const AGENTS_MILESTONE: RoadmapMilestone = {
   key: 'agents',
-  status: 'planned',
+  status: 'tbd',
+  discussNeeded: true,
+  note: 'Brief rewrite pending under the Spec-first flow (rules.md). Tasks below are tentative, locked in after Szef confirms the brief.',
   tasks: [
     {
       id: 'BL-AGENTS-001',

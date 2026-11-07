@@ -2,8 +2,9 @@ import type { RoadmapMilestone } from '../types';
 
 export const THREADS_MILESTONE: RoadmapMilestone = {
   key: 'threads',
-  status: 'planned',
-  note: 'Continuous threads that ride alongside milestones, not tied to a single release.',
+  status: 'tbd',
+  discussNeeded: true,
+  note: 'Continuous threads that ride alongside milestones, not tied to a single release. All items need Szef confirmation before promotion to planned.',
   tasks: [
     {
       id: 'BL-DX-001',
@@ -15,6 +16,12 @@ export const THREADS_MILESTONE: RoadmapMilestone = {
       id: 'BL-DOC-001',
       description:
         'Each merged milestone ships with a short user-facing release note in the PR body (changelog style, no internals).',
+      status: 'planned',
+    },
+    {
+      id: 'BL-DOC-002',
+      description:
+        'Audit stellarcrew.dev public site: review current copy/features/roadmap claims vs v2 reality, identify stale content and missing screenshots, produce a short diff doc in knowledge/discovery/ before touching the site.',
       status: 'planned',
     },
   ],
