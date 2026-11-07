@@ -152,7 +152,7 @@ export function WorkspaceDialog({
             </legend>
             <div className="flex flex-wrap gap-2">
               {WORKSPACE_COLOR_PALETTE.map((option) => {
-                const checked = option.hex.toLowerCase() === watchedColor.toLowerCase();
+                const checked = option.key === watchedColor.toLowerCase();
                 return (
                   <label
                     key={option.key}
@@ -165,7 +165,7 @@ export function WorkspaceDialog({
                   >
                     <input
                       type="radio"
-                      value={option.hex}
+                      value={option.key}
                       className="sr-only"
                       aria-label={t(`workspaces.dialog.colors.${option.key}`)}
                       {...form.register('iconColor')}

@@ -86,7 +86,7 @@ export const WORKSPACE_COLOR_PALETTE: readonly WorkspaceColorOption[] = [
   },
 ];
 
-export const DEFAULT_WORKSPACE_COLOR = WORKSPACE_COLOR_PALETTE[0].hex;
+export const DEFAULT_WORKSPACE_COLOR = WORKSPACE_COLOR_PALETTE[0].key;
 
 export function deriveInitials(name: string): string {
   const trimmed = name.trim();
@@ -98,9 +98,8 @@ export function deriveInitials(name: string): string {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-export function findColorOption(hex: string): WorkspaceColorOption {
-  const match = WORKSPACE_COLOR_PALETTE.find(
-    (option) => option.hex.toLowerCase() === hex.toLowerCase(),
-  );
+export function findColorOption(key: string): WorkspaceColorOption {
+  const normalized = key.toLowerCase();
+  const match = WORKSPACE_COLOR_PALETTE.find((option) => option.key === normalized);
   return match ?? WORKSPACE_COLOR_PALETTE[0];
 }
