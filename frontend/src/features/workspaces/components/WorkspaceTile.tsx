@@ -1,6 +1,8 @@
 import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { RolePill } from '@/features/user-management/components/RolePill';
+
 import { findColorOption, type Workspace } from '../types';
 
 interface WorkspaceTileProps {
@@ -25,9 +27,14 @@ export function WorkspaceTile({ workspace, onEdit, onDelete }: WorkspaceTileProp
         >
           {workspace.iconInitials}
         </span>
-        <div className="flex min-w-0 flex-col">
+        <div className="flex min-w-0 flex-col gap-1">
           <h2 className="truncate text-base font-semibold text-sc-text">{workspace.name}</h2>
           <p className="truncate text-xs text-sc-text-muted">{workspace.slug}</p>
+          {workspace.role ? (
+            <div>
+              <RolePill role={workspace.role} size="sm" />
+            </div>
+          ) : null}
         </div>
       </div>
 
