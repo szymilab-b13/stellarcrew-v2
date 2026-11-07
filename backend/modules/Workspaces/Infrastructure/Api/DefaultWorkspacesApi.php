@@ -139,6 +139,11 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
         return $this->getMembership($workspaceId, $userId);
     }
 
+    public function removeAllMembershipsOf(UserId $userId): void
+    {
+        $this->workspaces->removeAllMembershipsOf($userId);
+    }
+
     private function toMembershipView(WorkspaceMember $member): MembershipView
     {
         return new MembershipView(

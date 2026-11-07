@@ -58,4 +58,11 @@ interface WorkspacesApi
     public function removeMember(WorkspaceId $workspaceId, UserId $userId): void;
 
     public function findMember(WorkspaceId $workspaceId, UserId $userId): ?MembershipView;
+
+    /**
+     * System-level bulk removal of all memberships a user has across every workspace.
+     * Bypasses the admin/owner guards used in {@see self::removeMember()} — intended for
+     * audit undo of {@code user_management.user.created}, not for end-user flows.
+     */
+    public function removeAllMembershipsOf(UserId $userId): void;
 }

@@ -90,6 +90,14 @@ final class SpyWorkspacesApi implements WorkspacesApi
         return $this->getMembership($workspaceId, $userId);
     }
 
+    /** @var list<UserId> */
+    public array $removeAllMembershipsOfCalls = [];
+
+    public function removeAllMembershipsOf(UserId $userId): void
+    {
+        $this->removeAllMembershipsOfCalls[] = $userId;
+    }
+
     public function membershipFor(UserId $userId, WorkspaceRole $role): MembershipView
     {
         return new MembershipView(

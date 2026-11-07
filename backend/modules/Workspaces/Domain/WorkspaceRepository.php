@@ -19,6 +19,8 @@ interface WorkspaceRepository
 
     public function removeMembership(WorkspaceMember $member): void;
 
+    public function removeAllMembershipsOf(UserId $userId): void;
+
     public function findMembership(WorkspaceId $workspaceId, UserId $userId): ?WorkspaceMember;
 
     /**
