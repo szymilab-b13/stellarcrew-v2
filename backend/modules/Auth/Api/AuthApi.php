@@ -32,4 +32,12 @@ interface AuthApi
      * @throws UserNotFoundException
      */
     public function markReactivated(UserId $userId): void;
+
+    /**
+     * Replaces the user's password hash. Caller is responsible for policy checks
+     * (length, complexity); AuthApi just hashes and persists.
+     *
+     * @throws UserNotFoundException
+     */
+    public function setPassword(UserId $userId, string $plaintextPassword): void;
 }

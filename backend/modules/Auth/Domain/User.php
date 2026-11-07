@@ -14,7 +14,7 @@ class User
     public function __construct(
         private readonly UserId $id,
         private readonly string $email,
-        private readonly string $passwordHash,
+        private string $passwordHash,
         private readonly UserRole $role,
         private readonly DateTimeImmutable $createdAt,
         private readonly ?string $displayName = null,
@@ -55,6 +55,11 @@ class User
     public function passwordHash(): string
     {
         return $this->passwordHash;
+    }
+
+    public function changePassword(string $passwordHash): void
+    {
+        $this->passwordHash = $passwordHash;
     }
 
     public function role(): UserRole

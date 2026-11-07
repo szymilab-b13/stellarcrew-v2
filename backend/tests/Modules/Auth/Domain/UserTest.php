@@ -73,6 +73,15 @@ final class UserTest extends TestCase
         self::assertNull($sut->deactivatedAt());
     }
 
+    public function testShouldReplacePasswordHashWhenChangePasswordCalled(): void
+    {
+        $sut = $this->freshUser();
+
+        $sut->changePassword('new-hashed-password');
+
+        self::assertSame('new-hashed-password', $sut->passwordHash());
+    }
+
     private function freshUser(): User
     {
         return new User(

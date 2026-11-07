@@ -110,6 +110,38 @@ final class DefaultAuthApiTest extends TestCase
         $sut->markDeactivated(new UserId(Uuid::v7()));
     }
 
+    public function testShouldReplaceHashWhenSetPasswordCalled(): void
+    {
+        $users = $this->userRepository();
+        $sut = new DefaultAuthApi(
+            $users,
+            $this->passwordHasher(),
+            $this->uuidGenerator(Uuid::fromString('0192f3f5-0000-7000-8000-000000000005')),
+            new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')),
+        );
+        $created = $sut->createAdmin('admin@example.com', 'old-secret-pass-long');
+
+        $sut->setPassword($created->id, 'brand-new-secret-pass');
+
+        $persisted = $users->findByEmail('admin@example.com');
+        self::assertNotNull($persisted);
+        self::assertSame('hashed:brand-new-secret-pass', $persisted->passwordHash());
+    }
+
+    public function testShouldThrowUserNotFoundExceptionWhenSetPasswordForUnknownUser(): void
+    {
+        $sut = new DefaultAuthApi(
+            $this->userRepository(),
+            $this->passwordHasher(),
+            $this->uuidGenerator(Uuid::fromString('0192f3f5-0000-7000-8000-000000000006')),
+            new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')),
+        );
+
+        $this->expectException(UserNotFoundException::class);
+
+        $sut->setPassword(new UserId(Uuid::v7()), 'brand-new-secret-pass');
+    }
+
     private function userRepository(): UserRepository
     {
         return new class () implements UserRepository {

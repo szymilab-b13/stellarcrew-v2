@@ -26,6 +26,9 @@ final class SpyAuthApi implements AuthApi
     /** @var list<UserId> */
     public array $markReactivatedCalls = [];
 
+    /** @var list<array{userId: UserId, plaintext: string}> */
+    public array $setPasswordCalls = [];
+
     /** @var array<string, true> */
     private array $takenEmails = [];
 
@@ -92,6 +95,15 @@ final class SpyAuthApi implements AuthApi
         }
 
         $this->markReactivatedCalls[] = $userId;
+    }
+
+    public function setPassword(UserId $userId, string $plaintextPassword): void
+    {
+        if (isset($this->missingIds[(string) $userId])) {
+            throw UserNotFoundException::forId($userId);
+        }
+
+        $this->setPasswordCalls[] = ['userId' => $userId, 'plaintext' => $plaintextPassword];
     }
 
     public function withTakenEmail(string $email): self

@@ -95,4 +95,15 @@ final readonly class DefaultAuthApi implements AuthApi
         $user->reactivate();
         $this->users->save($user);
     }
+
+    public function setPassword(UserId $userId, string $plaintextPassword): void
+    {
+        $user = $this->users->findById($userId);
+        if (!$user instanceof User) {
+            throw UserNotFoundException::forId($userId);
+        }
+
+        $user->changePassword($this->hasher->hash($plaintextPassword));
+        $this->users->save($user);
+    }
 }
