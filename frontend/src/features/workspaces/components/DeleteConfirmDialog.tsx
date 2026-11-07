@@ -1,6 +1,7 @@
 import { Loader2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { Button } from '@/components/ui/Button';
 import { ApiError } from '@/lib/apiClient';
 
 import type { Workspace } from '../types';
@@ -52,35 +53,26 @@ export function DeleteConfirmDialog({
         {serverMessage ? (
           <p
             role="alert"
-            className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900"
+            className="rounded-md border border-sc-danger/40 bg-sc-danger/10 px-3 py-2 text-sm text-sc-danger"
           >
             {serverMessage}
           </p>
         ) : null}
 
-        <div className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex items-center justify-center rounded-md border border-sc-border bg-sc-bg-card px-3 py-2 text-sm font-semibold text-sc-text transition-colors hover:bg-sc-bg"
-          >
-            {t('common.cancel')}
-          </button>
-          <button
-            type="button"
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="destructive"
             onClick={onConfirm}
             disabled={isSubmitting}
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+            leadingIcon={
+              isSubmitting ? <Loader2 className="animate-spin" size={14} aria-hidden /> : undefined
+            }
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="animate-spin" size={14} aria-hidden />
-                {t('workspaces.delete.deleting')}
-              </>
-            ) : (
-              t('workspaces.delete.confirm')
-            )}
-          </button>
+            {isSubmitting ? t('workspaces.delete.deleting') : t('workspaces.delete.confirm')}
+          </Button>
+          <Button variant="secondary" onClick={onClose}>
+            {t('common.cancel')}
+          </Button>
         </div>
       </div>
     </div>

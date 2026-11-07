@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, X } from 'lucide-react';
+import { ArrowRight, Loader2, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { ApiError } from '@/lib/apiClient';
 
 import {
@@ -111,16 +113,15 @@ export function WorkspaceDialog({
             <label htmlFor="workspace-name" className="text-xs font-medium text-sc-text">
               {t('workspaces.dialog.nameLabel')}
             </label>
-            <input
+            <Input
               id="workspace-name"
               type="text"
               autoComplete="off"
-              aria-invalid={Boolean(nameError)}
-              className="w-full rounded-md border border-sc-border bg-sc-bg px-3 py-2 text-sm text-sc-text outline-none transition-colors focus:border-sc-text"
+              invalid={Boolean(nameError)}
               {...form.register('name')}
             />
             {nameError ? (
-              <p role="alert" className="text-xs text-red-600">
+              <p role="alert" className="text-xs text-sc-danger">
                 {t(`workspaces.dialog.errors.${nameError}`)}
               </p>
             ) : null}
@@ -130,17 +131,17 @@ export function WorkspaceDialog({
             <label htmlFor="workspace-initials" className="text-xs font-medium text-sc-text">
               {t('workspaces.dialog.initialsLabel')}
             </label>
-            <input
+            <Input
               id="workspace-initials"
               type="text"
               maxLength={3}
               autoComplete="off"
-              aria-invalid={Boolean(initialsError)}
-              className="w-24 rounded-md border border-sc-border bg-sc-bg px-3 py-2 text-sm uppercase tracking-widest text-sc-text outline-none transition-colors focus:border-sc-text"
+              invalid={Boolean(initialsError)}
+              className="w-24 uppercase tracking-widest"
               {...form.register('iconInitials')}
             />
             {initialsError ? (
-              <p role="alert" className="text-xs text-red-600">
+              <p role="alert" className="text-xs text-sc-danger">
                 {t(`workspaces.dialog.errors.${initialsError}`)}
               </p>
             ) : null}
@@ -179,38 +180,36 @@ export function WorkspaceDialog({
           {serverMessage ? (
             <p
               role="alert"
-              className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900"
+              className="rounded-md border border-sc-danger/40 bg-sc-danger/10 px-3 py-2 text-sm text-sc-danger"
             >
               {serverMessage}
             </p>
           ) : null}
 
           <div className="flex items-center justify-end gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex items-center justify-center rounded-md border border-sc-border bg-sc-bg-card px-3 py-2 text-sm font-semibold text-sc-text transition-colors hover:bg-sc-bg"
-            >
+            <Button variant="secondary" onClick={onClose}>
               {t('common.cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              variant="primary"
               disabled={isSubmitting}
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-sc-primary px-4 py-2 text-sm font-semibold text-sc-primary-foreground shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
-            >
-              {isSubmitting ? (
-                <>
+              trailingIcon={
+                isSubmitting ? (
                   <Loader2 className="animate-spin" size={14} aria-hidden />
-                  {t('common.saving')}
-                </>
-              ) : (
-                t(
-                  mode === 'create'
-                    ? 'workspaces.dialog.submitCreate'
-                    : 'workspaces.dialog.submitEdit',
+                ) : (
+                  <ArrowRight size={14} aria-hidden />
                 )
-              )}
-            </button>
+              }
+            >
+              {isSubmitting
+                ? t('common.saving')
+                : t(
+                    mode === 'create'
+                      ? 'workspaces.dialog.submitCreate'
+                      : 'workspaces.dialog.submitEdit',
+                  )}
+            </Button>
           </div>
         </form>
       </div>
