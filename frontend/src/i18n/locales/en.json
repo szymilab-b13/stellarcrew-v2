@@ -131,6 +131,8 @@
     "delete": {
       "title": "Delete workspace",
       "body": "Delete workspace \"{{name}}\"? This cannot be undone.",
+      "confirmPrompt": "Please confirm before proceeding.",
+      "acknowledge": "Yes, I understand and want to remove the workspace \"{{name}}\".",
       "confirm": "Delete",
       "deleting": "Deleting…",
       "errors": {

@@ -151,7 +151,10 @@ describe('WorkspacesLandingPage', () => {
 
     await screen.findByRole('article', { name: /workspace default/i });
     await user.click(screen.getByRole('button', { name: /delete workspace default/i }));
-    await user.click(await screen.findByRole('button', { name: /^delete$/i }));
+    const confirmButton = await screen.findByRole('button', { name: /^delete$/i });
+    expect(confirmButton).toBeDisabled();
+    await user.click(await screen.findByRole('checkbox'));
+    await user.click(confirmButton);
 
     const deleteCall = vi.mocked(fetch).mock.calls[1];
     expect(String(deleteCall[0])).toContain(`/api/workspaces/${sampleWorkspaces[0].id}`);

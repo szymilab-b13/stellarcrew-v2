@@ -131,6 +131,8 @@
     "delete": {
       "title": "Usuń workspace",
       "body": "Usunąć workspace „{{name}}”? Operacja jest nieodwracalna.",
+      "confirmPrompt": "Potwierdź, zanim przejdziesz dalej.",
+      "acknowledge": "Tak, rozumiem i chcę usunąć workspace „{{name}}”.",
       "confirm": "Usuń",
       "deleting": "Usuwam…",
       "errors": {
