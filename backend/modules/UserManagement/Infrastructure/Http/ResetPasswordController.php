@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\UserManagement\Infrastructure\Http;
 
+use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Shared\Kernel\UserId;
 use Modules\UserManagement\Api\Exception\PasswordTooShortException;
 use Modules\UserManagement\Api\Exception\UserProfileNotFoundException;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final readonly class ResetPasswordController
@@ -45,11 +47,17 @@ final readonly class ResetPasswordController
     )]
     public function __invoke(
         string $id,
+        #[CurrentUser]
+        SecurityUser $user,
         #[MapRequestPayload]
         ResetPasswordRequest $input,
     ): JsonResponse {
         try {
-            $this->users->resetUserPassword(UserId::fromString($id), $input->newPassword);
+            $this->users->resetUserPassword(
+                $user->domainUser()->id(),
+                UserId::fromString($id),
+                $input->newPassword,
+            );
         } catch (UserProfileNotFoundException) {
             return new JsonResponse(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
         } catch (PasswordTooShortException) {

@@ -10,6 +10,7 @@ use Modules\Shared\Kernel\WorkspaceId;
 final readonly class RemoveMemberCommand
 {
     public function __construct(
+        public UserId $actorUserId,
         public WorkspaceId $workspaceId,
         public UserId $userId,
     ) {

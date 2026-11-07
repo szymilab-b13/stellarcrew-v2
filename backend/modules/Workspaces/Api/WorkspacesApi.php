@@ -34,10 +34,10 @@ interface WorkspacesApi
      * @throws InvalidMemberRoleException
      */
     public function assignMember(
+        UserId $actorUserId,
         WorkspaceId $workspaceId,
         UserId $userId,
         string $role,
-        ?UserId $invitedBy = null,
     ): MembershipView;
 
     /**
@@ -45,6 +45,7 @@ interface WorkspacesApi
      * @throws InvalidMemberRoleException
      */
     public function changeMemberRole(
+        UserId $actorUserId,
         WorkspaceId $workspaceId,
         UserId $userId,
         string $role,
@@ -55,7 +56,7 @@ interface WorkspacesApi
      * @throws AdminMustBeDowngradedFirstException
      * @throws CannotRemoveOwnerException
      */
-    public function removeMember(WorkspaceId $workspaceId, UserId $userId): void;
+    public function removeMember(UserId $actorUserId, WorkspaceId $workspaceId, UserId $userId): void;
 
     public function findMember(WorkspaceId $workspaceId, UserId $userId): ?MembershipView;
 }

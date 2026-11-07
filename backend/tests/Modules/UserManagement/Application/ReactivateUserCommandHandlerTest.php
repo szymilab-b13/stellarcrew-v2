@@ -21,6 +21,7 @@ final class ReactivateUserCommandHandlerTest extends TestCase
 {
     public function testShouldClearDeactivatedAtWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save($this->deactivatedProfile($userId));
@@ -29,7 +30,7 @@ final class ReactivateUserCommandHandlerTest extends TestCase
         $audit = new SpyAuditLogger();
         $sut = new ReactivateUserCommandHandler($profiles, $auth, $audit, new FrozenClock(new DateTimeImmutable('2026-11-08T09:00:00+00:00')));
 
-        $sut(new ReactivateUserCommand($userId));
+        $sut(new ReactivateUserCommand($actorUserId, $userId));
 
         $profile = $profiles->findById($userId);
         self::assertNotNull($profile);
@@ -39,6 +40,7 @@ final class ReactivateUserCommandHandlerTest extends TestCase
 
     public function testShouldCallAuthMarkReactivatedWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save($this->deactivatedProfile($userId));
@@ -46,14 +48,15 @@ final class ReactivateUserCommandHandlerTest extends TestCase
         $auth = new SpyAuthApi();
         $sut = new ReactivateUserCommandHandler($profiles, $auth, new SpyAuditLogger(), new FrozenClock(new DateTimeImmutable('2026-11-08T09:00:00+00:00')));
 
-        $sut(new ReactivateUserCommand($userId));
+        $sut(new ReactivateUserCommand($actorUserId, $userId));
 
         self::assertCount(1, $auth->markReactivatedCalls);
         self::assertSame((string) $userId, (string) $auth->markReactivatedCalls[0]);
     }
 
-    public function testShouldLogAuditEntryWhenCommandExecuted(): void
+    public function testShouldLogAuditEntryWithActorUserIdWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save($this->deactivatedProfile($userId));
@@ -61,17 +64,19 @@ final class ReactivateUserCommandHandlerTest extends TestCase
         $audit = new SpyAuditLogger();
         $sut = new ReactivateUserCommandHandler($profiles, new SpyAuthApi(), $audit, new FrozenClock(new DateTimeImmutable('2026-11-08T09:00:00+00:00')));
 
-        $sut(new ReactivateUserCommand($userId));
+        $sut(new ReactivateUserCommand($actorUserId, $userId));
 
         self::assertCount(1, $audit->entries);
         $entry = $audit->entries[0];
         self::assertSame('user_management.user.reactivated', $entry->action);
         self::assertSame('user', $entry->resourceType);
         self::assertSame((string) $userId, $entry->resourceId);
+        self::assertSame($actorUserId, $entry->userId);
     }
 
     public function testShouldNoOpWhenAlreadyActive(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save(UserProfile::create($userId, null, '#abcdef', new DateTimeImmutable('2026-11-07T14:00:00+00:00')));
@@ -80,7 +85,7 @@ final class ReactivateUserCommandHandlerTest extends TestCase
         $audit = new SpyAuditLogger();
         $sut = new ReactivateUserCommandHandler($profiles, $auth, $audit, new FrozenClock(new DateTimeImmutable('2026-11-08T09:00:00+00:00')));
 
-        $sut(new ReactivateUserCommand($userId));
+        $sut(new ReactivateUserCommand($actorUserId, $userId));
 
         self::assertSame([], $auth->markReactivatedCalls);
         self::assertSame([], $audit->entries);
@@ -97,7 +102,7 @@ final class ReactivateUserCommandHandlerTest extends TestCase
 
         $this->expectException(UserProfileNotFoundException::class);
 
-        $sut(new ReactivateUserCommand(new UserId(Uuid::v7())));
+        $sut(new ReactivateUserCommand(new UserId(Uuid::v7()), new UserId(Uuid::v7())));
     }
 
     private function deactivatedProfile(UserId $userId): UserProfile

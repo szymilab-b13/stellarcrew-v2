@@ -45,7 +45,7 @@ final readonly class ResetUserPasswordCommandHandler
         $this->auth->setPassword($command->userId, $command->newPassword);
 
         $this->audit->log(new AuditEntry(
-            userId: null,
+            userId: $command->actorUserId,
             action: self::AUDIT_ACTION,
             occurredAt: $this->clock->now(),
             resourceType: self::AUDIT_RESOURCE_TYPE,

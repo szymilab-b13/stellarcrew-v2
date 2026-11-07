@@ -95,27 +95,29 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
     }
 
     public function assignMember(
+        UserId $actorUserId,
         WorkspaceId $workspaceId,
         UserId $userId,
         string $role,
-        ?UserId $invitedBy = null,
     ): MembershipView {
         $member = ($this->assignMember)(new AssignMemberCommand(
+            $actorUserId,
             $workspaceId,
             $userId,
             $this->toRole($role),
-            $invitedBy,
         ));
 
         return $this->toMembershipView($member);
     }
 
     public function changeMemberRole(
+        UserId $actorUserId,
         WorkspaceId $workspaceId,
         UserId $userId,
         string $role,
     ): MembershipView {
         $member = ($this->changeMemberRole)(new ChangeMemberRoleCommand(
+            $actorUserId,
             $workspaceId,
             $userId,
             $this->toRole($role),
@@ -129,9 +131,9 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
         return WorkspaceRole::tryFrom($role) ?? throw InvalidMemberRoleException::unknownRole($role);
     }
 
-    public function removeMember(WorkspaceId $workspaceId, UserId $userId): void
+    public function removeMember(UserId $actorUserId, WorkspaceId $workspaceId, UserId $userId): void
     {
-        ($this->removeMember)(new RemoveMemberCommand($workspaceId, $userId));
+        ($this->removeMember)(new RemoveMemberCommand($actorUserId, $workspaceId, $userId));
     }
 
     public function findMember(WorkspaceId $workspaceId, UserId $userId): ?MembershipView

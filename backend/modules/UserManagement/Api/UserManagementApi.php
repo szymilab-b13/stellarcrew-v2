@@ -28,6 +28,7 @@ interface UserManagementApi
      * @throws EmailTakenException
      */
     public function createUser(
+        UserId $actorUserId,
         string $email,
         string $plaintextPassword,
         bool $isSuperAdmin = false,
@@ -46,14 +47,14 @@ interface UserManagementApi
      *
      * @throws UserProfileNotFoundException
      */
-    public function deactivateUser(UserId $userId): void;
+    public function deactivateUser(UserId $actorUserId, UserId $userId): void;
 
     /**
      * Idempotent: no-op when the profile is already active.
      *
      * @throws UserProfileNotFoundException
      */
-    public function reactivateUser(UserId $userId): void;
+    public function reactivateUser(UserId $actorUserId, UserId $userId): void;
 
     /**
      * Super-admin password reset. Non-reversible (no before_state in audit).
@@ -61,5 +62,5 @@ interface UserManagementApi
      * @throws UserProfileNotFoundException
      * @throws PasswordTooShortException
      */
-    public function resetUserPassword(UserId $userId, string $newPassword): void;
+    public function resetUserPassword(UserId $actorUserId, UserId $userId, string $newPassword): void;
 }

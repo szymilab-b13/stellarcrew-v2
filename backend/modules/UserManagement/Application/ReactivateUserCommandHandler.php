@@ -44,7 +44,7 @@ final readonly class ReactivateUserCommandHandler
         $this->profiles->save($profile);
 
         $this->audit->log(new AuditEntry(
-            userId: null,
+            userId: $command->actorUserId,
             action: self::AUDIT_ACTION,
             occurredAt: $now,
             resourceType: self::AUDIT_RESOURCE_TYPE,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\UserManagement\Infrastructure\Http;
 
+use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Shared\Kernel\UserId;
 use Modules\UserManagement\Api\Exception\UserProfileNotFoundException;
 use Modules\UserManagement\Api\UserManagementApi;
@@ -11,6 +12,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final readonly class ReactivateUserController
@@ -40,10 +42,13 @@ final readonly class ReactivateUserController
             new OA\Response(response: 404, description: 'User not found'),
         ],
     )]
-    public function reactivate(string $id): JsonResponse
-    {
+    public function reactivate(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
         try {
-            $this->users->reactivateUser(UserId::fromString($id));
+            $this->users->reactivateUser($user->domainUser()->id(), UserId::fromString($id));
         } catch (UserProfileNotFoundException) {
             return new JsonResponse(['error' => 'not_found'], Response::HTTP_NOT_FOUND);
         }

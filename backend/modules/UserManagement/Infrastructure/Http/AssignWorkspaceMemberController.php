@@ -57,10 +57,10 @@ final readonly class AssignWorkspaceMemberController
 
         $targetUserId = new UserId(Uuid::fromString($id));
         $view = $this->workspaces->assignMember(
+            $user->domainUser()->id(),
             $workspaceId,
             $targetUserId,
             $input->role,
-            $user->domainUser()->id(),
         );
 
         return new JsonResponse(

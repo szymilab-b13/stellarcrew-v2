@@ -22,6 +22,7 @@ final class ResetUserPasswordCommandHandlerTest extends TestCase
 {
     public function testShouldCallAuthSetPasswordWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save(UserProfile::create($userId, null, '#abcdef', new DateTimeImmutable('2026-11-07T14:00:00+00:00')));
@@ -31,15 +32,16 @@ final class ResetUserPasswordCommandHandlerTest extends TestCase
         $now = new DateTimeImmutable('2026-11-07T18:00:00+00:00');
         $sut = new ResetUserPasswordCommandHandler($profiles, $auth, $audit, new FrozenClock($now));
 
-        $sut(new ResetUserPasswordCommand($userId, 'brand-new-password'));
+        $sut(new ResetUserPasswordCommand($actorUserId, $userId, 'brand-new-password'));
 
         self::assertCount(1, $auth->setPasswordCalls);
         self::assertSame((string) $userId, (string) $auth->setPasswordCalls[0]['userId']);
         self::assertSame('brand-new-password', $auth->setPasswordCalls[0]['plaintext']);
     }
 
-    public function testShouldLogAuditEntryWithoutBeforeStateWhenCommandExecuted(): void
+    public function testShouldLogAuditEntryWithActorUserIdWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save(UserProfile::create($userId, null, '#abcdef', new DateTimeImmutable('2026-11-07T14:00:00+00:00')));
@@ -48,7 +50,7 @@ final class ResetUserPasswordCommandHandlerTest extends TestCase
         $now = new DateTimeImmutable('2026-11-07T18:00:00+00:00');
         $sut = new ResetUserPasswordCommandHandler($profiles, new SpyAuthApi(), $audit, new FrozenClock($now));
 
-        $sut(new ResetUserPasswordCommand($userId, 'brand-new-password'));
+        $sut(new ResetUserPasswordCommand($actorUserId, $userId, 'brand-new-password'));
 
         self::assertCount(1, $audit->entries);
         $entry = $audit->entries[0];
@@ -56,10 +58,12 @@ final class ResetUserPasswordCommandHandlerTest extends TestCase
         self::assertSame('user', $entry->resourceType);
         self::assertSame((string) $userId, $entry->resourceId);
         self::assertEquals($now, $entry->occurredAt);
+        self::assertSame($actorUserId, $entry->userId);
     }
 
     public function testShouldThrowPasswordTooShortExceptionWhenPasswordUnder12Chars(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save(UserProfile::create($userId, null, '#abcdef', new DateTimeImmutable('2026-11-07T14:00:00+00:00')));
@@ -69,7 +73,7 @@ final class ResetUserPasswordCommandHandlerTest extends TestCase
         $sut = new ResetUserPasswordCommandHandler($profiles, $auth, $audit, new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')));
 
         try {
-            $sut(new ResetUserPasswordCommand($userId, 'too-short'));
+            $sut(new ResetUserPasswordCommand($actorUserId, $userId, 'too-short'));
             self::fail('Expected PasswordTooShortException');
         } catch (PasswordTooShortException) {
             self::assertSame([], $auth->setPasswordCalls);
@@ -88,6 +92,6 @@ final class ResetUserPasswordCommandHandlerTest extends TestCase
 
         $this->expectException(UserProfileNotFoundException::class);
 
-        $sut(new ResetUserPasswordCommand(new UserId(Uuid::v7()), 'brand-new-password'));
+        $sut(new ResetUserPasswordCommand(new UserId(Uuid::v7()), new UserId(Uuid::v7()), 'brand-new-password'));
     }
 }

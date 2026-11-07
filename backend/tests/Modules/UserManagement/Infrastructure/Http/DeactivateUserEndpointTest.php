@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Modules\UserManagement\Infrastructure\Http;
 
 use App\Tests\Fixtures\Auth\SpyAuthApi;
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository;
 use DateTimeImmutable;
 
@@ -15,6 +16,7 @@ use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
 use Modules\Auth\Domain\UserRole;
 use Modules\Auth\Infrastructure\Security\HashablePlaintextUser;
+use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Shared\Kernel\UserId;
 use Modules\UserManagement\Domain\UserProfile;
 use Modules\UserManagement\Domain\UserProfileRepository;
@@ -85,6 +87,23 @@ final class DeactivateUserEndpointTest extends WebTestCase
         self::assertNotNull($profile);
         self::assertTrue($profile->isDeactivated());
         self::assertCount(1, $this->spyAuth()->markDeactivatedCalls);
+    }
+
+    public function testShouldRecordAuditEntryWithCallerAsActorWhenSuperAdminDeactivates(): void
+    {
+        $admin = $this->seedUser(self::ADMIN_EMAIL, self::PLAIN_PASSWORD, UserRole::Admin);
+        $token = $this->login(self::ADMIN_EMAIL, self::PLAIN_PASSWORD);
+        $targetId = $this->seedProfile();
+
+        $this->postJson('/api/user-management/users/'.$targetId.'/deactivate', $token);
+
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+        $audit = $this->spyAudit();
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame('user_management.user.deactivated', $entry->action);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($admin->id()));
     }
 
     public function testShould204AndNoOpWhenAlreadyDeactivated(): void
@@ -175,6 +194,14 @@ final class DeactivateUserEndpointTest extends WebTestCase
     {
         /** @var SpyAuthApi $spy */
         $spy = self::getContainer()->get(SpyAuthApi::class);
+
+        return $spy;
+    }
+
+    private function spyAudit(): SpyAuditLogger
+    {
+        /** @var SpyAuditLogger $spy */
+        $spy = self::getContainer()->get(AuditLoggerInterface::class);
 
         return $spy;
     }

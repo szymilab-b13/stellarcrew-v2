@@ -9,6 +9,7 @@ use Modules\Shared\Kernel\UserId;
 final readonly class ReactivateUserCommand
 {
     public function __construct(
+        public UserId $actorUserId,
         public UserId $userId,
     ) {
     }

@@ -54,12 +54,12 @@ final class SpyWorkspacesApi implements WorkspacesApi
     }
 
     public function assignMember(
+        UserId $actorUserId,
         WorkspaceId $workspaceId,
         UserId $userId,
         string $role,
-        ?UserId $invitedBy = null,
     ): MembershipView {
-        unset($invitedBy);
+        unset($actorUserId);
 
         return new MembershipView(
             workspaceId: (string) $workspaceId,
@@ -69,10 +69,13 @@ final class SpyWorkspacesApi implements WorkspacesApi
     }
 
     public function changeMemberRole(
+        UserId $actorUserId,
         WorkspaceId $workspaceId,
         UserId $userId,
         string $role,
     ): MembershipView {
+        unset($actorUserId);
+
         return new MembershipView(
             workspaceId: (string) $workspaceId,
             userId: (string) $userId,
@@ -80,9 +83,9 @@ final class SpyWorkspacesApi implements WorkspacesApi
         );
     }
 
-    public function removeMember(WorkspaceId $workspaceId, UserId $userId): void
+    public function removeMember(UserId $actorUserId, WorkspaceId $workspaceId, UserId $userId): void
     {
-        unset($workspaceId, $userId);
+        unset($actorUserId, $workspaceId, $userId);
     }
 
     public function findMember(WorkspaceId $workspaceId, UserId $userId): ?MembershipView

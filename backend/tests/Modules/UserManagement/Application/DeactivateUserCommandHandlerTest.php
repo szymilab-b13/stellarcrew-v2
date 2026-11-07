@@ -21,6 +21,7 @@ final class DeactivateUserCommandHandlerTest extends TestCase
 {
     public function testShouldSetDeactivatedAtWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save(UserProfile::create($userId, null, '#abcdef', new DateTimeImmutable('2026-11-07T14:00:00+00:00')));
@@ -30,7 +31,7 @@ final class DeactivateUserCommandHandlerTest extends TestCase
         $now = new DateTimeImmutable('2026-11-07T18:00:00+00:00');
         $sut = new DeactivateUserCommandHandler($profiles, $auth, $audit, new FrozenClock($now));
 
-        $sut(new DeactivateUserCommand($userId));
+        $sut(new DeactivateUserCommand($actorUserId, $userId));
 
         $profile = $profiles->findById($userId);
         self::assertNotNull($profile);
@@ -40,6 +41,7 @@ final class DeactivateUserCommandHandlerTest extends TestCase
 
     public function testShouldCallAuthMarkDeactivatedWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save(UserProfile::create($userId, null, '#abcdef', new DateTimeImmutable('2026-11-07T14:00:00+00:00')));
@@ -47,14 +49,15 @@ final class DeactivateUserCommandHandlerTest extends TestCase
         $auth = new SpyAuthApi();
         $sut = new DeactivateUserCommandHandler($profiles, $auth, new SpyAuditLogger(), new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')));
 
-        $sut(new DeactivateUserCommand($userId));
+        $sut(new DeactivateUserCommand($actorUserId, $userId));
 
         self::assertCount(1, $auth->markDeactivatedCalls);
         self::assertSame((string) $userId, (string) $auth->markDeactivatedCalls[0]);
     }
 
-    public function testShouldLogAuditEntryWhenCommandExecuted(): void
+    public function testShouldLogAuditEntryWithActorUserIdWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $profiles->save(UserProfile::create($userId, null, '#abcdef', new DateTimeImmutable('2026-11-07T14:00:00+00:00')));
@@ -62,17 +65,19 @@ final class DeactivateUserCommandHandlerTest extends TestCase
         $audit = new SpyAuditLogger();
         $sut = new DeactivateUserCommandHandler($profiles, new SpyAuthApi(), $audit, new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')));
 
-        $sut(new DeactivateUserCommand($userId));
+        $sut(new DeactivateUserCommand($actorUserId, $userId));
 
         self::assertCount(1, $audit->entries);
         $entry = $audit->entries[0];
         self::assertSame('user_management.user.deactivated', $entry->action);
         self::assertSame('user', $entry->resourceType);
         self::assertSame((string) $userId, $entry->resourceId);
+        self::assertSame($actorUserId, $entry->userId);
     }
 
     public function testShouldNoOpWhenAlreadyDeactivated(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
         $profiles = new InMemoryUserProfileRepository();
         $previousDeactivation = new DateTimeImmutable('2026-11-01T08:00:00+00:00');
@@ -88,7 +93,7 @@ final class DeactivateUserCommandHandlerTest extends TestCase
         $audit = new SpyAuditLogger();
         $sut = new DeactivateUserCommandHandler($profiles, $auth, $audit, new FrozenClock(new DateTimeImmutable('2026-11-07T18:00:00+00:00')));
 
-        $sut(new DeactivateUserCommand($userId));
+        $sut(new DeactivateUserCommand($actorUserId, $userId));
 
         self::assertSame([], $auth->markDeactivatedCalls);
         self::assertSame([], $audit->entries);
@@ -106,6 +111,6 @@ final class DeactivateUserCommandHandlerTest extends TestCase
 
         $this->expectException(UserProfileNotFoundException::class);
 
-        $sut(new DeactivateUserCommand(new UserId(Uuid::v7())));
+        $sut(new DeactivateUserCommand(new UserId(Uuid::v7()), new UserId(Uuid::v7())));
     }
 }

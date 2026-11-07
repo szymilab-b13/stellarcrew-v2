@@ -62,6 +62,7 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
     }
 
     public function createUser(
+        UserId $actorUserId,
         string $email,
         string $plaintextPassword,
         bool $isSuperAdmin = false,
@@ -69,6 +70,7 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
     ): UserProfileDto {
         try {
             return ($this->createUser)(new CreateUserCommand(
+                $actorUserId,
                 $email,
                 $plaintextPassword,
                 $isSuperAdmin,
@@ -103,19 +105,19 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
         return $this->toDto($profile);
     }
 
-    public function deactivateUser(UserId $userId): void
+    public function deactivateUser(UserId $actorUserId, UserId $userId): void
     {
-        ($this->deactivateUser)(new DeactivateUserCommand($userId));
+        ($this->deactivateUser)(new DeactivateUserCommand($actorUserId, $userId));
     }
 
-    public function reactivateUser(UserId $userId): void
+    public function reactivateUser(UserId $actorUserId, UserId $userId): void
     {
-        ($this->reactivateUser)(new ReactivateUserCommand($userId));
+        ($this->reactivateUser)(new ReactivateUserCommand($actorUserId, $userId));
     }
 
-    public function resetUserPassword(UserId $userId, string $newPassword): void
+    public function resetUserPassword(UserId $actorUserId, UserId $userId, string $newPassword): void
     {
-        ($this->resetUserPassword)(new ResetUserPasswordCommand($userId, $newPassword));
+        ($this->resetUserPassword)(new ResetUserPasswordCommand($actorUserId, $userId, $newPassword));
     }
 
     private function toDto(UserProfile $profile): UserProfileDto

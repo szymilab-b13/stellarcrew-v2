@@ -54,7 +54,7 @@ final readonly class RemoveWorkspaceMemberController
         $this->ensureCanManageMembers($user, $workspaceId);
 
         $targetUserId = new UserId(Uuid::fromString($id));
-        $this->workspaces->removeMember($workspaceId, $targetUserId);
+        $this->workspaces->removeMember($user->domainUser()->id(), $workspaceId, $targetUserId);
 
         return new JsonResponse(status: Response::HTTP_NO_CONTENT);
     }
