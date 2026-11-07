@@ -2,7 +2,7 @@ import type { RoadmapMilestone } from '../types';
 
 export const AUDIT_MILESTONE: RoadmapMilestone = {
   key: 'audit',
-  status: 'inProgress',
+  status: 'done',
   tasks: [
     {
       id: 'BL-AUDIT-001',
@@ -43,13 +43,15 @@ export const AUDIT_MILESTONE: RoadmapMilestone = {
       id: 'BL-AUDIT-006',
       description:
         'Sidebar menu item "Audit log" via MenuContributor (visible to super admin only).',
-      status: 'planned',
+      status: 'done',
+      commit: '8489f05',
     },
     {
       id: 'BL-AUDIT-007',
       description:
-        'UserManagement module registers UserManagementUndoer + UserManagementUndoDescriber for all 8 UM actions (user.created / .deactivated / .reactivated / .profile_updated, workspace_member.assigned / .removed / .role_changed). password_reset stays non-reversible.',
-      status: 'planned',
+        'UserManagement module registers UserManagementUndoer + UserManagementUndoDescriber for 6 reversible UM actions (user.created / .deactivated / .reactivated, workspace_member.assigned / .removed / .role_changed). profile_updated out of scope (no handler emits it yet); password_reset stays non-reversible. (Split: user actions 58a8052, workspace_member actions 672c8c2, describer ae2bb97.)',
+      status: 'done',
+      commit: 'ae2bb97',
     },
   ],
 };
