@@ -237,6 +237,74 @@
       "seeAll": "Zobacz wszystkie wpisy"
     }
   },
+  "audit": {
+    "breadcrumb": "Dziennik audytu",
+    "title": "Dziennik audytu",
+    "subtitle": "Wszystkie akcje administracyjne. Możesz filtrować i cofać wybrane wpisy.",
+    "loading": "Ładuję wpisy…",
+    "loadError": "Nie udało się załadować wpisów audytu.",
+    "listAria": "Tabela wpisów audytu",
+    "total": "Łącznie wpisów: {{count}}",
+    "filters": {
+      "ariaLabel": "Filtry dziennika audytu",
+      "actor": "Osoba wykonująca",
+      "actorAll": "Wszyscy",
+      "action": "Akcja",
+      "actionAll": "Wszystkie akcje",
+      "actionGroups": {
+        "user_management": "Zarządzanie użytkownikami",
+        "workspaces": "Workspace’y"
+      },
+      "resourceType": "Typ zasobu",
+      "resourceTypePlaceholder": "np. User",
+      "resourceId": "ID zasobu",
+      "resourceIdPlaceholder": "UUID zasobu",
+      "from": "Od",
+      "to": "Do",
+      "onlyReversible": "Tylko odwracalne",
+      "showUndone": "Pokaż cofnięte"
+    },
+    "columns": {
+      "actor": "Osoba",
+      "occurredAt": "Kiedy",
+      "action": "Akcja",
+      "resource": "Zasób",
+      "status": "Status",
+      "undo": "Cofnięcie"
+    },
+    "table": {
+      "empty": "Brak wpisów spełniających kryteria.",
+      "badgeActive": "aktywny",
+      "badgeUndone": "cofnięty",
+      "undoAction": "Cofnij",
+      "undoUnavailable": "—"
+    },
+    "actions": {
+      "user_management.user.created": "Utworzono użytkownika",
+      "user_management.user.deactivated": "Dezaktywowano użytkownika",
+      "user_management.user.reactivated": "Reaktywowano użytkownika",
+      "user_management.user.password_reset": "Zresetowano hasło",
+      "workspace_member.assigned": "Dodano członka workspace’a",
+      "workspace_member.role_changed": "Zmieniono rolę członka",
+      "workspace_member.removed": "Usunięto członka workspace’a"
+    },
+    "undoDialog": {
+      "title": "Cofnąć akcję?",
+      "summary": "Zamierzasz cofnąć: {{action}}.",
+      "describing": "Pobieram opis cofnięcia…",
+      "describeError": "Nie udało się pobrać opisu cofnięcia.",
+      "confirm": "Cofnij akcję",
+      "confirming": "Cofam…",
+      "errors": {
+        "notFound": "Wpis nie istnieje.",
+        "conflict": "Stan systemu uniemożliwia cofnięcie (ktoś zdążył wprowadzić inną zmianę).",
+        "alreadyUndone": "Ten wpis został już wcześniej cofnięty.",
+        "notSupported": "Ta akcja nie jest odwracalna.",
+        "forbidden": "Brak uprawnień do cofnięcia.",
+        "generic": "Nie udało się cofnąć akcji. Spróbuj ponownie."
+      }
+    }
+  },
   "dashboard": {
     "eyebrow": "Panel",
     "greeting": "Cześć, {{name}}",

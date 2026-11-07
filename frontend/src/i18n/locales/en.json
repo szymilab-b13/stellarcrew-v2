@@ -237,6 +237,74 @@
       "seeAll": "See all entries"
     }
   },
+  "audit": {
+    "breadcrumb": "Audit log",
+    "title": "Audit log",
+    "subtitle": "All administrative actions. Filter and undo selected entries.",
+    "loading": "Loading entries…",
+    "loadError": "Could not load audit entries.",
+    "listAria": "Audit entries table",
+    "total": "Total entries: {{count}}",
+    "filters": {
+      "ariaLabel": "Audit log filters",
+      "actor": "Actor",
+      "actorAll": "Everyone",
+      "action": "Action",
+      "actionAll": "All actions",
+      "actionGroups": {
+        "user_management": "User management",
+        "workspaces": "Workspaces"
+      },
+      "resourceType": "Resource type",
+      "resourceTypePlaceholder": "e.g. User",
+      "resourceId": "Resource ID",
+      "resourceIdPlaceholder": "Resource UUID",
+      "from": "From",
+      "to": "To",
+      "onlyReversible": "Reversible only",
+      "showUndone": "Show undone"
+    },
+    "columns": {
+      "actor": "Actor",
+      "occurredAt": "When",
+      "action": "Action",
+      "resource": "Resource",
+      "status": "Status",
+      "undo": "Undo"
+    },
+    "table": {
+      "empty": "No entries match the current filters.",
+      "badgeActive": "active",
+      "badgeUndone": "undone",
+      "undoAction": "Undo",
+      "undoUnavailable": "—"
+    },
+    "actions": {
+      "user_management.user.created": "Created user",
+      "user_management.user.deactivated": "Deactivated user",
+      "user_management.user.reactivated": "Reactivated user",
+      "user_management.user.password_reset": "Reset password",
+      "workspace_member.assigned": "Added workspace member",
+      "workspace_member.role_changed": "Changed member role",
+      "workspace_member.removed": "Removed workspace member"
+    },
+    "undoDialog": {
+      "title": "Undo this action?",
+      "summary": "You are about to undo: {{action}}.",
+      "describing": "Fetching undo description…",
+      "describeError": "Could not fetch the undo description.",
+      "confirm": "Undo action",
+      "confirming": "Undoing…",
+      "errors": {
+        "notFound": "Entry not found.",
+        "conflict": "Current system state prevents undo (someone else changed data).",
+        "alreadyUndone": "This entry has already been undone.",
+        "notSupported": "This action is not reversible.",
+        "forbidden": "You do not have permission to undo.",
+        "generic": "Could not undo the action. Please try again."
+      }
+    }
+  },
   "dashboard": {
     "eyebrow": "Dashboard",
     "greeting": "Welcome, {{name}}",
