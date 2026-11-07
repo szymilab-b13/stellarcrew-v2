@@ -43,15 +43,79 @@
     "sections": {
       "overview": "Przegląd",
       "workspaces": "Workspace’y",
+      "admin": "Administracja",
       "pinned": "Przypięte"
     },
     "items": {
       "dashboard": "Panel",
-      "workspaces": "Workspace’y"
+      "workspaces": "Workspace’y",
+      "users": "Użytkownicy"
     },
     "pinAdd": "Przypnij na górze",
     "pinRemove": "Odepnij",
     "pinLimit": "Maksymalnie {{limit}} przypiętych pozycji"
+  },
+  "userManagement": {
+    "breadcrumb": "Użytkownicy",
+    "title": "Użytkownicy",
+    "subtitle": "Zarządzaj wszystkimi użytkownikami tej instancji.",
+    "addUser": "Dodaj użytkownika",
+    "loading": "Ładuję użytkowników…",
+    "loadError": "Nie udało się załadować użytkowników.",
+    "listAria": "Tabela użytkowników",
+    "total": "Łącznie użytkowników: {{count}}",
+    "filters": {
+      "ariaLabel": "Filtry użytkowników",
+      "search": "Szukaj po e-mailu",
+      "searchPlaceholder": "np. admin@przykład.pl",
+      "workspace": "Workspace",
+      "workspaceAll": "Wszystkie workspace’y",
+      "hasSuperAdmin": "Super admin",
+      "hasSuperAdminAll": "Wszyscy użytkownicy",
+      "hasSuperAdminYes": "Tylko super adminowie",
+      "hasSuperAdminNo": "Tylko zwykli użytkownicy",
+      "onlyDeactivated": "Tylko dezaktywowani"
+    },
+    "columns": {
+      "email": "E-mail",
+      "superAdmin": "Super admin",
+      "workspaces": "Workspace’y",
+      "status": "Status",
+      "createdAt": "Utworzono"
+    },
+    "table": {
+      "empty": "Brak użytkowników dla obecnych filtrów.",
+      "badgeSuperAdmin": "Super admin",
+      "badgeRegular": "Zwykły",
+      "statusActive": "Aktywny",
+      "statusDeactivated": "Dezaktywowany"
+    },
+    "addDialog": {
+      "title": "Dodaj użytkownika",
+      "email": "E-mail",
+      "password": "Hasło",
+      "passwordHint": "Co najmniej 12 znaków.",
+      "passwordConfirm": "Powtórz hasło",
+      "isSuperAdmin": "Nadaj uprawnienia super admina",
+      "submit": "Utwórz",
+      "errors": {
+        "email": {
+          "invalid": "Podaj poprawny adres e-mail."
+        },
+        "password": {
+          "tooShort": "Hasło musi mieć co najmniej 12 znaków."
+        },
+        "passwordConfirm": {
+          "mismatch": "Hasła się różnią."
+        },
+        "server": {
+          "validation": "Serwer odrzucił przesłane dane.",
+          "emailTaken": "Ten e-mail jest już zajęty.",
+          "forbidden": "Tylko super admin może dodawać użytkowników.",
+          "generic": "Coś poszło nie tak. Spróbuj ponownie."
+        }
+      }
+    }
   },
   "workspaceSwitcher": {
     "label": "Workspace",

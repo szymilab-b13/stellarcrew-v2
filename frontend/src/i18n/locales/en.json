@@ -43,15 +43,79 @@
     "sections": {
       "overview": "Overview",
       "workspaces": "Workspaces",
+      "admin": "Administration",
       "pinned": "Pinned"
     },
     "items": {
       "dashboard": "Dashboard",
-      "workspaces": "Workspaces"
+      "workspaces": "Workspaces",
+      "users": "Users"
     },
     "pinAdd": "Pin to top",
     "pinRemove": "Unpin",
     "pinLimit": "Up to {{limit}} pinned items"
+  },
+  "userManagement": {
+    "breadcrumb": "Users",
+    "title": "Users",
+    "subtitle": "Manage every user in this instance.",
+    "addUser": "Add user",
+    "loading": "Loading users…",
+    "loadError": "Could not load users.",
+    "listAria": "Users table",
+    "total": "{{count}} users total",
+    "filters": {
+      "ariaLabel": "User filters",
+      "search": "Search by email",
+      "searchPlaceholder": "e.g. admin@example.com",
+      "workspace": "Workspace",
+      "workspaceAll": "All workspaces",
+      "hasSuperAdmin": "Super admin",
+      "hasSuperAdminAll": "All users",
+      "hasSuperAdminYes": "Only super admins",
+      "hasSuperAdminNo": "Only regular users",
+      "onlyDeactivated": "Only deactivated"
+    },
+    "columns": {
+      "email": "Email",
+      "superAdmin": "Super admin",
+      "workspaces": "Workspaces",
+      "status": "Status",
+      "createdAt": "Created"
+    },
+    "table": {
+      "empty": "No users match the current filters.",
+      "badgeSuperAdmin": "Super admin",
+      "badgeRegular": "Regular",
+      "statusActive": "Active",
+      "statusDeactivated": "Deactivated"
+    },
+    "addDialog": {
+      "title": "Add user",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 12 characters.",
+      "passwordConfirm": "Confirm password",
+      "isSuperAdmin": "Grant super admin",
+      "submit": "Create",
+      "errors": {
+        "email": {
+          "invalid": "Enter a valid email address."
+        },
+        "password": {
+          "tooShort": "Password must have at least 12 characters."
+        },
+        "passwordConfirm": {
+          "mismatch": "Passwords do not match."
+        },
+        "server": {
+          "validation": "The server rejected the submitted values.",
+          "emailTaken": "This email is already in use.",
+          "forbidden": "Only super admins can create users.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
+    }
   },
   "workspaceSwitcher": {
     "label": "Workspace",
