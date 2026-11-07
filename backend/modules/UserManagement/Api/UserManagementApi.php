@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Modules\UserManagement\Api;
 
 use Modules\Shared\Kernel\UserId;
+use Modules\UserManagement\Api\Dto\UserListItemDto;
+use Modules\UserManagement\Api\Dto\UserListPage;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
 use Modules\UserManagement\Api\Exception\EmailTakenException;
+use Modules\UserManagement\Application\Query\UserListFilters;
 
 interface UserManagementApi
 {
@@ -25,4 +28,11 @@ interface UserManagementApi
         bool $isSuperAdmin = false,
         ?string $displayName = null,
     ): UserProfileDto;
+
+    public function listAllUsers(UserListFilters $filters): UserListPage;
+
+    /**
+     * @return list<UserListItemDto>
+     */
+    public function listUsersVisibleTo(UserId $viewerId, ?string $q = null): array;
 }

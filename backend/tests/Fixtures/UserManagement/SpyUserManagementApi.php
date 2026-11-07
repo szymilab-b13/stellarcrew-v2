@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Fixtures\UserManagement;
 
 use Modules\Shared\Kernel\UserId;
+use Modules\UserManagement\Api\Dto\UserListPage;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
 use Modules\UserManagement\Api\UserManagementApi;
+use Modules\UserManagement\Application\Query\UserListFilters;
 use Modules\UserManagement\Domain\AvatarColorPicker;
 
 final class SpyUserManagementApi implements UserManagementApi
@@ -59,5 +61,17 @@ final class SpyUserManagementApi implements UserManagementApi
             avatarColor: AvatarColorPicker::pick($email),
             isDeactivated: false,
         );
+    }
+
+    public function listAllUsers(UserListFilters $filters): UserListPage
+    {
+        return new UserListPage([], 0, $filters->page, $filters->perPage);
+    }
+
+    public function listUsersVisibleTo(UserId $viewerId, ?string $q = null): array
+    {
+        unset($viewerId, $q);
+
+        return [];
     }
 }

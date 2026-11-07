@@ -75,6 +75,9 @@ services:
     Modules\UserManagement\Domain\UserProfileRepository:
         alias: Modules\UserManagement\Infrastructure\Doctrine\Repository\DoctrineUserProfileRepository
 
+    Modules\UserManagement\Application\ReadModel\UserProfileReadModel:
+        alias: Modules\UserManagement\Infrastructure\ReadModel\DbalUserProfileReadModel
+
     Modules\UserManagement\Api\UserManagementApi:
         alias: Modules\UserManagement\Infrastructure\Api\DefaultUserManagementApi
 
@@ -94,6 +97,7 @@ when@test:
         App\Tests\Fixtures\Auth\InMemoryUserRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository: ~
+        App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel: ~
 
         Modules\Core\Domain\SystemSettingRepository:
             alias: App\Tests\Fixtures\Core\InMemorySystemSettingRepository
@@ -112,6 +116,9 @@ when@test:
 
         Modules\UserManagement\Domain\UserProfileRepository:
             alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository
+
+        Modules\UserManagement\Application\ReadModel\UserProfileReadModel:
+            alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel
 
         # swap real health checks with always-healthy fakes so endpoint tests do not require live infrastructure
         Modules\Core\Infrastructure\HealthCheck\DbHealthCheck:
