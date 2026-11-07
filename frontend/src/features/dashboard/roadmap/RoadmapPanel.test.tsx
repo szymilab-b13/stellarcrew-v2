@@ -139,4 +139,42 @@ describe('RoadmapPanel', () => {
     expect(screen.queryByText(/BL-AI-/i)).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /BL-AI-/i })).not.toBeInTheDocument();
   });
+
+  it('should render the AUTH refresh tokens milestone as planned with its BL-AUTH-004/005 tasks and no commit links', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/AUTH refresh tokens — rotation \+ revocation/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText('BL-AUTH-004')).toBeInTheDocument();
+    expect(screen.getByText('BL-AUTH-005')).toBeInTheDocument();
+
+    const description = screen.getByText(/Short-lived access/i);
+    expect(description).not.toHaveClass('line-through');
+    expect(screen.queryByRole('link', { name: /BL-AUTH-00[45]/i })).not.toBeInTheDocument();
+  });
+
+  it('should render the CHAT milestone as tbd with a dependency note and no tasks', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/CHAT — conversations between user and agents/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText(/Depends on AGENTS and WORKSPACES/i)).toBeInTheDocument();
+    expect(screen.queryByText(/BL-CHAT-/i)).not.toBeInTheDocument();
+  });
+
+  it('should render non-milestone threads as planned with BL-DX and BL-DOC tasks', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/Non-milestone threads — DX and documentation/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText('BL-DX-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-DOC-001')).toBeInTheDocument();
+
+    const description = screen.getByText(/ad-hoc fake health checks/i);
+    expect(description).not.toHaveClass('line-through');
+    expect(screen.queryByRole('link', { name: /BL-(DX|DOC)-/i })).not.toBeInTheDocument();
+  });
 });

@@ -111,6 +111,15 @@
       },
       "aiEngine": {
         "title": "AI ENGINE — model orchestration, memory strategy"
+      },
+      "authRefresh": {
+        "title": "AUTH refresh tokens — rotacja + revokacja"
+      },
+      "chat": {
+        "title": "CHAT — rozmowy użytkownika z agentami"
+      },
+      "threads": {
+        "title": "Wątki pozamilestone’owe — DX i dokumentacja"
       }
     }
   },
