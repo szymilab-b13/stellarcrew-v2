@@ -20,8 +20,7 @@ export const AUTH_MILESTONE: RoadmapMilestone = {
     },
     {
       id: 'BL-AUTH-003',
-      description:
-        'Home-page route guard, topbar greeting with current user and Logout action.',
+      description: 'Home-page route guard, topbar greeting with current user and Logout action.',
       status: 'done',
       commit: 'c05505c',
     },

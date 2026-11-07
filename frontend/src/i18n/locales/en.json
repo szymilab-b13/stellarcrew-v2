@@ -102,6 +102,9 @@
       },
       "workspaces": {
         "title": "WORKSPACES — multi-tenant workspaces"
+      },
+      "permissions": {
+        "title": "PERMISSIONS — fine-grained per-workspace access"
       }
     }
   },

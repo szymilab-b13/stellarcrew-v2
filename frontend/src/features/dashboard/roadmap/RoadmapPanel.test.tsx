@@ -97,4 +97,19 @@ describe('RoadmapPanel', () => {
     const description = screen.getByText(/Workspaces module/i);
     expect(description).toHaveClass('line-through');
   });
+
+  it('should render the PERMISSIONS milestone as planned with its BL-PERM tasks and no commit links', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/PERMISSIONS — fine-grained per-workspace access/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText('BL-PERM-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-PERM-002')).toBeInTheDocument();
+    expect(screen.getByText('BL-PERM-003')).toBeInTheDocument();
+
+    const description = screen.getByText(/Permission enum per module/i);
+    expect(description).not.toHaveClass('line-through');
+    expect(screen.queryByRole('link', { name: /BL-PERM-/i })).not.toBeInTheDocument();
+  });
 });
