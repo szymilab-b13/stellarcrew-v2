@@ -228,11 +228,19 @@ function resolveServerErrorMessage(
   if (!error) {
     return null;
   }
-  if (error.status === 400) {
-    return t('api.serverRejected');
-  }
   if (error.status === 404) {
     return t('api.alreadyInstalledMessage');
   }
+  if (error.status === 400 || error.status === 422) {
+    return extractBackendMessage(error.body) ?? t('api.serverRejected');
+  }
   return t('api.genericError');
+}
+
+function extractBackendMessage(body: unknown): string | null {
+  if (typeof body !== 'object' || body === null) return null;
+  const error = (body as { error?: unknown }).error;
+  if (typeof error !== 'object' || error === null) return null;
+  const message = (error as { message?: unknown }).message;
+  return typeof message === 'string' && message.length > 0 ? message : null;
 }

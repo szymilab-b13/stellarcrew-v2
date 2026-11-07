@@ -164,6 +164,33 @@ describe('InstallWizard', () => {
     expect(sentForm.get('locale')).toBe('en');
   });
 
+  it('should send selected agents as repeated agents[] entries so Symfony maps them to an array', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(mockResponse({ body: { is_installed: false } }))
+      .mockResolvedValueOnce(mockResponse({ status: 201, body: { ok: true } }));
+
+    render(<InstallWizard />, { wrapper: createWrapper() });
+    const user = userEvent.setup();
+
+    await fillValidAdminStep(user);
+    await clickContinue(user);
+    await clickContinue(user);
+    await clickContinue(user);
+    await user.type(await screen.findByLabelText(/workspace name\s*\*?$/i), 'Acme HQ');
+    await user.click(screen.getByLabelText(/include maja/i));
+    await user.click(screen.getByLabelText(/include luna/i));
+    await clickContinue(user);
+    await user.click(screen.getByRole('button', { name: /finish setup/i }));
+
+    await waitFor(() => {
+      expect(vi.mocked(fetch)).toHaveBeenCalledTimes(2);
+    });
+
+    const sentForm = (vi.mocked(fetch).mock.calls[1][1] as RequestInit).body as FormData;
+    expect(sentForm.getAll('agents[]')).toEqual(['maja', 'luna']);
+    expect(sentForm.get('agents')).toBeNull();
+  });
+
   it('should show a server error message when the install endpoint returns 400', async () => {
     vi.mocked(fetch)
       .mockResolvedValueOnce(mockResponse({ body: { is_installed: false } }))
@@ -182,6 +209,38 @@ describe('InstallWizard', () => {
 
     expect(await screen.findByText(/server rejected the submitted values/i)).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: /you are all set/i })).not.toBeInTheDocument();
+  });
+
+  it('should surface the backend validation message when the install endpoint returns 422', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(mockResponse({ body: { is_installed: false } }))
+      .mockResolvedValueOnce(
+        mockResponse({
+          status: 422,
+          body: {
+            error: {
+              code: 'HTTP_422',
+              message: 'password must be at least 10 characters long',
+            },
+          },
+        }),
+      );
+
+    render(<InstallWizard />, { wrapper: createWrapper() });
+    const user = userEvent.setup();
+
+    await fillValidAdminStep(user);
+    await clickContinue(user);
+    await clickContinue(user);
+    await clickContinue(user);
+    await user.type(await screen.findByLabelText(/workspace name\s*\*?$/i), 'Acme HQ');
+    await clickContinue(user);
+    await user.click(screen.getByRole('button', { name: /finish setup/i }));
+
+    expect(
+      await screen.findByText(/password must be at least 10 characters long/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/something went wrong/i)).not.toBeInTheDocument();
   });
 
   it('should show an API-unavailable notice when the status endpoint fails', async () => {

@@ -60,6 +60,13 @@ services:
     Modules\Auth\Api\AuthApi:
         alias: Modules\Auth\Infrastructure\DefaultAuthApi
 
+    # Workspaces module bindings
+    Modules\Workspaces\Domain\WorkspaceRepository:
+        alias: Modules\Workspaces\Infrastructure\Doctrine\Repository\DoctrineWorkspaceRepository
+
+    Modules\Workspaces\Api\WorkspacesApi:
+        alias: Modules\Workspaces\Infrastructure\Api\DefaultWorkspacesApi
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
@@ -73,6 +80,7 @@ when@test:
         App\Tests\Fixtures\Core\InMemorySystemSettingRepository: ~
         App\Tests\Fixtures\Auth\SpyAuthApi: ~
         App\Tests\Fixtures\Auth\InMemoryUserRepository: ~
+        App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~
 
         Modules\Core\Domain\SystemSettingRepository:
             alias: App\Tests\Fixtures\Core\InMemorySystemSettingRepository
@@ -82,6 +90,9 @@ when@test:
 
         Modules\Auth\Domain\UserRepository:
             alias: App\Tests\Fixtures\Auth\InMemoryUserRepository
+
+        Modules\Workspaces\Domain\WorkspaceRepository:
+            alias: App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository
 
         # swap real health checks with always-healthy fakes so endpoint tests do not require live infrastructure
         Modules\Core\Infrastructure\HealthCheck\DbHealthCheck:

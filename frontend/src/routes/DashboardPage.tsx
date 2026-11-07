@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { useMe } from '@/features/auth/api/useMe';
+import { RoadmapPanel } from '@/features/dashboard';
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -10,9 +11,6 @@ export function DashboardPage() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-10">
       <header className="flex flex-col gap-2">
-        <span className="text-xs font-semibold uppercase tracking-widest text-sc-text-muted">
-          {t('dashboard.eyebrow')}
-        </span>
         <h1 className="text-3xl font-semibold tracking-tight">
           {t('dashboard.greeting', { name: displayName })}
         </h1>
@@ -24,10 +22,7 @@ export function DashboardPage() {
         <p className="mt-2 text-sm text-sc-text-muted">{t('dashboard.widgets.whatNow.body')}</p>
       </section>
 
-      <section className="rounded-lg border border-sc-border bg-sc-bg-secondary p-5">
-        <h2 className="text-lg font-medium">{t('dashboard.widgets.roadmap.title')}</h2>
-        <p className="mt-2 text-sm text-sc-text-muted">{t('dashboard.widgets.roadmap.body')}</p>
-      </section>
+      <RoadmapPanel />
     </div>
   );
 }

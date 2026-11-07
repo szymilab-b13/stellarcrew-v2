@@ -10,4 +10,5 @@ return [
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
     Modules\Core\Infrastructure\Bundle\CoreBundle::class => ['all' => true],
     Modules\Auth\Infrastructure\Bundle\AuthBundle::class => ['all' => true],
+    Modules\Workspaces\Infrastructure\Bundle\WorkspacesBundle::class => ['all' => true],
 ];
