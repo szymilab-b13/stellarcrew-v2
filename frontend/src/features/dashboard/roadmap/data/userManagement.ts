@@ -77,8 +77,9 @@ export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
     {
       id: 'BL-UM-011',
       description:
-        'Deactivate / reactivate account: endpoints + UI confirm modals + AuthApi::markDeactivated / markReactivated + audit logs (both reversible).',
-      status: 'planned',
+        'Deactivate / reactivate account: endpoints + UI confirm modals + AuthApi::markDeactivated / markReactivated + audit logs (both reversible). (Split: Auth side eca06e2, UM commands 08026e5, FE UserAccountSection e985af9.)',
+      status: 'done',
+      commit: 'e985af9',
     },
     {
       id: 'BL-UM-012',
