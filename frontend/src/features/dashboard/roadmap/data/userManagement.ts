@@ -76,5 +76,11 @@ export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
         'Reset password (super admin): endpoint + AuthApi::setPassword + UI modal with password+confirm fields + audit log (non-reversible, no password in before_state).',
       status: 'tbd',
     },
+    {
+      id: 'BL-UM-013',
+      description:
+        'List row actions burger menu on /admin/users: MoreHorizontal trigger + dropdown role="menu" (styled as UserMenu from topbar) with two actions — Details (Eye icon, navigates to /admin/users/{id}) and Deactivate/Reactivate (UserX/UserCheck icon, opens reused DeactivationConfirmDialog). FT-UM-002 reopened to in-progress.',
+      status: 'planned',
+    },
   ],
 };
