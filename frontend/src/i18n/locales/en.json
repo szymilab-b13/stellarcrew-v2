@@ -81,14 +81,22 @@
       "superAdmin": "Super admin",
       "workspaces": "Workspaces",
       "status": "Status",
-      "createdAt": "Created"
+      "createdAt": "Created",
+      "actions": "Actions"
     },
     "table": {
       "empty": "No users match the current filters.",
       "badgeSuperAdmin": "Super admin",
       "badgeRegular": "Regular",
       "statusActive": "Active",
-      "statusDeactivated": "Deactivated"
+      "statusDeactivated": "Deactivated",
+      "rowActionsAria": "Actions for user {{email}}"
+    },
+    "row": {
+      "actionDetails": "Details",
+      "actionDeactivate": "Deactivate",
+      "actionReactivate": "Reactivate",
+      "actionResetPassword": "Reset password"
     },
     "addDialog": {
       "title": "Add user",

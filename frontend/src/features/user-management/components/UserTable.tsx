@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 
 import type { UserListItem } from '../types';
 
+import { UserRowActionsMenu } from './UserRowActionsMenu';
+
 interface UserTableProps {
   users: UserListItem[];
 }
@@ -33,12 +35,15 @@ export function UserTable({ users }: UserTableProps) {
             <th scope="col" className="px-4 py-3 font-semibold">
               {t('userManagement.columns.createdAt')}
             </th>
+            <th scope="col" className="px-4 py-3 text-right font-semibold">
+              <span className="sr-only">{t('userManagement.columns.actions')}</span>
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-sc-border">
           {users.length === 0 ? (
             <tr>
-              <td colSpan={5} className="px-4 py-6 text-center text-sm text-sc-text-muted">
+              <td colSpan={6} className="px-4 py-6 text-center text-sm text-sc-text-muted">
                 {t('userManagement.table.empty')}
               </td>
             </tr>
@@ -71,6 +76,13 @@ export function UserTable({ users }: UserTableProps) {
               </td>
               <td className="px-4 py-3 text-sc-text-muted">
                 {dateFormatter.format(new Date(user.createdAt))}
+              </td>
+              <td className="px-4 py-3 text-right">
+                <UserRowActionsMenu
+                  userId={user.id}
+                  email={user.email}
+                  isDeactivated={user.deactivatedAt !== null}
+                />
               </td>
             </tr>
           ))}

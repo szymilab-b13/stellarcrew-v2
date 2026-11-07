@@ -81,14 +81,22 @@
       "superAdmin": "Super admin",
       "workspaces": "Workspace’y",
       "status": "Status",
-      "createdAt": "Utworzono"
+      "createdAt": "Utworzono",
+      "actions": "Akcje"
     },
     "table": {
       "empty": "Brak użytkowników dla obecnych filtrów.",
       "badgeSuperAdmin": "Super admin",
       "badgeRegular": "Zwykły",
       "statusActive": "Aktywny",
-      "statusDeactivated": "Dezaktywowany"
+      "statusDeactivated": "Dezaktywowany",
+      "rowActionsAria": "Akcje dla użytkownika {{email}}"
+    },
+    "row": {
+      "actionDetails": "Detale",
+      "actionDeactivate": "Dezaktywuj",
+      "actionReactivate": "Aktywuj",
+      "actionResetPassword": "Resetuj hasło"
     },
     "addDialog": {
       "title": "Dodaj użytkownika",
