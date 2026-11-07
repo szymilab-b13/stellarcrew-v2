@@ -36,7 +36,8 @@ export const AUDIT_MILESTONE: RoadmapMilestone = {
       id: 'BL-AUDIT-005',
       description:
         'UI /admin/audit: table + filters (actor autocomplete, action select grouped per module, resource, date range) + undo button + confirm modal with UndoDescriber output + i18n pl/en.',
-      status: 'planned',
+      status: 'done',
+      commit: 'b610bb1',
     },
     {
       id: 'BL-AUDIT-006',
