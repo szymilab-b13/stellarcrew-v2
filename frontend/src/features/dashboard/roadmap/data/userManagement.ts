@@ -88,5 +88,12 @@ export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
       status: 'done',
       commit: '2160915',
     },
+    {
+      id: 'BL-UM-013',
+      description:
+        'List row actions burger menu on /admin/users: MoreHorizontal trigger + dropdown role="menu" (styled as UserMenu from topbar) with three actions — Details (Eye icon, navigates to /admin/users/{id}), Deactivate/Reactivate (UserX/UserCheck icon, opens reused DeactivationConfirmDialog) and Reset password (KeyRound icon, opens reused ResetPasswordDialog). 8 vitest green.',
+      status: 'done',
+      commit: '5908052',
+    },
   ],
 };
