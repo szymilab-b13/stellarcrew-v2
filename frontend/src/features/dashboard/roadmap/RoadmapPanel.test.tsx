@@ -1,0 +1,40 @@
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it } from 'vitest';
+
+import { RoadmapPanel } from './RoadmapPanel';
+
+describe('RoadmapPanel', () => {
+  it('should render each milestone collapsed by default', () => {
+    render(<RoadmapPanel />);
+
+    const details = screen.getAllByRole('group');
+    expect(details.length).toBeGreaterThan(0);
+    for (const node of details) {
+      expect(node).not.toHaveAttribute('open');
+    }
+  });
+
+  it('should expand a milestone to reveal its tasks when clicked', async () => {
+    render(<RoadmapPanel />);
+
+    await userEvent.click(screen.getByText(/CORE — platform foundation/i));
+
+    expect(screen.getByText(/BL-CORE-002/)).toBeInTheDocument();
+    expect(screen.getByText(/HealthController/i)).toBeInTheDocument();
+  });
+
+  it('should render done tasks with a strikethrough and a linked commit hash', async () => {
+    render(<RoadmapPanel />);
+    await userEvent.click(screen.getByText(/CORE — platform foundation/i));
+
+    const commitLink = screen.getByRole('link', { name: /f52b949/ });
+    expect(commitLink).toHaveAttribute(
+      'href',
+      'https://github.com/Nessandro/stellarcrew-v2-private/commit/f52b949',
+    );
+
+    const description = screen.getByText(/User moved from Core to Auth/i);
+    expect(description).toHaveClass('line-through');
+  });
+});

@@ -80,6 +80,22 @@
     "aria": "Nawigacja okruszkowa",
     "home": "Strona główna"
   },
+  "roadmap": {
+    "title": "Mapa drogowa",
+    "subtitle": "Milestony i zadania — domyślnie zwinięte.",
+    "emptyTasks": "Zakres do ustalenia z Szefem.",
+    "statuses": {
+      "done": "Zrobione",
+      "inProgress": "W toku",
+      "planned": "Zaplanowane",
+      "tbd": "Do omówienia"
+    },
+    "milestones": {
+      "core": {
+        "title": "CORE — fundament platformy"
+      }
+    }
+  },
   "workspaces": {
     "breadcrumb": "Workspace’y",
     "title": "Workspace’y",

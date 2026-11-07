@@ -80,6 +80,22 @@
     "aria": "Breadcrumbs",
     "home": "Home"
   },
+  "roadmap": {
+    "title": "Roadmap",
+    "subtitle": "Milestones and tasks — collapsed by default.",
+    "emptyTasks": "No tasks yet — scope to be confirmed with Szef.",
+    "statuses": {
+      "done": "Done",
+      "inProgress": "In progress",
+      "planned": "Planned",
+      "tbd": "To discuss"
+    },
+    "milestones": {
+      "core": {
+        "title": "CORE — platform foundation"
+      }
+    }
+  },
   "workspaces": {
     "breadcrumb": "Workspaces",
     "title": "Workspaces",
