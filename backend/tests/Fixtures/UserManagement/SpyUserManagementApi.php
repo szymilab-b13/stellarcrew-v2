@@ -20,6 +20,12 @@ final class SpyUserManagementApi implements UserManagementApi
     /** @var list<array{email: string, password: string, isSuperAdmin: bool, displayName: ?string}> */
     public array $createUserCalls = [];
 
+    /** @var list<UserId> */
+    public array $deactivateCalls = [];
+
+    /** @var list<UserId> */
+    public array $reactivateCalls = [];
+
     public function createProfileForUser(UserId $userId, string $email, ?string $displayName = null): UserProfileDto
     {
         $this->createProfileCalls[] = [
@@ -81,5 +87,15 @@ final class SpyUserManagementApi implements UserManagementApi
         unset($userId);
 
         return null;
+    }
+
+    public function deactivateUser(UserId $userId): void
+    {
+        $this->deactivateCalls[] = $userId;
+    }
+
+    public function reactivateUser(UserId $userId): void
+    {
+        $this->reactivateCalls[] = $userId;
     }
 }

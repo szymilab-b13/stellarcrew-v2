@@ -10,6 +10,7 @@ use Modules\UserManagement\Api\Dto\UserListItemDto;
 use Modules\UserManagement\Api\Dto\UserListPage;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
 use Modules\UserManagement\Api\Exception\EmailTakenException;
+use Modules\UserManagement\Api\Exception\UserProfileNotFoundException;
 use Modules\UserManagement\Application\Query\UserListFilters;
 
 interface UserManagementApi
@@ -38,4 +39,18 @@ interface UserManagementApi
      * @return list<UserListItemDto>
      */
     public function listUsersVisibleTo(UserId $viewerId, ?string $q = null): array;
+
+    /**
+     * Idempotent: no-op when the profile is already deactivated.
+     *
+     * @throws UserProfileNotFoundException
+     */
+    public function deactivateUser(UserId $userId): void;
+
+    /**
+     * Idempotent: no-op when the profile is already active.
+     *
+     * @throws UserProfileNotFoundException
+     */
+    public function reactivateUser(UserId $userId): void;
 }
