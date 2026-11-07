@@ -27,7 +27,7 @@ export function AdminUserDetailPage() {
   const user = detail.data;
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex w-full flex-col gap-6">
       <nav className="text-xs text-sc-text-muted" aria-label="breadcrumb">
         <Link to="/admin/users" className="hover:underline">
           {t('adminUserDetail.breadcrumb.users')}
