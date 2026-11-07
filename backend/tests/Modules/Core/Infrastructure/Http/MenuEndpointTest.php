@@ -58,10 +58,17 @@ final class MenuEndpointTest extends WebTestCase
 
         $admin = $payload['sections'][2];
         self::assertSame('menu.sections.admin', $admin['labelKey']);
-        self::assertSame('admin.users', $admin['items'][0]['id']);
+
+        $adminItemIds = array_map(static fn (array $item): string => $item['id'], $admin['items']);
+        self::assertSame(['admin.users', 'admin.audit'], $adminItemIds);
+
         self::assertSame('menu.items.users', $admin['items'][0]['labelKey']);
         self::assertSame('/admin/users', $admin['items'][0]['path']);
         self::assertSame('Users', $admin['items'][0]['icon']);
+
+        self::assertSame('menu.items.auditLog', $admin['items'][1]['labelKey']);
+        self::assertSame('/admin/audit', $admin['items'][1]['path']);
+        self::assertSame('ScrollText', $admin['items'][1]['icon']);
     }
 
     public function testShouldHideAdminSectionForNonAdmin(): void
