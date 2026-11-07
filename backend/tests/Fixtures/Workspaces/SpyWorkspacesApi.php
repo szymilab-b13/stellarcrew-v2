@@ -93,6 +93,49 @@ final class SpyWorkspacesApi implements WorkspacesApi
         return $this->getMembership($workspaceId, $userId);
     }
 
+    /** @var list<UserId> */
+    public array $removeAllMembershipsOfCalls = [];
+
+    public function removeAllMembershipsOf(UserId $userId): void
+    {
+        $this->removeAllMembershipsOfCalls[] = $userId;
+    }
+
+    /** @var list<array{workspaceId: WorkspaceId, userId: UserId}> */
+    public array $removeMembershipAsSystemCalls = [];
+
+    public function removeMembershipAsSystem(WorkspaceId $workspaceId, UserId $userId): void
+    {
+        $this->removeMembershipAsSystemCalls[] = [
+            'workspaceId' => $workspaceId,
+            'userId' => $userId,
+        ];
+    }
+
+    /** @var list<array{workspaceId: WorkspaceId, userId: UserId, role: string}> */
+    public array $restoreMembershipAsSystemCalls = [];
+
+    public function restoreMembershipAsSystem(WorkspaceId $workspaceId, UserId $userId, string $role): void
+    {
+        $this->restoreMembershipAsSystemCalls[] = [
+            'workspaceId' => $workspaceId,
+            'userId' => $userId,
+            'role' => $role,
+        ];
+    }
+
+    /** @var list<array{workspaceId: WorkspaceId, userId: UserId, role: string}> */
+    public array $setMembershipRoleAsSystemCalls = [];
+
+    public function setMembershipRoleAsSystem(WorkspaceId $workspaceId, UserId $userId, string $role): void
+    {
+        $this->setMembershipRoleAsSystemCalls[] = [
+            'workspaceId' => $workspaceId,
+            'userId' => $userId,
+            'role' => $role,
+        ];
+    }
+
     public function membershipFor(UserId $userId, WorkspaceRole $role): MembershipView
     {
         return new MembershipView(

@@ -6,6 +6,10 @@ namespace Modules\Core\Infrastructure\Http;
 
 use function array_slice;
 
+use Modules\Audit\Api\Exception\AuditEntryAlreadyUndoneException;
+use Modules\Audit\Api\Exception\AuditEntryNotFoundException;
+use Modules\Audit\Api\Exception\UndoConflictException;
+use Modules\Audit\Api\Exception\UndoNotSupportedException;
 use Modules\Core\Application\Install\InvalidInstallInputException;
 use Modules\Core\Application\Install\SystemAlreadyInstalledException;
 use Modules\UserManagement\Api\Exception\EmailTakenException as UserManagementEmailTakenException;
@@ -110,6 +114,22 @@ final readonly class ExceptionListener
 
         if ($throwable instanceof MemberNotFoundException) {
             return [Response::HTTP_NOT_FOUND, 'NOT_FOUND', null];
+        }
+
+        if ($throwable instanceof AuditEntryNotFoundException) {
+            return [Response::HTTP_NOT_FOUND, 'NOT_FOUND', null];
+        }
+
+        if ($throwable instanceof AuditEntryAlreadyUndoneException) {
+            return [Response::HTTP_GONE, 'ALREADY_UNDONE', null];
+        }
+
+        if ($throwable instanceof UndoNotSupportedException) {
+            return [Response::HTTP_UNPROCESSABLE_ENTITY, 'UNDO_NOT_SUPPORTED', null];
+        }
+
+        if ($throwable instanceof UndoConflictException) {
+            return [Response::HTTP_CONFLICT, 'UNDO_CONFLICT', ['conflict_code' => $throwable->conflictCode()]];
         }
 
         if ($throwable instanceof AuthenticationException) {

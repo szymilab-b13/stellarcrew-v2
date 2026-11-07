@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppLayout } from './components/app/AppLayout';
 import { InstallGate } from './components/app/InstallGate';
 import { LoginPage } from './features/auth';
+import { AdminAuditPage } from './features/audit';
 import { AdminUserDetailPage, AdminUsersPage } from './features/user-management';
 import { CurrentWorkspaceGuard } from './features/workspaces/components/CurrentWorkspaceGuard';
 import { MembersSettingsPage } from './features/workspaces/settings';
@@ -29,6 +30,7 @@ export function App() {
             <Route element={<RequireSuperAdmin />}>
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
+              <Route path="/admin/audit" element={<AdminAuditPage />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

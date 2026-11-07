@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Modules\Audit\Infrastructure\Service;
 
 use function array_key_exists;
+
+use DateTimeImmutable;
+
 use function is_array;
 
 use LogicException;
@@ -13,14 +16,21 @@ use Modules\Audit\Api\AuditEntryWithState;
 use Modules\Audit\Api\Dto\AuditEntryDto;
 use Modules\Audit\Api\Dto\AuditPage;
 use Modules\Audit\Api\Dto\AuditQuery;
+use Modules\Audit\Api\Exception\AuditEntryAlreadyUndoneException;
+use Modules\Audit\Api\Exception\AuditEntryNotFoundException;
+use Modules\Audit\Api\Exception\UndoNotSupportedException;
+use Modules\Audit\Api\UndoDescriberInterface;
 use Modules\Audit\Application\ReadModel\AuditEntriesReadModel;
 use Modules\Audit\Domain\AuditLogEntry;
 use Modules\Audit\Domain\AuditLogEntryRepository;
 use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Shared\Kernel\AuditEntryId;
+use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\UuidGenerator;
+
+use function sprintf;
 
 final readonly class AuditService implements AuditApi, AuditLoggerInterface
 {
@@ -28,6 +38,8 @@ final readonly class AuditService implements AuditApi, AuditLoggerInterface
         private AuditLogEntryRepository $repository,
         private AuditEntriesReadModel $readModel,
         private UuidGenerator $uuidGenerator,
+        private UndoDispatcher $undoDispatcher,
+        private Clock $clock,
     ) {
     }
 
@@ -93,12 +105,44 @@ final readonly class AuditService implements AuditApi, AuditLoggerInterface
 
     public function undo(AuditEntryId $id, UserId $performedBy): AuditEntryId
     {
-        throw new LogicException('Audit undo is not implemented yet (BL-AUDIT-004).');
+        $entry = $this->repository->findById($id) ?? throw AuditEntryNotFoundException::forId($id);
+
+        if ($entry->undoneAt() instanceof DateTimeImmutable) {
+            throw AuditEntryAlreadyUndoneException::forId($id);
+        }
+
+        $undoer = $this->undoDispatcher->findUndoerFor($entry->action())
+            ?? throw UndoNotSupportedException::forAction($entry->action());
+
+        $entryDto = $this->toDto($entry);
+        $undoer->undo($entryDto, $performedBy);
+
+        $now = $this->clock->now();
+        $entry->markUndone($now, $performedBy);
+        $this->repository->save($entry);
+
+        return $this->record(new AuditEntryWithState(
+            actorUserId: $performedBy,
+            action: $entry->action() . '.undone',
+            occurredAt: $now,
+            resourceType: $entry->resourceType(),
+            resourceId: $entry->resourceId(),
+            metadata: ['original_action' => $entry->action()],
+            revertsEntryId: $entry->id(),
+        ));
     }
 
     public function describeUndo(AuditEntryId $id): string
     {
-        throw new LogicException('Audit undo describe is not implemented yet (BL-AUDIT-004).');
+        $entry = $this->repository->findById($id) ?? throw AuditEntryNotFoundException::forId($id);
+
+        $describer = $this->undoDispatcher->findDescriberFor($entry->action());
+
+        if (!$describer instanceof UndoDescriberInterface) {
+            return sprintf('Cofnij akcję %s', $entry->action());
+        }
+
+        return $describer->describe($this->toDto($entry));
     }
 
     /**
@@ -115,5 +159,25 @@ final readonly class AuditService implements AuditApi, AuditLoggerInterface
         unset($metadata[$key]);
 
         return is_array($value) ? $value : null;
+    }
+
+    private function toDto(AuditLogEntry $entry): AuditEntryDto
+    {
+        return new AuditEntryDto(
+            id: $entry->id(),
+            actorUserId: $entry->actorUserId(),
+            actorEmail: null,
+            action: $entry->action(),
+            resourceType: $entry->resourceType(),
+            resourceId: $entry->resourceId(),
+            beforeState: $entry->beforeState(),
+            afterState: $entry->afterState(),
+            metadata: $entry->metadata(),
+            occurredAt: $entry->occurredAt(),
+            undoneAt: $entry->undoneAt(),
+            undoneBy: $entry->undoneBy(),
+            undoneByEmail: null,
+            revertsEntryId: $entry->revertsEntryId(),
+        );
     }
 }

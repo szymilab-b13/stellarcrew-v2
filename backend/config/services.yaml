@@ -106,6 +106,8 @@ when@test:
         # swap doctrine-backed install adapters with in-memory fakes for endpoint tests
         App\Tests\Fixtures\Core\InMemorySystemSettingRepository: ~
         App\Tests\Fixtures\Core\SpyAuditLogger: ~
+        App\Tests\Fixtures\Audit\StubTestUndoer:
+            tags: ['audit.undoer']
         App\Tests\Fixtures\Auth\SpyAuthApi: ~
         App\Tests\Fixtures\Auth\InMemoryUserRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~

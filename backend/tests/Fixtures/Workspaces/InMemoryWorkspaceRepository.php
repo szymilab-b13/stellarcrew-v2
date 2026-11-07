@@ -74,6 +74,20 @@ final class InMemoryWorkspaceRepository implements WorkspaceRepository
         $this->members = $kept;
     }
 
+    public function removeAllMembershipsOf(UserId $userId): void
+    {
+        $kept = [];
+        foreach ($this->members as $existing) {
+            if ($existing->userId()->equals($userId)) {
+                continue;
+            }
+
+            $kept[] = $existing;
+        }
+
+        $this->members = $kept;
+    }
+
     public function findMembership(WorkspaceId $workspaceId, UserId $userId): ?WorkspaceMember
     {
         foreach ($this->members as $member) {
