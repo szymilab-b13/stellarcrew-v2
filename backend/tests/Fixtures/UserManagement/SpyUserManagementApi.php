@@ -14,6 +14,9 @@ final class SpyUserManagementApi implements UserManagementApi
     /** @var list<array{userId: UserId, email: string, displayName: ?string}> */
     public array $createProfileCalls = [];
 
+    /** @var list<array{email: string, password: string, isSuperAdmin: bool, displayName: ?string}> */
+    public array $createUserCalls = [];
+
     public function createProfileForUser(UserId $userId, string $email, ?string $displayName = null): UserProfileDto
     {
         $this->createProfileCalls[] = [
@@ -35,5 +38,26 @@ final class SpyUserManagementApi implements UserManagementApi
         unset($userId);
 
         return null;
+    }
+
+    public function createUser(
+        string $email,
+        string $plaintextPassword,
+        bool $isSuperAdmin = false,
+        ?string $displayName = null,
+    ): UserProfileDto {
+        $this->createUserCalls[] = [
+            'email' => $email,
+            'password' => $plaintextPassword,
+            'isSuperAdmin' => $isSuperAdmin,
+            'displayName' => $displayName,
+        ];
+
+        return new UserProfileDto(
+            id: 'spy-user-id',
+            displayName: $displayName,
+            avatarColor: AvatarColorPicker::pick($email),
+            isDeactivated: false,
+        );
     }
 }

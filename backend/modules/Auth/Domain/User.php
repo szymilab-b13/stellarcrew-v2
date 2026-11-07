@@ -29,6 +29,17 @@ class User
         return new self($id, $email, $passwordHash, UserRole::Admin, $createdAt, $displayName);
     }
 
+    public static function createWithRole(
+        UserId $id,
+        string $email,
+        string $passwordHash,
+        UserRole $role,
+        DateTimeImmutable $createdAt,
+        ?string $displayName = null,
+    ): self {
+        return new self($id, $email, $passwordHash, $role, $createdAt, $displayName);
+    }
+
     public function id(): UserId
     {
         return $this->id;
