@@ -84,6 +84,7 @@
     "title": "Mapa drogowa",
     "subtitle": "Milestony i zadania — domyślnie zwinięte.",
     "emptyTasks": "Zakres do ustalenia z Szefem.",
+    "discussNeeded": "Do omówienia",
     "statuses": {
       "done": "Zrobione",
       "inProgress": "W toku",
@@ -93,6 +94,39 @@
     "milestones": {
       "core": {
         "title": "CORE — fundament platformy"
+      },
+      "auth": {
+        "title": "AUTH — pierwszy login (JWT)"
+      },
+      "ui": {
+        "title": "UI — shell aplikacji, menu, Design 2.0 polish"
+      },
+      "workspaces": {
+        "title": "WORKSPACES — wielo-workspace’owość"
+      },
+      "userManagement": {
+        "title": "USER MANAGEMENT — panel admina dla userów + przypisania do workspace"
+      },
+      "audit": {
+        "title": "AUDIT — audit log + mechanizm cofania"
+      },
+      "permissions": {
+        "title": "PERMISSIONS — uprawnienia per workspace"
+      },
+      "agents": {
+        "title": "AGENTS — katalog, user agenty, przypisania, pamięć"
+      },
+      "aiEngine": {
+        "title": "AI ENGINE — model orchestration, memory strategy"
+      },
+      "authRefresh": {
+        "title": "AUTH refresh tokens — rotacja + revokacja"
+      },
+      "chat": {
+        "title": "CHAT — rozmowy użytkownika z agentami"
+      },
+      "threads": {
+        "title": "Wątki pozamilestone’owe — DX i dokumentacja"
       }
     }
   },

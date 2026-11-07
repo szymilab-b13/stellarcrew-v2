@@ -84,6 +84,7 @@
     "title": "Roadmap",
     "subtitle": "Milestones and tasks — collapsed by default.",
     "emptyTasks": "No tasks yet — scope to be confirmed with Szef.",
+    "discussNeeded": "Needs discussion",
     "statuses": {
       "done": "Done",
       "inProgress": "In progress",
@@ -93,6 +94,39 @@
     "milestones": {
       "core": {
         "title": "CORE — platform foundation"
+      },
+      "auth": {
+        "title": "AUTH — first login (JWT)"
+      },
+      "ui": {
+        "title": "UI — app shell, menu, Design 2.0 polish"
+      },
+      "workspaces": {
+        "title": "WORKSPACES — multi-tenant workspaces"
+      },
+      "userManagement": {
+        "title": "USER MANAGEMENT — admin panel for users + workspace assignments"
+      },
+      "audit": {
+        "title": "AUDIT — audit log + undo dispatcher"
+      },
+      "permissions": {
+        "title": "PERMISSIONS — fine-grained per-workspace access"
+      },
+      "agents": {
+        "title": "AGENTS — catalog, user agents, assignments, memory"
+      },
+      "aiEngine": {
+        "title": "AI ENGINE — model orchestration, memory strategy"
+      },
+      "authRefresh": {
+        "title": "AUTH refresh tokens — rotation + revocation"
+      },
+      "chat": {
+        "title": "CHAT — conversations between user and agents"
+      },
+      "threads": {
+        "title": "Non-milestone threads — DX and documentation"
       }
     }
   },
