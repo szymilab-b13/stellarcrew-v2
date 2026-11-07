@@ -117,6 +117,60 @@
       }
     }
   },
+  "workspaceMembers": {
+    "breadcrumb": "Członkowie",
+    "title": "Członkowie workspace'a",
+    "subtitle": "Zarządzaj zespołem w tym workspace'ie.",
+    "loading": "Ładuję członków…",
+    "loadError": "Nie udało się załadować członków.",
+    "listAria": "Tabela członków",
+    "total": "Łącznie: {{count}}",
+    "roles": {
+      "owner": "Właściciel",
+      "admin": "Admin",
+      "member": "Członek",
+      "guest": "Gość"
+    },
+    "columns": {
+      "email": "E-mail",
+      "role": "Rola",
+      "joinedAt": "Dołączył"
+    },
+    "table": {
+      "empty": "Brak członków do wyświetlenia.",
+      "remove": "Usuń",
+      "removeAria": "Usuń członka {{email}}",
+      "roleAria": "Zmień rolę {{email}}"
+    },
+    "add": {
+      "title": "Dodaj członka",
+      "email": "E-mail użytkownika",
+      "emailPlaceholder": "np. ktoś@przykład.pl",
+      "role": "Rola",
+      "submit": "Dodaj",
+      "loading": "Szukam…",
+      "candidatesAria": "Sugerowani użytkownicy",
+      "notFoundHint": "Nie znaleziono. Poproś super admina o utworzenie konta.",
+      "errors": {
+        "alreadyMember": "Ten użytkownik już jest członkiem.",
+        "forbidden": "Nie masz uprawnień do dodawania członków.",
+        "validation": "Serwer odrzucił przesłane dane.",
+        "generic": "Coś poszło nie tak. Spróbuj ponownie."
+      }
+    },
+    "remove": {
+      "title": "Usuń członka",
+      "body": "Usunąć członka „{{email}}” z tego workspace'a?",
+      "confirm": "Usuń",
+      "confirming": "Usuwam…",
+      "errors": {
+        "adminMustBeDowngraded": "Zdegraduj admina do roli Członek przed usunięciem.",
+        "notFound": "Ten użytkownik nie jest już członkiem.",
+        "forbidden": "Nie masz uprawnień do usuwania członków.",
+        "generic": "Nie udało się usunąć członka."
+      }
+    }
+  },
   "workspaceSwitcher": {
     "label": "Workspace",
     "empty": "Wybierz workspace",

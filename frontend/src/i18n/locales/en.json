@@ -117,6 +117,60 @@
       }
     }
   },
+  "workspaceMembers": {
+    "breadcrumb": "Members",
+    "title": "Workspace members",
+    "subtitle": "Manage the team in this workspace.",
+    "loading": "Loading members…",
+    "loadError": "Could not load members.",
+    "listAria": "Members table",
+    "total": "{{count}} members total",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member",
+      "guest": "Guest"
+    },
+    "columns": {
+      "email": "Email",
+      "role": "Role",
+      "joinedAt": "Joined"
+    },
+    "table": {
+      "empty": "No members to display.",
+      "remove": "Remove",
+      "removeAria": "Remove member {{email}}",
+      "roleAria": "Change role of {{email}}"
+    },
+    "add": {
+      "title": "Add member",
+      "email": "User email",
+      "emailPlaceholder": "e.g. someone@example.com",
+      "role": "Role",
+      "submit": "Add",
+      "loading": "Searching…",
+      "candidatesAria": "Suggested users",
+      "notFoundHint": "No match. Ask a super admin to create the account.",
+      "errors": {
+        "alreadyMember": "This user is already a member.",
+        "forbidden": "You do not have permission to add members.",
+        "validation": "The server rejected the submitted values.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "remove": {
+      "title": "Remove member",
+      "body": "Remove member \"{{email}}\" from this workspace?",
+      "confirm": "Remove",
+      "confirming": "Removing…",
+      "errors": {
+        "adminMustBeDowngraded": "Downgrade the admin to Member before removing.",
+        "notFound": "This user is no longer a member.",
+        "forbidden": "You do not have permission to remove members.",
+        "generic": "Could not remove the member."
+      }
+    }
+  },
   "workspaceSwitcher": {
     "label": "Workspace",
     "empty": "Select workspace",
