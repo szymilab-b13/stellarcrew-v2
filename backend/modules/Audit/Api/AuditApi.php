@@ -12,7 +12,7 @@ use Modules\Shared\Kernel\UserId;
 
 interface AuditApi
 {
-    public function log(AuditEntryWithState $entry): AuditEntryId;
+    public function record(AuditEntryWithState $entry): AuditEntryId;
 
     public function search(AuditQuery $query): AuditPage;
 

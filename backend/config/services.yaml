@@ -50,13 +50,16 @@ services:
     Modules\Core\Domain\SystemSettingRepository:
         alias: Modules\Core\Infrastructure\Doctrine\Repository\DoctrineSystemSettingRepository
 
-    # Core audit logger — temporary no-op sink until BL-AUDIT-002 wires the concrete AuditApi-backed logger
-    Modules\Core\Api\AuditLoggerInterface:
-        alias: Modules\Core\Infrastructure\Audit\NoOpAuditLogger
-
     # Audit module bindings
     Modules\Audit\Domain\AuditLogEntryRepository:
         alias: Modules\Audit\Infrastructure\Doctrine\Repository\DoctrineAuditLogEntryRepository
+
+    Modules\Audit\Api\AuditApi:
+        alias: Modules\Audit\Infrastructure\Service\AuditService
+
+    # Concrete logger from the Audit module replaces the Core no-op sink
+    Modules\Core\Api\AuditLoggerInterface:
+        alias: Modules\Audit\Infrastructure\Service\AuditService
 
     # Auth module bindings
     Modules\Auth\Domain\UserRepository:
