@@ -10,7 +10,7 @@ FRONTEND_DIR   := frontend
         backend-rector backend-rector-fix \
         frontend-install frontend-build frontend-dev frontend-test \
         frontend-lint frontend-lint-fix frontend-eslint frontend-prettier frontend-typecheck \
-        migrate seed test lint build clean smoke
+        migrate seed test lint build clean smoke reset-install
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-24s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -143,6 +143,21 @@ build: frontend-build ## Build production bundles (frontend bundle; backend has 
 clean: ## Stop containers + remove volumes (DESTRUCTIVE)
 	$(DOCKER_COMPOSE) down -v
 	@echo "[clean] All containers and volumes removed."
+
+RESET_INSTALL_TOKEN ?= Prywatne
+
+reset-install: ## DESTRUCTIVE: wipe users, workspaces + install flag so /install re-runs. Type "Prywatne" to confirm.
+	@printf '\033[1;31m[reset-install]\033[0m This will DELETE all users, workspaces, and the install flag.\n'
+	@printf 'Type \033[1;33m%s\033[0m to confirm (Ctrl-C to abort): ' "$(RESET_INSTALL_TOKEN)"
+	@read answer; \
+	if [ "$$answer" = "$(RESET_INSTALL_TOKEN)" ]; then \
+		$(DOCKER_COMPOSE) exec -T postgres psql -U $${POSTGRES_USER:-app} -d $${POSTGRES_DB:-stellarcrew} \
+			-c "TRUNCATE core.system_settings, auth.users, workspaces.invitations, workspaces.workspace_members, workspaces.workspaces CASCADE;"; \
+		echo "[reset-install] Done. Reload the app — the install wizard will appear again."; \
+	else \
+		echo "[reset-install] Aborted (expected '$(RESET_INSTALL_TOKEN)', got '$$answer')."; \
+		exit 1; \
+	fi
 
 ## ---- Smoke ----------------------------------------------------------------
 
