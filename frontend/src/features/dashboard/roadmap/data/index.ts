@@ -1,4 +1,5 @@
 import type { RoadmapMilestone } from '../types';
+import { AGENTS_MILESTONE } from './agents';
 import { AUTH_MILESTONE } from './auth';
 import { CORE_MILESTONE } from './core';
 import { PERMISSIONS_MILESTONE } from './permissions';
@@ -11,4 +12,5 @@ export const ROADMAP: RoadmapMilestone[] = [
   UI_MILESTONE,
   WORKSPACES_MILESTONE,
   PERMISSIONS_MILESTONE,
+  AGENTS_MILESTONE,
 ];

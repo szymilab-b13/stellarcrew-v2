@@ -112,4 +112,20 @@ describe('RoadmapPanel', () => {
     expect(description).not.toHaveClass('line-through');
     expect(screen.queryByRole('link', { name: /BL-PERM-/i })).not.toBeInTheDocument();
   });
+
+  it('should render the AGENTS milestone as planned with its BL-AGENTS tasks and no commit links', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/AGENTS — catalog, user agents, assignments, memory/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText('BL-AGENTS-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-AGENTS-002')).toBeInTheDocument();
+    expect(screen.getByText('BL-AGENTS-003')).toBeInTheDocument();
+    expect(screen.getByText('BL-AGENTS-007')).toBeInTheDocument();
+
+    const description = screen.getByText(/Predefined agents catalog/i);
+    expect(description).not.toHaveClass('line-through');
+    expect(screen.queryByRole('link', { name: /BL-AGENTS-/i })).not.toBeInTheDocument();
+  });
 });

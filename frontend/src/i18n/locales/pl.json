@@ -105,6 +105,9 @@
       },
       "permissions": {
         "title": "PERMISSIONS — uprawnienia per workspace"
+      },
+      "agents": {
+        "title": "AGENTS — katalog, user agenty, przypisania, pamięć"
       }
     }
   },

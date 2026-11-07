@@ -105,6 +105,9 @@
       },
       "permissions": {
         "title": "PERMISSIONS — fine-grained per-workspace access"
+      },
+      "agents": {
+        "title": "AGENTS — catalog, user agents, assignments, memory"
       }
     }
   },
