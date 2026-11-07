@@ -56,6 +56,13 @@ export async function reactivateUser(id: string): Promise<void> {
   await apiFetch<unknown>(`/api/user-management/users/${id}/reactivate`, { method: 'POST' });
 }
 
+export async function resetUserPassword(id: string, newPassword: string): Promise<void> {
+  await apiFetch<unknown>(`/api/user-management/users/${id}/reset-password`, {
+    method: 'POST',
+    body: JSON.stringify({ newPassword }),
+  });
+}
+
 function buildListPath(filters: UserListFilters): string {
   const params = new URLSearchParams();
   if (filters.q) params.set('q', filters.q);

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useDeactivateUser, useReactivateUser } from '../api/useUserDetail';
+import { useDeactivateUser, useReactivateUser, useResetUserPassword } from '../api/useUserDetail';
 import { DeactivationConfirmDialog } from './DeactivationConfirmDialog';
+import { ResetPasswordDialog } from './ResetPasswordDialog';
 
 interface UserAccountSectionProps {
   userId: string;
@@ -12,26 +13,46 @@ interface UserAccountSectionProps {
 
 export function UserAccountSection({ userId, email, isDeactivated }: UserAccountSectionProps) {
   const { t } = useTranslation();
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [activationDialogOpen, setActivationDialogOpen] = useState(false);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const deactivate = useDeactivateUser(userId);
   const reactivate = useReactivateUser(userId);
+  const resetPassword = useResetUserPassword(userId);
 
-  const mutation = isDeactivated ? reactivate : deactivate;
+  const activationMutation = isDeactivated ? reactivate : deactivate;
 
-  function openDialog() {
-    mutation.reset();
-    setDialogOpen(true);
+  function openActivationDialog() {
+    activationMutation.reset();
+    setActivationDialogOpen(true);
   }
 
-  function closeDialog() {
-    setDialogOpen(false);
-    mutation.reset();
+  function closeActivationDialog() {
+    setActivationDialogOpen(false);
+    activationMutation.reset();
   }
 
-  function confirm() {
-    mutation.mutate(undefined, {
+  function confirmActivation() {
+    activationMutation.mutate(undefined, {
       onSuccess: () => {
-        setDialogOpen(false);
+        setActivationDialogOpen(false);
+      },
+    });
+  }
+
+  function openResetPasswordDialog() {
+    resetPassword.reset();
+    setResetPasswordDialogOpen(true);
+  }
+
+  function closeResetPasswordDialog() {
+    setResetPasswordDialogOpen(false);
+    resetPassword.reset();
+  }
+
+  function submitResetPassword(newPassword: string) {
+    resetPassword.mutate(newPassword, {
+      onSuccess: () => {
+        setResetPasswordDialogOpen(false);
       },
     });
   }
@@ -44,7 +65,7 @@ export function UserAccountSection({ userId, email, isDeactivated }: UserAccount
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={openDialog}
+          onClick={openActivationDialog}
           className={
             isDeactivated
               ? 'inline-flex items-center rounded-md border border-sc-border bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-500/20'
@@ -57,21 +78,29 @@ export function UserAccountSection({ userId, email, isDeactivated }: UserAccount
         </button>
         <button
           type="button"
-          disabled
-          className="inline-flex items-center rounded-md border border-sc-border bg-sc-bg px-3 py-1.5 text-xs font-semibold text-sc-text-muted disabled:cursor-not-allowed disabled:opacity-60"
-          title={t('adminUserDetail.account.resetPasswordPendingTooltip')}
+          onClick={openResetPasswordDialog}
+          className="inline-flex items-center rounded-md border border-sc-border bg-sc-primary/10 px-3 py-1.5 text-xs font-semibold text-sc-primary transition-colors hover:bg-sc-primary/20"
         >
           {t('adminUserDetail.account.resetPassword')}
         </button>
       </div>
-      {dialogOpen ? (
+      {activationDialogOpen ? (
         <DeactivationConfirmDialog
           mode={isDeactivated ? 'reactivate' : 'deactivate'}
           email={email}
-          isSubmitting={mutation.isPending}
-          error={mutation.error}
-          onClose={closeDialog}
-          onConfirm={confirm}
+          isSubmitting={activationMutation.isPending}
+          error={activationMutation.error}
+          onClose={closeActivationDialog}
+          onConfirm={confirmActivation}
+        />
+      ) : null}
+      {resetPasswordDialogOpen ? (
+        <ResetPasswordDialog
+          email={email}
+          isSubmitting={resetPassword.isPending}
+          error={resetPassword.error}
+          onClose={closeResetPasswordDialog}
+          onSubmit={submitResetPassword}
         />
       ) : null}
     </section>

@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { deactivateUser, fetchUserAudit, fetchUserDetail, reactivateUser } from './usersApi';
+import {
+  deactivateUser,
+  fetchUserAudit,
+  fetchUserDetail,
+  reactivateUser,
+  resetUserPassword,
+} from './usersApi';
 import { usersQueryKey } from './useUsers';
 import type { UserAuditEntry, UserDetail } from '../types';
 
@@ -50,6 +56,16 @@ export function useReactivateUser(id: string) {
       queryClient.invalidateQueries({ queryKey: userDetailQueryKey(id) });
       queryClient.invalidateQueries({ queryKey: userAuditQueryKey(id) });
       queryClient.invalidateQueries({ queryKey: usersQueryKey });
+    },
+  });
+}
+
+export function useResetUserPassword(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newPassword: string) => resetUserPassword(id, newPassword),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userAuditQueryKey(id) });
     },
   });
 }

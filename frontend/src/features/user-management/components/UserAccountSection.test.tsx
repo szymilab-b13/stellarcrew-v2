@@ -107,4 +107,39 @@ describe('UserAccountSection', () => {
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
+
+  it('exposes an enabled Reset password button', () => {
+    render(<UserAccountSection userId="abc" email="target@example.com" isDeactivated={false} />, {
+      wrapper: makeWrapper(),
+    });
+
+    const resetButton = screen.getByRole('button', { name: /reset password/i });
+    expect(resetButton).toBeEnabled();
+  });
+
+  it('opens the reset password dialog and POSTs the new password on submit', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(mockResponse(204));
+    const user = userEvent.setup();
+
+    render(
+      <UserAccountSection userId="reset-id" email="target@example.com" isDeactivated={false} />,
+      { wrapper: makeWrapper() },
+    );
+
+    await user.click(screen.getByRole('button', { name: /reset password/i }));
+    const dialog = await screen.findByRole('dialog');
+    await user.type(within(dialog).getByLabelText('New password'), 'brand-new-password-ok');
+    await user.type(within(dialog).getByLabelText('Repeat new password'), 'brand-new-password-ok');
+    await user.click(within(dialog).getByRole('button', { name: /^reset password$/i }));
+
+    await waitFor(() => {
+      expect(vi.mocked(fetch)).toHaveBeenCalledWith(
+        '/api/user-management/users/reset-id/reset-password',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ newPassword: 'brand-new-password-ok' }),
+        }),
+      );
+    });
+  });
 });

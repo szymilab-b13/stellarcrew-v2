@@ -200,7 +200,18 @@
       "deactivate": "Deaktywuj",
       "reactivate": "Reaktywuj",
       "resetPassword": "Reset hasła",
-      "resetPasswordPendingTooltip": "Dostępne po BL-UM-012.",
+      "resetPasswordDialog": {
+        "title": "Zresetować hasło?",
+        "body": "Ustawiasz nowe hasło dla {{email}}. Wpisz nowe hasło dwukrotnie, aby potwierdzić.",
+        "newPassword": "Nowe hasło",
+        "confirmPassword": "Powtórz nowe hasło",
+        "submit": "Zresetuj hasło",
+        "submitting": "Resetuję…",
+        "errors": {
+          "tooShort": "Hasło musi mieć co najmniej 12 znaków.",
+          "mismatch": "Hasła nie są identyczne."
+        }
+      },
       "deactivateDialog": {
         "title": "Deaktywować konto?",
         "body": "Użytkownik {{email}} nie będzie mógł się zalogować. Historia i przypisania do workspace’ów pozostaną nietknięte.",

@@ -200,7 +200,18 @@
       "deactivate": "Deactivate",
       "reactivate": "Reactivate",
       "resetPassword": "Reset password",
-      "resetPasswordPendingTooltip": "Available after BL-UM-012.",
+      "resetPasswordDialog": {
+        "title": "Reset password?",
+        "body": "You are setting a new password for {{email}}. Enter the new password twice to confirm.",
+        "newPassword": "New password",
+        "confirmPassword": "Repeat new password",
+        "submit": "Reset password",
+        "submitting": "Resetting…",
+        "errors": {
+          "tooShort": "Password must be at least 12 characters long.",
+          "mismatch": "Passwords do not match."
+        }
+      },
       "deactivateDialog": {
         "title": "Deactivate account?",
         "body": "{{email}} won’t be able to sign in anymore. History and workspace assignments stay intact.",
