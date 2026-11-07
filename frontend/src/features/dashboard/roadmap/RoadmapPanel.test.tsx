@@ -57,4 +57,24 @@ describe('RoadmapPanel', () => {
     const description = screen.getByText(/lexik\/jwt-authentication-bundle/i);
     expect(description).toHaveClass('line-through');
   });
+
+  it('should render the UI milestone with its BL-UI tasks and commit links', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/UI — app shell, menu, Design 2.0 polish/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText('BL-UI-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-UI-004')).toBeInTheDocument();
+    expect(screen.getByText('BL-UI-POLISH-001')).toBeInTheDocument();
+
+    const commitLink = screen.getByRole('link', { name: /ad1ac4d/ });
+    expect(commitLink).toHaveAttribute(
+      'href',
+      'https://github.com/Nessandro/stellarcrew-v2-private/commit/ad1ac4d',
+    );
+
+    const description = screen.getByText(/Backend menu registry/i);
+    expect(description).toHaveClass('line-through');
+  });
 });

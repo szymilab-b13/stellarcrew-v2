@@ -96,6 +96,9 @@
       },
       "auth": {
         "title": "AUTH — first login (JWT)"
+      },
+      "ui": {
+        "title": "UI — app shell, menu, Design 2.0 polish"
       }
     }
   },
