@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useUserAudit, useUserDetail } from '../api/useUserDetail';
 
 import { RolePill } from './RolePill';
+import { UserAccountSection } from './UserAccountSection';
 
 export function AdminUserDetailPage() {
   const { t } = useTranslation();
@@ -87,31 +88,11 @@ export function AdminUserDetailPage() {
         )}
       </section>
 
-      <section className="flex flex-col gap-3 rounded-lg border border-sc-border bg-sc-bg-card p-4">
-        <h2 className="text-sm font-semibold text-sc-text">
-          {t('adminUserDetail.sections.account')}
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            disabled
-            className="inline-flex items-center rounded-md border border-sc-border bg-sc-bg px-3 py-1.5 text-xs font-semibold text-sc-text-muted disabled:cursor-not-allowed disabled:opacity-60"
-            title={t('adminUserDetail.account.pendingTooltip')}
-          >
-            {user.deactivatedAt !== null
-              ? t('adminUserDetail.account.reactivate')
-              : t('adminUserDetail.account.deactivate')}
-          </button>
-          <button
-            type="button"
-            disabled
-            className="inline-flex items-center rounded-md border border-sc-border bg-sc-bg px-3 py-1.5 text-xs font-semibold text-sc-text-muted disabled:cursor-not-allowed disabled:opacity-60"
-            title={t('adminUserDetail.account.pendingTooltip')}
-          >
-            {t('adminUserDetail.account.resetPassword')}
-          </button>
-        </div>
-      </section>
+      <UserAccountSection
+        userId={user.id}
+        email={user.email}
+        isDeactivated={user.deactivatedAt !== null}
+      />
 
       <section className="flex flex-col gap-3 rounded-lg border border-sc-border bg-sc-bg-card p-4">
         <div className="flex items-center justify-between">

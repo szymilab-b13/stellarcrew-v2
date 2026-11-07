@@ -200,7 +200,24 @@
       "deactivate": "Deactivate",
       "reactivate": "Reactivate",
       "resetPassword": "Reset password",
-      "pendingTooltip": "Available after BL-UM-011/012."
+      "resetPasswordPendingTooltip": "Available after BL-UM-012.",
+      "deactivateDialog": {
+        "title": "Deactivate account?",
+        "body": "{{email}} won’t be able to sign in anymore. History and workspace assignments stay intact.",
+        "confirm": "Deactivate",
+        "confirming": "Deactivating…"
+      },
+      "reactivateDialog": {
+        "title": "Reactivate account?",
+        "body": "{{email}} will be able to sign in again.",
+        "confirm": "Reactivate",
+        "confirming": "Reactivating…"
+      },
+      "errors": {
+        "notFound": "User does not exist.",
+        "forbidden": "You don’t have permission to perform this action.",
+        "generic": "Could not complete the action. Please try again."
+      }
     },
     "audit": {
       "loading": "Loading audit entries…",

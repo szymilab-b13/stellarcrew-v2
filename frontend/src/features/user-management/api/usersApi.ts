@@ -48,6 +48,14 @@ export async function fetchUserAudit(id: string): Promise<UserAuditEntry[]> {
   return payload.items.map(mapUserAuditEntry);
 }
 
+export async function deactivateUser(id: string): Promise<void> {
+  await apiFetch<unknown>(`/api/user-management/users/${id}/deactivate`, { method: 'POST' });
+}
+
+export async function reactivateUser(id: string): Promise<void> {
+  await apiFetch<unknown>(`/api/user-management/users/${id}/reactivate`, { method: 'POST' });
+}
+
 function buildListPath(filters: UserListFilters): string {
   const params = new URLSearchParams();
   if (filters.q) params.set('q', filters.q);

@@ -200,7 +200,24 @@
       "deactivate": "Deaktywuj",
       "reactivate": "Reaktywuj",
       "resetPassword": "Reset hasła",
-      "pendingTooltip": "Dostępne po BL-UM-011/012."
+      "resetPasswordPendingTooltip": "Dostępne po BL-UM-012.",
+      "deactivateDialog": {
+        "title": "Deaktywować konto?",
+        "body": "Użytkownik {{email}} nie będzie mógł się zalogować. Historia i przypisania do workspace’ów pozostaną nietknięte.",
+        "confirm": "Deaktywuj",
+        "confirming": "Deaktywuję…"
+      },
+      "reactivateDialog": {
+        "title": "Reaktywować konto?",
+        "body": "Użytkownik {{email}} znów będzie mógł się zalogować.",
+        "confirm": "Reaktywuj",
+        "confirming": "Reaktywuję…"
+      },
+      "errors": {
+        "notFound": "Użytkownik nie istnieje.",
+        "forbidden": "Brak uprawnień do tej akcji.",
+        "generic": "Nie udało się wykonać akcji. Spróbuj ponownie."
+      }
     },
     "audit": {
       "loading": "Ładuję wpisy…",
