@@ -32,8 +32,10 @@ export async function install(payload: InstallPayload): Promise<void> {
   if (payload.instanceName) formData.append('instance_name', payload.instanceName);
   if (payload.locale) formData.append('locale', payload.locale);
   if (payload.workspaceName) formData.append('workspace_name', payload.workspaceName);
-  if (payload.selectedAgentSlugs && payload.selectedAgentSlugs.length > 0) {
-    formData.append('agents', JSON.stringify(payload.selectedAgentSlugs));
+  if (payload.selectedAgentSlugs) {
+    for (const slug of payload.selectedAgentSlugs) {
+      formData.append('agents[]', slug);
+    }
   }
   if (payload.logo) formData.append('logo', payload.logo);
 
