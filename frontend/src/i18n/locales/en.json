@@ -179,6 +179,12 @@
     "collapsedEmpty": "No workspace",
     "loading": "Loading…"
   },
+  "profileDropdown": {
+    "trigger": "Profile",
+    "menuAria": "Profile menu",
+    "myWorkspacesHeading": "My workspaces",
+    "noWorkspaces": "No workspaces yet."
+  },
   "dashboard": {
     "eyebrow": "Dashboard",
     "greeting": "Welcome, {{name}}",

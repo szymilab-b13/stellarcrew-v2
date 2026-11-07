@@ -179,6 +179,12 @@
     "collapsedEmpty": "Brak workspace’a",
     "loading": "Ładuję…"
   },
+  "profileDropdown": {
+    "trigger": "Profil",
+    "menuAria": "Menu profilu",
+    "myWorkspacesHeading": "Moje workspace’y",
+    "noWorkspaces": "Brak workspace’ów."
+  },
   "dashboard": {
     "eyebrow": "Panel",
     "greeting": "Cześć, {{name}}",
