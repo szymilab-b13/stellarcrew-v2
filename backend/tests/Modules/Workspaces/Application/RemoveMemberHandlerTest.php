@@ -24,6 +24,7 @@ final class RemoveMemberHandlerTest extends TestCase
 {
     public function testShouldRemoveMemberWhenRoleIsMember(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $repo = new InMemoryWorkspaceRepository();
         $workspaceId = new WorkspaceId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
@@ -39,13 +40,14 @@ final class RemoveMemberHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable('2026-11-07T15:00:00+00:00')),
         );
 
-        $sut(new RemoveMemberCommand($workspaceId, $userId));
+        $sut(new RemoveMemberCommand($actorUserId, $workspaceId, $userId));
 
         self::assertNull($repo->findMembership($workspaceId, $userId));
     }
 
     public function testShouldRemoveMemberWhenRoleIsGuest(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $repo = new InMemoryWorkspaceRepository();
         $workspaceId = new WorkspaceId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
@@ -61,13 +63,14 @@ final class RemoveMemberHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable('2026-11-07T15:00:00+00:00')),
         );
 
-        $sut(new RemoveMemberCommand($workspaceId, $userId));
+        $sut(new RemoveMemberCommand($actorUserId, $workspaceId, $userId));
 
         self::assertNull($repo->findMembership($workspaceId, $userId));
     }
 
     public function testShouldThrowAdminMustBeDowngradedFirstWhenRoleIsAdmin(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $repo = new InMemoryWorkspaceRepository();
         $workspaceId = new WorkspaceId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
@@ -88,7 +91,7 @@ final class RemoveMemberHandlerTest extends TestCase
         $this->expectExceptionMessage('must be downgraded');
 
         try {
-            $sut(new RemoveMemberCommand($workspaceId, $userId));
+            $sut(new RemoveMemberCommand($actorUserId, $workspaceId, $userId));
         } finally {
             self::assertSame([], $audit->entries);
             self::assertNotNull($repo->findMembership($workspaceId, $userId));
@@ -97,6 +100,7 @@ final class RemoveMemberHandlerTest extends TestCase
 
     public function testShouldThrowCannotRemoveOwnerWhenRoleIsOwner(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $repo = new InMemoryWorkspaceRepository();
         $workspaceId = new WorkspaceId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
@@ -116,7 +120,7 @@ final class RemoveMemberHandlerTest extends TestCase
         $this->expectException(CannotRemoveOwnerException::class);
 
         try {
-            $sut(new RemoveMemberCommand($workspaceId, $userId));
+            $sut(new RemoveMemberCommand($actorUserId, $workspaceId, $userId));
         } finally {
             self::assertSame([], $audit->entries);
             self::assertNotNull($repo->findMembership($workspaceId, $userId));
@@ -135,14 +139,15 @@ final class RemoveMemberHandlerTest extends TestCase
         $this->expectException(MemberNotFoundException::class);
 
         try {
-            $sut(new RemoveMemberCommand(new WorkspaceId(Uuid::v7()), new UserId(Uuid::v7())));
+            $sut(new RemoveMemberCommand(new UserId(Uuid::v7()), new WorkspaceId(Uuid::v7()), new UserId(Uuid::v7())));
         } finally {
             self::assertSame([], $audit->entries);
         }
     }
 
-    public function testShouldLogAuditEntryWithBeforeStateWhenMemberRemoved(): void
+    public function testShouldLogAuditEntryWithActorAndBeforeStateWhenMemberRemoved(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $repo = new InMemoryWorkspaceRepository();
         $workspaceId = new WorkspaceId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
@@ -159,12 +164,13 @@ final class RemoveMemberHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable('2026-11-07T15:00:00+00:00')),
         );
 
-        $sut(new RemoveMemberCommand($workspaceId, $userId));
+        $sut(new RemoveMemberCommand($actorUserId, $workspaceId, $userId));
 
         self::assertCount(1, $audit->entries);
         $entry = $audit->entries[0];
         self::assertSame(RemoveMemberCommandHandler::AUDIT_ACTION, $entry->action);
         self::assertSame(RemoveMemberCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame($actorUserId, $entry->userId);
         self::assertSame((string) $workspaceId, $entry->metadata['before_state']['workspace_id']);
         self::assertSame((string) $userId, $entry->metadata['before_state']['user_id']);
         self::assertSame('member', $entry->metadata['before_state']['role']);

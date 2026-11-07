@@ -1,6 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { fetchUserAudit, fetchUserDetail } from './usersApi';
+import {
+  deactivateUser,
+  fetchUserAudit,
+  fetchUserDetail,
+  reactivateUser,
+  resetUserPassword,
+} from './usersApi';
+import { usersQueryKey } from './useUsers';
 import type { UserAuditEntry, UserDetail } from '../types';
 
 export function userDetailQueryKey(id: string) {
@@ -26,5 +33,39 @@ export function useUserAudit(id: string) {
     queryFn: () => fetchUserAudit(id),
     enabled: id.length > 0,
     staleTime: 10_000,
+  });
+}
+
+export function useDeactivateUser(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => deactivateUser(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userDetailQueryKey(id) });
+      queryClient.invalidateQueries({ queryKey: userAuditQueryKey(id) });
+      queryClient.invalidateQueries({ queryKey: usersQueryKey });
+    },
+  });
+}
+
+export function useReactivateUser(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => reactivateUser(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userDetailQueryKey(id) });
+      queryClient.invalidateQueries({ queryKey: userAuditQueryKey(id) });
+      queryClient.invalidateQueries({ queryKey: usersQueryKey });
+    },
+  });
+}
+
+export function useResetUserPassword(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newPassword: string) => resetUserPassword(id, newPassword),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userAuditQueryKey(id) });
+    },
   });
 }

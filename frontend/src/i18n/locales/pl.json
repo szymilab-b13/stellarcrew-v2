@@ -81,14 +81,22 @@
       "superAdmin": "Super admin",
       "workspaces": "Workspace’y",
       "status": "Status",
-      "createdAt": "Utworzono"
+      "createdAt": "Utworzono",
+      "actions": "Akcje"
     },
     "table": {
       "empty": "Brak użytkowników dla obecnych filtrów.",
       "badgeSuperAdmin": "Super admin",
       "badgeRegular": "Zwykły",
       "statusActive": "Aktywny",
-      "statusDeactivated": "Dezaktywowany"
+      "statusDeactivated": "Dezaktywowany",
+      "rowActionsAria": "Akcje dla użytkownika {{email}}"
+    },
+    "row": {
+      "actionDetails": "Detale",
+      "actionDeactivate": "Dezaktywuj",
+      "actionReactivate": "Aktywuj",
+      "actionResetPassword": "Resetuj hasło"
     },
     "addDialog": {
       "title": "Dodaj użytkownika",
@@ -200,7 +208,35 @@
       "deactivate": "Deaktywuj",
       "reactivate": "Reaktywuj",
       "resetPassword": "Reset hasła",
-      "pendingTooltip": "Dostępne po BL-UM-011/012."
+      "resetPasswordDialog": {
+        "title": "Zresetować hasło?",
+        "body": "Ustawiasz nowe hasło dla {{email}}. Wpisz nowe hasło dwukrotnie, aby potwierdzić.",
+        "newPassword": "Nowe hasło",
+        "confirmPassword": "Powtórz nowe hasło",
+        "submit": "Zresetuj hasło",
+        "submitting": "Resetuję…",
+        "errors": {
+          "tooShort": "Hasło musi mieć co najmniej 12 znaków.",
+          "mismatch": "Hasła nie są identyczne."
+        }
+      },
+      "deactivateDialog": {
+        "title": "Deaktywować konto?",
+        "body": "Użytkownik {{email}} nie będzie mógł się zalogować. Historia i przypisania do workspace’ów pozostaną nietknięte.",
+        "confirm": "Deaktywuj",
+        "confirming": "Deaktywuję…"
+      },
+      "reactivateDialog": {
+        "title": "Reaktywować konto?",
+        "body": "Użytkownik {{email}} znów będzie mógł się zalogować.",
+        "confirm": "Reaktywuj",
+        "confirming": "Reaktywuję…"
+      },
+      "errors": {
+        "notFound": "Użytkownik nie istnieje.",
+        "forbidden": "Brak uprawnień do tej akcji.",
+        "generic": "Nie udało się wykonać akcji. Spróbuj ponownie."
+      }
     },
     "audit": {
       "loading": "Ładuję wpisy…",

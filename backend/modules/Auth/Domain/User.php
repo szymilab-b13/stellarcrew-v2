@@ -9,10 +9,12 @@ use Modules\Shared\Kernel\UserId;
 
 class User
 {
+    private ?DateTimeImmutable $deactivatedAt = null;
+
     public function __construct(
         private readonly UserId $id,
         private readonly string $email,
-        private readonly string $passwordHash,
+        private string $passwordHash,
         private readonly UserRole $role,
         private readonly DateTimeImmutable $createdAt,
         private readonly ?string $displayName = null,
@@ -55,6 +57,11 @@ class User
         return $this->passwordHash;
     }
 
+    public function changePassword(string $passwordHash): void
+    {
+        $this->passwordHash = $passwordHash;
+    }
+
     public function role(): UserRole
     {
         return $this->role;
@@ -68,5 +75,29 @@ class User
     public function displayName(): ?string
     {
         return $this->displayName;
+    }
+
+    public function deactivatedAt(): ?DateTimeImmutable
+    {
+        return $this->deactivatedAt;
+    }
+
+    public function isDeactivated(): bool
+    {
+        return $this->deactivatedAt instanceof DateTimeImmutable;
+    }
+
+    public function deactivate(DateTimeImmutable $now): void
+    {
+        if ($this->deactivatedAt instanceof DateTimeImmutable) {
+            return;
+        }
+
+        $this->deactivatedAt = $now;
+    }
+
+    public function reactivate(): void
+    {
+        $this->deactivatedAt = null;
     }
 }

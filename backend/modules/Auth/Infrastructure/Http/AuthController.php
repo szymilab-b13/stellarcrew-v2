@@ -34,6 +34,7 @@ final readonly class AuthController
         responses: [
             new OA\Response(response: 200, description: 'Login successful'),
             new OA\Response(response: 401, description: 'Invalid credentials'),
+            new OA\Response(response: 403, description: 'Account deactivated'),
             new OA\Response(response: 422, description: 'Validation error'),
         ],
     )]
@@ -49,6 +50,10 @@ final readonly class AuthController
 
         if (!$this->passwords->isPasswordValid($securityUser, $input->password)) {
             throw new CustomUserMessageAuthenticationException('Invalid credentials.');
+        }
+
+        if ($domainUser->isDeactivated()) {
+            return new JsonResponse(['error' => 'account_deactivated'], Response::HTTP_FORBIDDEN);
         }
 
         return new JsonResponse([

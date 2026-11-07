@@ -7,6 +7,7 @@ namespace Modules\Auth\Infrastructure\Doctrine\Repository;
 use Doctrine\ORM\EntityManagerInterface;
 use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
+use Modules\Shared\Kernel\UserId;
 
 final readonly class DoctrineUserRepository implements UserRepository
 {
@@ -23,6 +24,11 @@ final readonly class DoctrineUserRepository implements UserRepository
     public function findByEmail(string $email): ?User
     {
         return $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
+    }
+
+    public function findById(UserId $id): ?User
+    {
+        return $this->em->getRepository(User::class)->findOneBy(['id' => $id]);
     }
 
     public function count(): int

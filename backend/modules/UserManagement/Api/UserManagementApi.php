@@ -10,6 +10,8 @@ use Modules\UserManagement\Api\Dto\UserListItemDto;
 use Modules\UserManagement\Api\Dto\UserListPage;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
 use Modules\UserManagement\Api\Exception\EmailTakenException;
+use Modules\UserManagement\Api\Exception\PasswordTooShortException;
+use Modules\UserManagement\Api\Exception\UserProfileNotFoundException;
 use Modules\UserManagement\Application\Query\UserListFilters;
 
 interface UserManagementApi
@@ -26,6 +28,7 @@ interface UserManagementApi
      * @throws EmailTakenException
      */
     public function createUser(
+        UserId $actorUserId,
         string $email,
         string $plaintextPassword,
         bool $isSuperAdmin = false,
@@ -38,4 +41,26 @@ interface UserManagementApi
      * @return list<UserListItemDto>
      */
     public function listUsersVisibleTo(UserId $viewerId, ?string $q = null): array;
+
+    /**
+     * Idempotent: no-op when the profile is already deactivated.
+     *
+     * @throws UserProfileNotFoundException
+     */
+    public function deactivateUser(UserId $actorUserId, UserId $userId): void;
+
+    /**
+     * Idempotent: no-op when the profile is already active.
+     *
+     * @throws UserProfileNotFoundException
+     */
+    public function reactivateUser(UserId $actorUserId, UserId $userId): void;
+
+    /**
+     * Super-admin password reset. Non-reversible (no before_state in audit).
+     *
+     * @throws UserProfileNotFoundException
+     * @throws PasswordTooShortException
+     */
+    public function resetUserPassword(UserId $actorUserId, UserId $userId, string $newPassword): void;
 }

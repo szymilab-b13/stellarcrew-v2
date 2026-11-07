@@ -42,7 +42,7 @@ final readonly class ChangeMemberRoleCommandHandler
         $this->workspaces->saveMembership($member);
 
         $this->audit->log(new AuditEntry(
-            userId: null,
+            userId: $command->actorUserId,
             action: self::AUDIT_ACTION,
             occurredAt: $this->clock->now(),
             resourceType: self::AUDIT_RESOURCE_TYPE,

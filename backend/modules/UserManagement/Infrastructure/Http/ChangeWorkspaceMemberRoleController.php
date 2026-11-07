@@ -56,7 +56,12 @@ final readonly class ChangeWorkspaceMemberRoleController
         $this->ensureCanManageMembers($user, $workspaceId);
 
         $targetUserId = new UserId(Uuid::fromString($id));
-        $view = $this->workspaces->changeMemberRole($workspaceId, $targetUserId, $input->role);
+        $view = $this->workspaces->changeMemberRole(
+            $user->domainUser()->id(),
+            $workspaceId,
+            $targetUserId,
+            $input->role,
+        );
 
         return new JsonResponse([
             'workspaceId' => $view->workspaceId,

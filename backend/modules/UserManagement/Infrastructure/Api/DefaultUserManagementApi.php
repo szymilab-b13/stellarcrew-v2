@@ -14,6 +14,8 @@ use Modules\UserManagement\Api\Exception\EmailTakenException;
 use Modules\UserManagement\Api\UserManagementApi;
 use Modules\UserManagement\Application\CreateUserCommand;
 use Modules\UserManagement\Application\CreateUserCommandHandler;
+use Modules\UserManagement\Application\DeactivateUserCommand;
+use Modules\UserManagement\Application\DeactivateUserCommandHandler;
 use Modules\UserManagement\Application\Query\GetUserDetailQuery;
 use Modules\UserManagement\Application\Query\GetUserDetailQueryHandler;
 use Modules\UserManagement\Application\Query\ListAllUsersQuery;
@@ -21,6 +23,10 @@ use Modules\UserManagement\Application\Query\ListAllUsersQueryHandler;
 use Modules\UserManagement\Application\Query\ListVisibleUsersQuery;
 use Modules\UserManagement\Application\Query\ListVisibleUsersQueryHandler;
 use Modules\UserManagement\Application\Query\UserListFilters;
+use Modules\UserManagement\Application\ReactivateUserCommand;
+use Modules\UserManagement\Application\ReactivateUserCommandHandler;
+use Modules\UserManagement\Application\ResetUserPasswordCommand;
+use Modules\UserManagement\Application\ResetUserPasswordCommandHandler;
 use Modules\UserManagement\Domain\AvatarColorPicker;
 use Modules\UserManagement\Domain\UserProfile;
 use Modules\UserManagement\Domain\UserProfileRepository;
@@ -33,6 +39,9 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
         private ListAllUsersQueryHandler $listAllUsers,
         private ListVisibleUsersQueryHandler $listVisibleUsers,
         private GetUserDetailQueryHandler $getUserDetail,
+        private DeactivateUserCommandHandler $deactivateUser,
+        private ReactivateUserCommandHandler $reactivateUser,
+        private ResetUserPasswordCommandHandler $resetUserPassword,
         private Clock $clock,
     ) {
     }
@@ -53,6 +62,7 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
     }
 
     public function createUser(
+        UserId $actorUserId,
         string $email,
         string $plaintextPassword,
         bool $isSuperAdmin = false,
@@ -60,6 +70,7 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
     ): UserProfileDto {
         try {
             return ($this->createUser)(new CreateUserCommand(
+                $actorUserId,
                 $email,
                 $plaintextPassword,
                 $isSuperAdmin,
@@ -92,6 +103,21 @@ final readonly class DefaultUserManagementApi implements UserManagementApi
         }
 
         return $this->toDto($profile);
+    }
+
+    public function deactivateUser(UserId $actorUserId, UserId $userId): void
+    {
+        ($this->deactivateUser)(new DeactivateUserCommand($actorUserId, $userId));
+    }
+
+    public function reactivateUser(UserId $actorUserId, UserId $userId): void
+    {
+        ($this->reactivateUser)(new ReactivateUserCommand($actorUserId, $userId));
+    }
+
+    public function resetUserPassword(UserId $actorUserId, UserId $userId, string $newPassword): void
+    {
+        ($this->resetUserPassword)(new ResetUserPasswordCommand($actorUserId, $userId, $newPassword));
     }
 
     private function toDto(UserProfile $profile): UserProfileDto

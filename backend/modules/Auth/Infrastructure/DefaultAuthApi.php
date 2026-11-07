@@ -7,6 +7,7 @@ namespace Modules\Auth\Infrastructure;
 use Modules\Auth\Api\AuthApi;
 use Modules\Auth\Api\Dto\AuthUser;
 use Modules\Auth\Api\Exception\EmailTakenException;
+use Modules\Auth\Api\Exception\UserNotFoundException;
 use Modules\Auth\Application\PasswordHasher;
 use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
@@ -71,5 +72,38 @@ final readonly class DefaultAuthApi implements AuthApi
         $this->users->save($user);
 
         return new AuthUser($user->id(), $user->email(), $now, $user->displayName());
+    }
+
+    public function markDeactivated(UserId $userId): void
+    {
+        $user = $this->users->findById($userId);
+        if (!$user instanceof User) {
+            throw UserNotFoundException::forId($userId);
+        }
+
+        $user->deactivate($this->clock->now());
+        $this->users->save($user);
+    }
+
+    public function markReactivated(UserId $userId): void
+    {
+        $user = $this->users->findById($userId);
+        if (!$user instanceof User) {
+            throw UserNotFoundException::forId($userId);
+        }
+
+        $user->reactivate();
+        $this->users->save($user);
+    }
+
+    public function setPassword(UserId $userId, string $plaintextPassword): void
+    {
+        $user = $this->users->findById($userId);
+        if (!$user instanceof User) {
+            throw UserNotFoundException::forId($userId);
+        }
+
+        $user->changePassword($this->hasher->hash($plaintextPassword));
+        $this->users->save($user);
     }
 }

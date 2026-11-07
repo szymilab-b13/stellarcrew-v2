@@ -17,8 +17,17 @@ final class SpyUserManagementApi implements UserManagementApi
     /** @var list<array{userId: UserId, email: string, displayName: ?string}> */
     public array $createProfileCalls = [];
 
-    /** @var list<array{email: string, password: string, isSuperAdmin: bool, displayName: ?string}> */
+    /** @var list<array{actorUserId: UserId, email: string, password: string, isSuperAdmin: bool, displayName: ?string}> */
     public array $createUserCalls = [];
+
+    /** @var list<array{actorUserId: UserId, userId: UserId}> */
+    public array $deactivateCalls = [];
+
+    /** @var list<array{actorUserId: UserId, userId: UserId}> */
+    public array $reactivateCalls = [];
+
+    /** @var list<array{actorUserId: UserId, userId: UserId, newPassword: string}> */
+    public array $resetPasswordCalls = [];
 
     public function createProfileForUser(UserId $userId, string $email, ?string $displayName = null): UserProfileDto
     {
@@ -44,12 +53,14 @@ final class SpyUserManagementApi implements UserManagementApi
     }
 
     public function createUser(
+        UserId $actorUserId,
         string $email,
         string $plaintextPassword,
         bool $isSuperAdmin = false,
         ?string $displayName = null,
     ): UserProfileDto {
         $this->createUserCalls[] = [
+            'actorUserId' => $actorUserId,
             'email' => $email,
             'password' => $plaintextPassword,
             'isSuperAdmin' => $isSuperAdmin,
@@ -81,5 +92,24 @@ final class SpyUserManagementApi implements UserManagementApi
         unset($userId);
 
         return null;
+    }
+
+    public function deactivateUser(UserId $actorUserId, UserId $userId): void
+    {
+        $this->deactivateCalls[] = ['actorUserId' => $actorUserId, 'userId' => $userId];
+    }
+
+    public function reactivateUser(UserId $actorUserId, UserId $userId): void
+    {
+        $this->reactivateCalls[] = ['actorUserId' => $actorUserId, 'userId' => $userId];
+    }
+
+    public function resetUserPassword(UserId $actorUserId, UserId $userId, string $newPassword): void
+    {
+        $this->resetPasswordCalls[] = [
+            'actorUserId' => $actorUserId,
+            'userId' => $userId,
+            'newPassword' => $newPassword,
+        ];
     }
 }

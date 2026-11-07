@@ -11,10 +11,10 @@ use Modules\Workspaces\Domain\WorkspaceRole;
 final readonly class AssignMemberCommand
 {
     public function __construct(
+        public UserId $actorUserId,
         public WorkspaceId $workspaceId,
         public UserId $userId,
         public WorkspaceRole $role,
-        public ?UserId $invitedBy = null,
     ) {
     }
 }

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\UserManagement\Infrastructure\Http;
 
+use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\UserManagement\Api\UserManagementApi;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final readonly class UserManagementController
@@ -32,9 +34,14 @@ final readonly class UserManagementController
             new OA\Response(response: 422, description: 'Validation error or email already taken'),
         ],
     )]
-    public function create(#[MapRequestPayload] CreateUserRequest $input): JsonResponse
-    {
+    public function create(
+        #[CurrentUser]
+        SecurityUser $user,
+        #[MapRequestPayload]
+        CreateUserRequest $input,
+    ): JsonResponse {
         $profile = $this->users->createUser(
+            $user->domainUser()->id(),
             $input->email,
             $input->password,
             $input->isSuperAdmin,

@@ -21,16 +21,19 @@ class UserProfile
 
     public const string AVATAR_COLOR_PATTERN = '/^#[0-9A-Fa-f]{6}$/';
 
+    private ?DateTimeImmutable $deactivatedAt;
+
     public function __construct(
         private readonly UserId $id,
         private readonly ?string $displayName,
         private readonly string $avatarColor,
         private readonly DateTimeImmutable $createdAt,
-        private readonly DateTimeImmutable $updatedAt,
-        private readonly ?DateTimeImmutable $deactivatedAt = null,
+        private DateTimeImmutable $updatedAt,
+        ?DateTimeImmutable $deactivatedAt = null,
     ) {
         $this->guardDisplayName($displayName);
         $this->guardAvatarColor($avatarColor);
+        $this->deactivatedAt = $deactivatedAt;
     }
 
     public static function create(
@@ -81,6 +84,26 @@ class UserProfile
     public function isDeactivated(): bool
     {
         return $this->deactivatedAt instanceof DateTimeImmutable;
+    }
+
+    public function deactivate(DateTimeImmutable $now): void
+    {
+        if ($this->deactivatedAt instanceof DateTimeImmutable) {
+            return;
+        }
+
+        $this->deactivatedAt = $now;
+        $this->updatedAt = $now;
+    }
+
+    public function reactivate(DateTimeImmutable $now): void
+    {
+        if (!$this->deactivatedAt instanceof DateTimeImmutable) {
+            return;
+        }
+
+        $this->deactivatedAt = null;
+        $this->updatedAt = $now;
     }
 
     private function guardDisplayName(?string $displayName): void

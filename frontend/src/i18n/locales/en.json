@@ -81,14 +81,22 @@
       "superAdmin": "Super admin",
       "workspaces": "Workspaces",
       "status": "Status",
-      "createdAt": "Created"
+      "createdAt": "Created",
+      "actions": "Actions"
     },
     "table": {
       "empty": "No users match the current filters.",
       "badgeSuperAdmin": "Super admin",
       "badgeRegular": "Regular",
       "statusActive": "Active",
-      "statusDeactivated": "Deactivated"
+      "statusDeactivated": "Deactivated",
+      "rowActionsAria": "Actions for user {{email}}"
+    },
+    "row": {
+      "actionDetails": "Details",
+      "actionDeactivate": "Deactivate",
+      "actionReactivate": "Reactivate",
+      "actionResetPassword": "Reset password"
     },
     "addDialog": {
       "title": "Add user",
@@ -200,7 +208,35 @@
       "deactivate": "Deactivate",
       "reactivate": "Reactivate",
       "resetPassword": "Reset password",
-      "pendingTooltip": "Available after BL-UM-011/012."
+      "resetPasswordDialog": {
+        "title": "Reset password?",
+        "body": "You are setting a new password for {{email}}. Enter the new password twice to confirm.",
+        "newPassword": "New password",
+        "confirmPassword": "Repeat new password",
+        "submit": "Reset password",
+        "submitting": "Resetting…",
+        "errors": {
+          "tooShort": "Password must be at least 12 characters long.",
+          "mismatch": "Passwords do not match."
+        }
+      },
+      "deactivateDialog": {
+        "title": "Deactivate account?",
+        "body": "{{email}} won’t be able to sign in anymore. History and workspace assignments stay intact.",
+        "confirm": "Deactivate",
+        "confirming": "Deactivating…"
+      },
+      "reactivateDialog": {
+        "title": "Reactivate account?",
+        "body": "{{email}} will be able to sign in again.",
+        "confirm": "Reactivate",
+        "confirming": "Reactivating…"
+      },
+      "errors": {
+        "notFound": "User does not exist.",
+        "forbidden": "You don’t have permission to perform this action.",
+        "generic": "Could not complete the action. Please try again."
+      }
     },
     "audit": {
       "loading": "Loading audit entries…",

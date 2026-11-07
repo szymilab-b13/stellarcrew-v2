@@ -42,12 +42,12 @@ final readonly class AssignMemberCommandHandler
             $command->userId,
             $command->role,
             $now,
-            $command->invitedBy,
+            $command->actorUserId,
         );
         $this->workspaces->saveMembership($member);
 
         $this->audit->log(new AuditEntry(
-            userId: $command->invitedBy,
+            userId: $command->actorUserId,
             action: self::AUDIT_ACTION,
             occurredAt: $now,
             resourceType: self::AUDIT_RESOURCE_TYPE,

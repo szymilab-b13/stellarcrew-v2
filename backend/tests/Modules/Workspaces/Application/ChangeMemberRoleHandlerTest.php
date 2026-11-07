@@ -23,6 +23,7 @@ final class ChangeMemberRoleHandlerTest extends TestCase
 {
     public function testShouldUpdateMemberRoleWhenCommandExecuted(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $repo = new InMemoryWorkspaceRepository();
         $workspaceId = new WorkspaceId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
@@ -38,7 +39,7 @@ final class ChangeMemberRoleHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable('2026-11-07T15:00:00+00:00')),
         );
 
-        $updated = $sut(new ChangeMemberRoleCommand($workspaceId, $userId, WorkspaceRole::Admin));
+        $updated = $sut(new ChangeMemberRoleCommand($actorUserId, $workspaceId, $userId, WorkspaceRole::Admin));
 
         self::assertSame(WorkspaceRole::Admin, $updated->role());
         self::assertSame(WorkspaceRole::Admin, $repo->findMembership($workspaceId, $userId)?->role());
@@ -46,6 +47,7 @@ final class ChangeMemberRoleHandlerTest extends TestCase
 
     public function testShouldThrowInvalidMemberRoleWhenPromotingToOwner(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $repo = new InMemoryWorkspaceRepository();
         $workspaceId = new WorkspaceId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
@@ -65,7 +67,7 @@ final class ChangeMemberRoleHandlerTest extends TestCase
         $this->expectException(InvalidMemberRoleException::class);
 
         try {
-            $sut(new ChangeMemberRoleCommand($workspaceId, $userId, WorkspaceRole::Owner));
+            $sut(new ChangeMemberRoleCommand($actorUserId, $workspaceId, $userId, WorkspaceRole::Owner));
         } finally {
             self::assertSame([], $audit->entries);
             self::assertSame(WorkspaceRole::Admin, $repo->findMembership($workspaceId, $userId)?->role());
@@ -85,6 +87,7 @@ final class ChangeMemberRoleHandlerTest extends TestCase
 
         try {
             $sut(new ChangeMemberRoleCommand(
+                new UserId(Uuid::v7()),
                 new WorkspaceId(Uuid::v7()),
                 new UserId(Uuid::v7()),
                 WorkspaceRole::Admin,
@@ -94,8 +97,9 @@ final class ChangeMemberRoleHandlerTest extends TestCase
         }
     }
 
-    public function testShouldLogAuditEntryWithBeforeAndAfterStateWhenRoleChanged(): void
+    public function testShouldLogAuditEntryWithActorBeforeAndAfterStateWhenRoleChanged(): void
     {
+        $actorUserId = new UserId(Uuid::v7());
         $repo = new InMemoryWorkspaceRepository();
         $workspaceId = new WorkspaceId(Uuid::v7());
         $userId = new UserId(Uuid::v7());
@@ -112,12 +116,13 @@ final class ChangeMemberRoleHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable('2026-11-07T15:00:00+00:00')),
         );
 
-        $sut(new ChangeMemberRoleCommand($workspaceId, $userId, WorkspaceRole::Member));
+        $sut(new ChangeMemberRoleCommand($actorUserId, $workspaceId, $userId, WorkspaceRole::Member));
 
         self::assertCount(1, $audit->entries);
         $entry = $audit->entries[0];
         self::assertSame(ChangeMemberRoleCommandHandler::AUDIT_ACTION, $entry->action);
         self::assertSame(ChangeMemberRoleCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame($actorUserId, $entry->userId);
         self::assertSame('guest', $entry->metadata['before_state']['role']);
         self::assertSame('member', $entry->metadata['after_state']['role']);
         self::assertSame((string) $workspaceId, $entry->metadata['workspace_id']);
