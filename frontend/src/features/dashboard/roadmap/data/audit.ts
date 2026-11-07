@@ -29,7 +29,8 @@ export const AUDIT_MILESTONE: RoadmapMilestone = {
       id: 'BL-AUDIT-004',
       description:
         'Undo dispatcher: UndoerInterface + UndoDescriberInterface tagged services, AuditApi::undo / describeUndo, HTTP POST /api/audit/entries/{id}/undo returning {new_entry_id}, 404/409/410/422 mapping.',
-      status: 'planned',
+      status: 'done',
+      commit: '0633493',
     },
     {
       id: 'BL-AUDIT-005',
