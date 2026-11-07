@@ -107,6 +107,9 @@
       "userManagement": {
         "title": "USER MANAGEMENT — admin panel for users + workspace assignments"
       },
+      "audit": {
+        "title": "AUDIT — audit log + undo dispatcher"
+      },
       "permissions": {
         "title": "PERMISSIONS — fine-grained per-workspace access"
       },

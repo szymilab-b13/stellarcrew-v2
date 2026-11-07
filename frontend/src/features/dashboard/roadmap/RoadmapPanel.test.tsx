@@ -140,7 +140,7 @@ describe('RoadmapPanel', () => {
     expect(screen.queryByRole('link', { name: /BL-AI-/i })).not.toBeInTheDocument();
   });
 
-  it('should render the USER MANAGEMENT milestone as tbd with a Needs discussion pill, a spec note and no tasks', async () => {
+  it('should render the USER MANAGEMENT milestone as planned with BL-UM tasks and no Needs discussion pill', async () => {
     render(<RoadmapPanel />);
 
     const header = screen.getByText(
@@ -148,12 +148,24 @@ describe('RoadmapPanel', () => {
     );
     const summary = header.closest('summary');
     expect(summary).not.toBeNull();
-    expect(summary).toHaveTextContent(/needs discussion/i);
+    expect(summary).not.toHaveTextContent(/needs discussion/i);
 
     await userEvent.click(header);
 
-    expect(screen.getByText(/knowledge\/briefs\/1c-user-management\.md/i)).toBeInTheDocument();
-    expect(screen.queryByText(/BL-UM-/i)).not.toBeInTheDocument();
+    expect(screen.getByText('BL-UM-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-UM-012')).toBeInTheDocument();
+    expect(screen.getByText(/UserProfile entity/i)).toBeInTheDocument();
+  });
+
+  it('should render the AUDIT milestone with BL-AUDIT tasks', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/AUDIT — audit log \+ undo dispatcher/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText('BL-AUDIT-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-AUDIT-007')).toBeInTheDocument();
+    expect(screen.getByText(/UndoerInterface/i)).toBeInTheDocument();
   });
 
   it('should flag the AI ENGINE milestone with a Needs discussion pill next to the status', () => {

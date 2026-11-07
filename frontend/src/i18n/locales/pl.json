@@ -107,6 +107,9 @@
       "userManagement": {
         "title": "USER MANAGEMENT — panel admina dla userów + przypisania do workspace"
       },
+      "audit": {
+        "title": "AUDIT — audit log + mechanizm cofania"
+      },
       "permissions": {
         "title": "PERMISSIONS — uprawnienia per workspace"
       },
