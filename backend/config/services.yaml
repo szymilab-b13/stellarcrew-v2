@@ -71,6 +71,9 @@ services:
     Modules\Workspaces\Api\WorkspacesApi:
         alias: Modules\Workspaces\Infrastructure\Api\DefaultWorkspacesApi
 
+    Modules\Workspaces\Application\ReadModel\WorkspaceMembersReadModel:
+        alias: Modules\Workspaces\Infrastructure\ReadModel\DbalWorkspaceMembersReadModel
+
     # UserManagement module bindings
     Modules\UserManagement\Domain\UserProfileRepository:
         alias: Modules\UserManagement\Infrastructure\Doctrine\Repository\DoctrineUserProfileRepository
@@ -96,6 +99,7 @@ when@test:
         App\Tests\Fixtures\Auth\SpyAuthApi: ~
         App\Tests\Fixtures\Auth\InMemoryUserRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~
+        App\Tests\Fixtures\Workspaces\InMemoryWorkspaceMembersReadModel: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel: ~
 
@@ -113,6 +117,9 @@ when@test:
 
         Modules\Workspaces\Domain\WorkspaceRepository:
             alias: App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository
+
+        Modules\Workspaces\Application\ReadModel\WorkspaceMembersReadModel:
+            alias: App\Tests\Fixtures\Workspaces\InMemoryWorkspaceMembersReadModel
 
         Modules\UserManagement\Domain\UserProfileRepository:
             alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository
