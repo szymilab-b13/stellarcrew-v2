@@ -93,6 +93,9 @@
     "milestones": {
       "core": {
         "title": "CORE — platform foundation"
+      },
+      "auth": {
+        "title": "AUTH — first login (JWT)"
       }
     }
   },

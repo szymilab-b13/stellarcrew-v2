@@ -37,4 +37,24 @@ describe('RoadmapPanel', () => {
     const description = screen.getByText(/User moved from Core to Auth/i);
     expect(description).toHaveClass('line-through');
   });
+
+  it('should render the AUTH milestone with its BL-AUTH tasks and commit links', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/AUTH — first login \(JWT\)/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText(/BL-AUTH-001/)).toBeInTheDocument();
+    expect(screen.getByText(/BL-AUTH-002/)).toBeInTheDocument();
+    expect(screen.getByText(/BL-AUTH-003/)).toBeInTheDocument();
+
+    const commitLink = screen.getByRole('link', { name: /ac605d5/ });
+    expect(commitLink).toHaveAttribute(
+      'href',
+      'https://github.com/Nessandro/stellarcrew-v2-private/commit/ac605d5',
+    );
+
+    const description = screen.getByText(/lexik\/jwt-authentication-bundle/i);
+    expect(description).toHaveClass('line-through');
+  });
 });
