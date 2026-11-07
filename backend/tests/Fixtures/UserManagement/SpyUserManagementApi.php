@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Fixtures\UserManagement;
 
 use Modules\Shared\Kernel\UserId;
+use Modules\UserManagement\Api\Dto\UserDetailDto;
 use Modules\UserManagement\Api\Dto\UserListPage;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
 use Modules\UserManagement\Api\UserManagementApi;
@@ -73,5 +74,12 @@ final class SpyUserManagementApi implements UserManagementApi
         unset($viewerId, $q);
 
         return [];
+    }
+
+    public function getUserDetail(UserId $userId): ?UserDetailDto
+    {
+        unset($userId);
+
+        return null;
     }
 }

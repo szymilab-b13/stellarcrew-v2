@@ -93,6 +93,40 @@ final readonly class DbalAuditEntriesReadModel implements AuditEntriesReadModel
         return $this->mapRow($row);
     }
 
+    public function listRecentForUser(UserId $userId, int $limit): array
+    {
+        $limit = max(1, $limit);
+        $rows = $this->connection->fetchAllAssociative(
+            'SELECT al.id, al.actor_user_id, al.action, al.resource_type, al.resource_id, '
+            . 'al.before_state, al.after_state, al.metadata, al.occurred_at, '
+            . 'al.undone_at, al.undone_by, al.reverts_entry_id, '
+            . 'actor.email AS actor_email, undoer.email AS undone_by_email '
+            . 'FROM audit.audit_log al '
+            . 'LEFT JOIN auth.users actor ON actor.id = al.actor_user_id '
+            . 'LEFT JOIN auth.users undoer ON undoer.id = al.undone_by '
+            . 'WHERE al.actor_user_id = :id '
+            . "OR (al.resource_type = 'User' AND al.resource_id = :id_text) "
+            . 'ORDER BY al.occurred_at DESC LIMIT :limit',
+            [
+                'id' => (string) $userId,
+                'id_text' => (string) $userId,
+                'limit' => $limit,
+            ],
+            [
+                'id' => ParameterType::STRING,
+                'id_text' => ParameterType::STRING,
+                'limit' => ParameterType::INTEGER,
+            ],
+        );
+
+        $items = [];
+        foreach ($rows as $row) {
+            $items[] = $this->mapRow($row);
+        }
+
+        return $items;
+    }
+
     /**
      * @return array{0: string, 1: array<string, mixed>, 2: array<string, ParameterType>}
      */

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\UserManagement\Api;
 
 use Modules\Shared\Kernel\UserId;
+use Modules\UserManagement\Api\Dto\UserDetailDto;
 use Modules\UserManagement\Api\Dto\UserListItemDto;
 use Modules\UserManagement\Api\Dto\UserListPage;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
@@ -16,6 +17,8 @@ interface UserManagementApi
     public function createProfileForUser(UserId $userId, string $email, ?string $displayName = null): UserProfileDto;
 
     public function getProfile(UserId $userId): ?UserProfileDto;
+
+    public function getUserDetail(UserId $userId): ?UserDetailDto;
 
     /**
      * Creates a brand-new user (Auth entry + UserProfile + audit log).

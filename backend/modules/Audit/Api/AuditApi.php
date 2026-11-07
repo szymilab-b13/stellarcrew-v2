@@ -18,6 +18,13 @@ interface AuditApi
 
     public function get(AuditEntryId $id): ?AuditEntryDto;
 
+    /**
+     * Returns the most recent entries related to the user — either as actor or as a target resource.
+     *
+     * @return list<AuditEntryDto>
+     */
+    public function listRecentForUser(UserId $userId, int $limit = 20): array;
+
     public function undo(AuditEntryId $id, UserId $performedBy): AuditEntryId;
 
     public function describeUndo(AuditEntryId $id): string;

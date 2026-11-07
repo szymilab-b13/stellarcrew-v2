@@ -14,8 +14,10 @@ use function min;
 
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
+use Modules\UserManagement\Api\Dto\UserDetailDto;
 use Modules\UserManagement\Api\Dto\UserListItemDto;
 use Modules\UserManagement\Api\Dto\UserListPage;
+use Modules\UserManagement\Api\Dto\UserWorkspaceAssignmentDto;
 use Modules\UserManagement\Application\Query\UserListFilters;
 use Modules\UserManagement\Application\ReadModel\UserProfileReadModel;
 
@@ -148,6 +150,72 @@ final readonly class DbalUserProfileReadModel implements UserProfileReadModel
         }
 
         return $items;
+    }
+
+    public function findDetail(UserId $userId): ?UserDetailDto
+    {
+        $row = $this->connection->fetchAssociative(
+            'SELECT u.id, u.email, u.role, u.created_at AS u_created_at, '
+            . 'p.display_name, p.avatar_color, p.deactivated_at '
+            . 'FROM user_management.user_profiles p '
+            . 'INNER JOIN auth.users u ON u.id = p.id '
+            . 'WHERE u.id = :id',
+            ['id' => (string) $userId],
+            ['id' => ParameterType::STRING],
+        );
+        if ($row === false) {
+            return null;
+        }
+
+        $assignments = $this->connection->fetchAllAssociative(
+            'SELECT w.id AS workspace_id, w.name, w.slug, w.icon_color, w.icon_initials, '
+            . 'wm.role, wm.joined_at '
+            . 'FROM workspaces.workspace_members wm '
+            . 'INNER JOIN workspaces.workspaces w ON w.id = wm.workspace_id '
+            . 'WHERE wm.user_id = :id AND w.deleted_at IS NULL '
+            . 'ORDER BY wm.joined_at ASC, w.name ASC',
+            ['id' => (string) $userId],
+            ['id' => ParameterType::STRING],
+        );
+
+        $workspaceAssignments = [];
+        foreach ($assignments as $assignment) {
+            $joinedAt = $assignment['joined_at'];
+            if (!$joinedAt instanceof DateTimeImmutable) {
+                $joinedAt = new DateTimeImmutable((string) $joinedAt);
+            }
+
+            $workspaceAssignments[] = new UserWorkspaceAssignmentDto(
+                workspaceId: (string) $assignment['workspace_id'],
+                workspaceName: (string) $assignment['name'],
+                workspaceSlug: (string) $assignment['slug'],
+                iconColor: (string) $assignment['icon_color'],
+                iconInitials: (string) $assignment['icon_initials'],
+                role: (string) $assignment['role'],
+                joinedAt: $joinedAt,
+            );
+        }
+
+        $createdAt = $row['u_created_at'];
+        if (!$createdAt instanceof DateTimeImmutable) {
+            $createdAt = new DateTimeImmutable((string) $createdAt);
+        }
+
+        $deactivatedAt = $row['deactivated_at'] ?? null;
+        if ($deactivatedAt !== null && !$deactivatedAt instanceof DateTimeImmutable) {
+            $deactivatedAt = new DateTimeImmutable((string) $deactivatedAt);
+        }
+
+        return new UserDetailDto(
+            id: (string) $row['id'],
+            email: (string) $row['email'],
+            isSuperAdmin: (string) $row['role'] === self::ROLE_ADMIN,
+            displayName: $row['display_name'] === null ? null : (string) $row['display_name'],
+            avatarColor: (string) $row['avatar_color'],
+            createdAt: $createdAt,
+            deactivatedAt: $deactivatedAt,
+            workspaceAssignments: $workspaceAssignments,
+        );
     }
 
     /**

@@ -86,6 +86,11 @@ final readonly class AuditService implements AuditApi, AuditLoggerInterface
         return $this->readModel->find($id);
     }
 
+    public function listRecentForUser(UserId $userId, int $limit = 20): array
+    {
+        return $this->readModel->listRecentForUser($userId, $limit);
+    }
+
     public function undo(AuditEntryId $id, UserId $performedBy): AuditEntryId
     {
         throw new LogicException('Audit undo is not implemented yet (BL-AUDIT-004).');

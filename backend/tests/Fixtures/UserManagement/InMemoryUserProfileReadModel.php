@@ -17,8 +17,10 @@ use function max;
 
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
+use Modules\UserManagement\Api\Dto\UserDetailDto;
 use Modules\UserManagement\Api\Dto\UserListItemDto;
 use Modules\UserManagement\Api\Dto\UserListPage;
+use Modules\UserManagement\Api\Dto\UserWorkspaceAssignmentDto;
 use Modules\UserManagement\Application\Query\UserListFilters;
 use Modules\UserManagement\Application\ReadModel\UserProfileReadModel;
 
@@ -143,6 +145,41 @@ final class InMemoryUserProfileReadModel implements UserProfileReadModel
         usort($matched, static fn (array $a, array $b): int => $a['email'] <=> $b['email']);
 
         return array_values(array_map($this->hydrate(...), $matched));
+    }
+
+    public function findDetail(UserId $userId): ?UserDetailDto
+    {
+        foreach ($this->users as $u) {
+            if ($u['id'] !== (string) $userId) {
+                continue;
+            }
+
+            $assignments = [];
+            foreach ($u['workspaceIds'] as $wsId) {
+                $assignments[] = new UserWorkspaceAssignmentDto(
+                    workspaceId: $wsId,
+                    workspaceName: 'Workspace ' . $wsId,
+                    workspaceSlug: 'workspace-' . $wsId,
+                    iconColor: '#8B5CF6',
+                    iconInitials: 'WS',
+                    role: 'member',
+                    joinedAt: $u['createdAt'],
+                );
+            }
+
+            return new UserDetailDto(
+                id: $u['id'],
+                email: $u['email'],
+                isSuperAdmin: $u['isSuperAdmin'],
+                displayName: null,
+                avatarColor: '#8B5CF6',
+                createdAt: $u['createdAt'],
+                deactivatedAt: $u['deactivatedAt'],
+                workspaceAssignments: $assignments,
+            );
+        }
+
+        return null;
     }
 
     /**
