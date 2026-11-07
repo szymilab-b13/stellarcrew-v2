@@ -95,5 +95,11 @@ export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
       status: 'done',
       commit: '5908052',
     },
+    {
+      id: 'BL-UM-014',
+      description:
+        'Thread actor user id through UM + Workspaces audit flows: 4 UM commands (CreateUser/DeactivateUser/ReactivateUser/ResetUserPassword) + 2 Workspaces commands (ChangeMemberRole/RemoveMember) + AssignMember carry UserId $actorUserId; UserManagementApi / WorkspacesApi methods expose actor; controllers inject #[CurrentUser] SecurityUser. SpyAuditLogger now enforces the AuditService contract (LogicException when userId is null) so tests reproduce the prod bug. Fixes 500 from deactivate/reactivate/reset/create and workspace change-role/remove endpoints.',
+      status: 'done',
+    },
   ],
 };
