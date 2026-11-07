@@ -84,6 +84,7 @@
     "title": "Mapa drogowa",
     "subtitle": "Milestony i zadania — domyślnie zwinięte.",
     "emptyTasks": "Zakres do ustalenia z Szefem.",
+    "discussNeeded": "Do omówienia",
     "statuses": {
       "done": "Zrobione",
       "inProgress": "W toku",

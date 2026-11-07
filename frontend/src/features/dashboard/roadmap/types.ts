@@ -11,5 +11,6 @@ export interface RoadmapMilestone {
   key: string;
   status: MilestoneStatus;
   note?: string;
+  discussNeeded?: boolean;
   tasks: RoadmapTask[];
 }

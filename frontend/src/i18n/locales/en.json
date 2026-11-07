@@ -84,6 +84,7 @@
     "title": "Roadmap",
     "subtitle": "Milestones and tasks — collapsed by default.",
     "emptyTasks": "No tasks yet — scope to be confirmed with Szef.",
+    "discussNeeded": "Needs discussion",
     "statuses": {
       "done": "Done",
       "inProgress": "In progress",

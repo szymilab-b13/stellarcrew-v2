@@ -1,4 +1,4 @@
-import { Circle, CircleCheck, CircleDashed, CircleDot } from 'lucide-react';
+import { ChevronRight, Square, SquareCheck, SquareDashed, SquareDot } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import type { MilestoneStatus, RoadmapMilestone, RoadmapTask } from './types';
@@ -26,7 +26,16 @@ export function MilestoneCard({ milestone }: MilestoneCardProps) {
   return (
     <details className="group rounded-lg border border-sc-border bg-sc-bg-card">
       <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3 text-sm font-medium text-sc-text transition-colors hover:bg-sc-bg-secondary">
+        <ChevronRight
+          className="h-4 w-4 flex-none text-sc-text-muted transition-transform group-open:rotate-90"
+          aria-hidden
+        />
         <span className="flex-1 truncate">{title}</span>
+        {milestone.discussNeeded ? (
+          <span className="inline-flex items-center rounded-full bg-amber-400/15 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-500">
+            {t('roadmap.discussNeeded')}
+          </span>
+        ) : null}
         <span
           className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-wide ${STATUS_BADGE_CLASSES[milestone.status]}`}
         >
@@ -63,7 +72,7 @@ function TaskRow({ task }: { task: RoadmapTask }) {
   const isDone = task.status === 'done';
   return (
     <li className="flex items-start gap-2 text-sm">
-      <StatusIcon status={task.status} />
+      <TaskCheckbox status={task.status} />
       <div className="min-w-0 flex-1">
         <span className="font-mono text-xs text-sc-text-muted">{task.id}</span>{' '}
         <span className={isDone ? 'line-through text-sc-text-muted' : 'text-sc-text'}>
@@ -87,11 +96,13 @@ function TaskRow({ task }: { task: RoadmapTask }) {
   );
 }
 
-function StatusIcon({ status }: { status: MilestoneStatus }) {
+function TaskCheckbox({ status }: { status: MilestoneStatus }) {
   const common = 'mt-0.5 h-4 w-4 flex-none';
-  if (status === 'done') return <CircleCheck className={`${common} text-sc-primary`} aria-hidden />;
+  if (status === 'done')
+    return <SquareCheck className={`${common} text-sc-primary`} aria-hidden data-testid="task-checkbox-done" />;
   if (status === 'inProgress')
-    return <CircleDot className={`${common} text-amber-500`} aria-hidden />;
-  if (status === 'tbd') return <CircleDashed className={`${common} text-slate-400`} aria-hidden />;
-  return <Circle className={`${common} text-sc-text-muted`} aria-hidden />;
+    return <SquareDot className={`${common} text-amber-500`} aria-hidden data-testid="task-checkbox-in-progress" />;
+  if (status === 'tbd')
+    return <SquareDashed className={`${common} text-slate-400`} aria-hidden data-testid="task-checkbox-tbd" />;
+  return <Square className={`${common} text-sc-text-muted`} aria-hidden data-testid="task-checkbox-planned" />;
 }

@@ -140,6 +140,46 @@ describe('RoadmapPanel', () => {
     expect(screen.queryByRole('link', { name: /BL-AI-/i })).not.toBeInTheDocument();
   });
 
+  it('should flag the AI ENGINE milestone with a Needs discussion pill next to the status', () => {
+    render(<RoadmapPanel />);
+
+    const summary = screen.getByText(/AI ENGINE — model orchestration, memory strategy/i).closest(
+      'summary',
+    );
+    expect(summary).not.toBeNull();
+    expect(summary).toHaveTextContent(/needs discussion/i);
+  });
+
+  it('should NOT render the Needs discussion pill on milestones without the flag', () => {
+    render(<RoadmapPanel />);
+
+    const coreSummary = screen
+      .getByText(/CORE — platform foundation/i)
+      .closest('summary');
+    expect(coreSummary).not.toBeNull();
+    expect(coreSummary).not.toHaveTextContent(/needs discussion/i);
+  });
+
+  it('should render done tasks with a checked square and planned tasks with an empty square', async () => {
+    render(<RoadmapPanel />);
+    await userEvent.click(screen.getByText(/CORE — platform foundation/i));
+
+    const doneBoxes = screen.getAllByTestId('task-checkbox-done');
+    expect(doneBoxes.length).toBeGreaterThan(0);
+
+    await userEvent.click(screen.getByText(/PERMISSIONS — fine-grained per-workspace access/i));
+    const plannedBoxes = screen.getAllByTestId('task-checkbox-planned');
+    expect(plannedBoxes.length).toBeGreaterThan(0);
+  });
+
+  it('should render a tbd task with a dashed checkbox (BL-AGENTS-006)', async () => {
+    render(<RoadmapPanel />);
+    await userEvent.click(screen.getByText(/AGENTS — catalog, user agents, assignments, memory/i));
+
+    const dashed = screen.getAllByTestId('task-checkbox-tbd');
+    expect(dashed.length).toBeGreaterThan(0);
+  });
+
   it('should render the AUTH refresh tokens milestone as planned with its BL-AUTH-004/005 tasks and no commit links', async () => {
     render(<RoadmapPanel />);
 
