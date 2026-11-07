@@ -11,6 +11,7 @@ import { LanguageSwitcher } from '@/features/settings/LanguageSwitcher';
 import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 import { resolveIcon } from './iconMap';
+import { ProfileDropdown } from './ProfileDropdown';
 import { PINNED_MENU_LIMIT, usePinnedMenu } from './usePinnedMenu';
 import { useCollapsedSections, useSidebarCollapsed } from './useSidebarState';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
@@ -200,6 +201,7 @@ export function Sidebar() {
       </nav>
 
       <div className="flex flex-col gap-2 border-t border-sc-border px-3 py-3">
+        <ProfileDropdown collapsed={collapsed} />
         <div className={`flex items-center gap-2 ${collapsed ? 'flex-col' : 'justify-between'}`}>
           {!collapsed ? <LanguageSwitcher /> : null}
           <ThemeToggle />

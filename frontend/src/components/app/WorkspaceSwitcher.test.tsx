@@ -129,6 +129,24 @@ describe('WorkspaceSwitcher', () => {
     expect(await screen.findByRole('button', { name: /select workspace/i })).toBeInTheDocument();
   });
 
+  it('should show the role pill for the current workspace and each menu item', async () => {
+    const alphaWithRole: Workspace = { ...workspaceAlpha, role: 'owner' };
+    const betaWithRole: Workspace = { ...workspaceBeta, role: 'admin' };
+    useCurrentWorkspace.setState({ currentWorkspaceId: alphaWithRole.id });
+    vi.mocked(fetch).mockResolvedValueOnce(mockResponse({ body: [alphaWithRole, betaWithRole] }));
+
+    renderSwitcher();
+    const user = userEvent.setup();
+
+    expect(await screen.findByTestId('role-pill-owner')).toBeInTheDocument();
+
+    await user.click(await screen.findByRole('button', { name: /alpha/i }));
+
+    const menu = await screen.findByRole('menu');
+    expect(menu).toContainElement(screen.getAllByTestId('role-pill-owner')[1] ?? null);
+    expect(menu).toContainElement(screen.getByTestId('role-pill-admin'));
+  });
+
   it('should render only the initials tile when collapsed', async () => {
     useCurrentWorkspace.setState({ currentWorkspaceId: workspaceAlpha.id });
     vi.mocked(fetch).mockResolvedValueOnce(mockResponse({ body: [workspaceAlpha] }));

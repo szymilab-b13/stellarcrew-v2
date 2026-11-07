@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
+import { RolePill } from '@/features/user-management/components/RolePill';
 import { useWorkspacesList } from '@/features/workspaces/api/useWorkspaces';
 import { useCurrentWorkspace } from '@/features/workspaces/state/useCurrentWorkspace';
 import { findColorOption, type Workspace } from '@/features/workspaces/types';
@@ -77,6 +78,11 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
               {t('workspaceSwitcher.label')}
             </span>
             <span className="truncate text-sm font-semibold text-sc-text">{displayName}</span>
+            {current?.role ? (
+              <span className="mt-0.5">
+                <RolePill role={current.role} size="sm" />
+              </span>
+            ) : null}
           </span>
         </span>
         {list.isPending ? (
@@ -111,6 +117,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
                     >
                       <WorkspaceIconSmall workspace={workspace} />
                       <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
+                      {workspace.role ? <RolePill role={workspace.role} size="sm" /> : null}
                     </button>
                   </li>
                 );

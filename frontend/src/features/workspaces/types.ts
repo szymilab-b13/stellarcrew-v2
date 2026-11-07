@@ -1,3 +1,5 @@
+export type WorkspaceRole = 'owner' | 'admin' | 'member' | 'guest';
+
 export interface Workspace {
   id: string;
   name: string;
@@ -5,6 +7,7 @@ export interface Workspace {
   iconColor: string;
   iconInitials: string;
   ownerId: string;
+  role?: WorkspaceRole;
 }
 
 export interface WorkspaceCreateInput {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Modules\Core\Infrastructure\Console;
 
 use App\Tests\Fixtures\Auth\SpyAuthApi;
+use App\Tests\Fixtures\UserManagement\SpyUserManagementApi;
 use App\Tests\Fixtures\Workspaces\SpyWorkspacesApi;
 use DateTimeImmutable;
 use Modules\Core\Application\Install\InstallSystemCommandHandler;
@@ -90,6 +91,7 @@ final class InstallCommandTest extends TestCase
             $auth,
             $settings,
             new SpyWorkspacesApi(),
+            new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
         );
         $command = new InstallCommand($isInstalled, $install);

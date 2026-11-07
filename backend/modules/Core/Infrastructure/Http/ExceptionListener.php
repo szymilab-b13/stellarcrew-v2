@@ -8,6 +8,12 @@ use function array_slice;
 
 use Modules\Core\Application\Install\InvalidInstallInputException;
 use Modules\Core\Application\Install\SystemAlreadyInstalledException;
+use Modules\UserManagement\Api\Exception\EmailTakenException as UserManagementEmailTakenException;
+use Modules\Workspaces\Api\Exception\AdminMustBeDowngradedFirstException;
+use Modules\Workspaces\Api\Exception\CannotRemoveOwnerException;
+use Modules\Workspaces\Api\Exception\InvalidMemberRoleException;
+use Modules\Workspaces\Api\Exception\MemberAlreadyExistsException;
+use Modules\Workspaces\Api\Exception\MemberNotFoundException;
 use Modules\Workspaces\Domain\WorkspaceNotFoundException;
 use Modules\Workspaces\Domain\WorkspacePermissionDeniedException;
 
@@ -80,6 +86,30 @@ final readonly class ExceptionListener
 
         if ($throwable instanceof WorkspacePermissionDeniedException) {
             return [Response::HTTP_FORBIDDEN, 'FORBIDDEN', null];
+        }
+
+        if ($throwable instanceof UserManagementEmailTakenException) {
+            return [Response::HTTP_UNPROCESSABLE_ENTITY, 'EMAIL_TAKEN', null];
+        }
+
+        if ($throwable instanceof MemberAlreadyExistsException) {
+            return [Response::HTTP_CONFLICT, 'ALREADY_MEMBER', null];
+        }
+
+        if ($throwable instanceof AdminMustBeDowngradedFirstException) {
+            return [Response::HTTP_UNPROCESSABLE_ENTITY, 'ADMIN_MUST_BE_DOWNGRADED_FIRST', null];
+        }
+
+        if ($throwable instanceof CannotRemoveOwnerException) {
+            return [Response::HTTP_UNPROCESSABLE_ENTITY, 'CANNOT_REMOVE_OWNER', null];
+        }
+
+        if ($throwable instanceof InvalidMemberRoleException) {
+            return [Response::HTTP_UNPROCESSABLE_ENTITY, 'INVALID_MEMBER_ROLE', null];
+        }
+
+        if ($throwable instanceof MemberNotFoundException) {
+            return [Response::HTTP_NOT_FOUND, 'NOT_FOUND', null];
         }
 
         if ($throwable instanceof AuthenticationException) {

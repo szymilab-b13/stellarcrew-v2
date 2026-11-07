@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\UserManagement\Domain\UserProfile" table="user_profiles" schema="user_management">
+
+        <id name="id" type="user_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="displayName" type="string" column="display_name" length="100" nullable="true"/>
+        <field name="avatarColor" type="string" column="avatar_color" length="20" nullable="false"/>
+        <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+        <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
+        <field name="deactivatedAt" type="datetimetz_immutable" column="deactivated_at" nullable="true"/>
+
+    </entity>
+
+</doctrine-mapping>

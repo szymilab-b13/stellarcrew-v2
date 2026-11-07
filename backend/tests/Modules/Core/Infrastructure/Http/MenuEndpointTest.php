@@ -7,6 +7,7 @@ namespace App\Tests\Modules\Core\Infrastructure\Http;
 use DateTimeImmutable;
 use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
+use Modules\Auth\Domain\UserRole;
 use Modules\Auth\Infrastructure\Security\HashablePlaintextUser;
 use Modules\Shared\Kernel\UserId;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -32,7 +33,7 @@ final class MenuEndpointTest extends WebTestCase
         self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testShouldReturnDashboardAndWorkspacesSectionsForAdmin(): void
+    public function testShouldReturnOverviewWorkspacesAndAdminSectionsForAdmin(): void
     {
         $this->seedAdmin('admin@example.com', 'secret-pass-long-enough');
         $token = $this->login('admin@example.com', 'secret-pass-long-enough');
@@ -43,7 +44,7 @@ final class MenuEndpointTest extends WebTestCase
         $payload = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
 
         $sectionIds = array_map(static fn (array $section): string => $section['id'], $payload['sections']);
-        self::assertSame(['overview', 'workspaces'], $sectionIds);
+        self::assertSame(['overview', 'workspaces', 'admin'], $sectionIds);
 
         $overview = $payload['sections'][0];
         self::assertSame('menu.sections.overview', $overview['labelKey']);
@@ -54,6 +55,27 @@ final class MenuEndpointTest extends WebTestCase
         $workspaces = $payload['sections'][1];
         self::assertSame('workspaces.list', $workspaces['items'][0]['id']);
         self::assertSame('/workspaces', $workspaces['items'][0]['path']);
+
+        $admin = $payload['sections'][2];
+        self::assertSame('menu.sections.admin', $admin['labelKey']);
+        self::assertSame('admin.users', $admin['items'][0]['id']);
+        self::assertSame('menu.items.users', $admin['items'][0]['labelKey']);
+        self::assertSame('/admin/users', $admin['items'][0]['path']);
+        self::assertSame('Users', $admin['items'][0]['icon']);
+    }
+
+    public function testShouldHideAdminSectionForNonAdmin(): void
+    {
+        $this->seedRegular('user@example.com', 'secret-pass-long-enough');
+        $token = $this->login('user@example.com', 'secret-pass-long-enough');
+
+        $this->client->request('GET', '/api/menu', server: ['HTTP_AUTHORIZATION' => 'Bearer '.$token]);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+
+        $sectionIds = array_map(static fn (array $section): string => $section['id'], $payload['sections']);
+        self::assertNotContains('admin', $sectionIds);
     }
 
     private function seedAdmin(string $email, string $plaintextPassword): void
@@ -68,6 +90,26 @@ final class MenuEndpointTest extends WebTestCase
             $passwordHash,
             new DateTimeImmutable('2026-11-06T09:00:00+00:00'),
             'Tomek',
+        );
+
+        /** @var UserRepository $users */
+        $users = self::getContainer()->get(UserRepository::class);
+        $users->save($user);
+    }
+
+    private function seedRegular(string $email, string $plaintextPassword): void
+    {
+        /** @var UserPasswordHasherInterface $hasher */
+        $hasher = self::getContainer()->get(UserPasswordHasherInterface::class);
+        $passwordHash = $hasher->hashPassword(new HashablePlaintextUser(), $plaintextPassword);
+
+        $user = User::createWithRole(
+            new UserId(Uuid::v7()),
+            $email,
+            $passwordHash,
+            UserRole::User,
+            new DateTimeImmutable('2026-11-06T09:00:00+00:00'),
+            'Regular',
         );
 
         /** @var UserRepository $users */

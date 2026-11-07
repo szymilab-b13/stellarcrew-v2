@@ -53,6 +53,43 @@ final class SpyWorkspacesApi implements WorkspacesApi
         return false;
     }
 
+    public function assignMember(
+        WorkspaceId $workspaceId,
+        UserId $userId,
+        string $role,
+        ?UserId $invitedBy = null,
+    ): MembershipView {
+        unset($invitedBy);
+
+        return new MembershipView(
+            workspaceId: (string) $workspaceId,
+            userId: (string) $userId,
+            role: $role,
+        );
+    }
+
+    public function changeMemberRole(
+        WorkspaceId $workspaceId,
+        UserId $userId,
+        string $role,
+    ): MembershipView {
+        return new MembershipView(
+            workspaceId: (string) $workspaceId,
+            userId: (string) $userId,
+            role: $role,
+        );
+    }
+
+    public function removeMember(WorkspaceId $workspaceId, UserId $userId): void
+    {
+        unset($workspaceId, $userId);
+    }
+
+    public function findMember(WorkspaceId $workspaceId, UserId $userId): ?MembershipView
+    {
+        return $this->getMembership($workspaceId, $userId);
+    }
+
     public function membershipFor(UserId $userId, WorkspaceRole $role): MembershipView
     {
         return new MembershipView(

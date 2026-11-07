@@ -43,15 +43,133 @@
     "sections": {
       "overview": "Overview",
       "workspaces": "Workspaces",
+      "admin": "Administration",
       "pinned": "Pinned"
     },
     "items": {
       "dashboard": "Dashboard",
-      "workspaces": "Workspaces"
+      "workspaces": "Workspaces",
+      "users": "Users"
     },
     "pinAdd": "Pin to top",
     "pinRemove": "Unpin",
     "pinLimit": "Up to {{limit}} pinned items"
+  },
+  "userManagement": {
+    "breadcrumb": "Users",
+    "title": "Users",
+    "subtitle": "Manage every user in this instance.",
+    "addUser": "Add user",
+    "loading": "Loading users…",
+    "loadError": "Could not load users.",
+    "listAria": "Users table",
+    "total": "{{count}} users total",
+    "filters": {
+      "ariaLabel": "User filters",
+      "search": "Search by email",
+      "searchPlaceholder": "e.g. admin@example.com",
+      "workspace": "Workspace",
+      "workspaceAll": "All workspaces",
+      "hasSuperAdmin": "Super admin",
+      "hasSuperAdminAll": "All users",
+      "hasSuperAdminYes": "Only super admins",
+      "hasSuperAdminNo": "Only regular users",
+      "onlyDeactivated": "Only deactivated"
+    },
+    "columns": {
+      "email": "Email",
+      "superAdmin": "Super admin",
+      "workspaces": "Workspaces",
+      "status": "Status",
+      "createdAt": "Created"
+    },
+    "table": {
+      "empty": "No users match the current filters.",
+      "badgeSuperAdmin": "Super admin",
+      "badgeRegular": "Regular",
+      "statusActive": "Active",
+      "statusDeactivated": "Deactivated"
+    },
+    "addDialog": {
+      "title": "Add user",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 12 characters.",
+      "passwordConfirm": "Confirm password",
+      "isSuperAdmin": "Grant super admin",
+      "submit": "Create",
+      "errors": {
+        "email": {
+          "invalid": "Enter a valid email address."
+        },
+        "password": {
+          "tooShort": "Password must have at least 12 characters."
+        },
+        "passwordConfirm": {
+          "mismatch": "Passwords do not match."
+        },
+        "server": {
+          "validation": "The server rejected the submitted values.",
+          "emailTaken": "This email is already in use.",
+          "forbidden": "Only super admins can create users.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
+    }
+  },
+  "workspaceMembers": {
+    "breadcrumb": "Members",
+    "title": "Workspace members",
+    "subtitle": "Manage the team in this workspace.",
+    "loading": "Loading members…",
+    "loadError": "Could not load members.",
+    "listAria": "Members table",
+    "total": "{{count}} members total",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member",
+      "guest": "Guest"
+    },
+    "columns": {
+      "email": "Email",
+      "role": "Role",
+      "joinedAt": "Joined"
+    },
+    "table": {
+      "empty": "No members to display.",
+      "remove": "Remove",
+      "removeAria": "Remove member {{email}}",
+      "roleAria": "Change role of {{email}}"
+    },
+    "add": {
+      "title": "Add member",
+      "email": "User email",
+      "emailPlaceholder": "e.g. someone@example.com",
+      "role": "Role",
+      "submit": "Add",
+      "loading": "Searching…",
+      "candidatesAria": "Suggested users",
+      "notFoundHint": "No match. Ask a super admin to create the account.",
+      "errors": {
+        "alreadyMember": "This user is already a member.",
+        "forbidden": "You do not have permission to add members.",
+        "validation": "The server rejected the submitted values.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "remove": {
+      "title": "Remove member",
+      "body": "Remove member \"{{email}}\" from this workspace?",
+      "confirm": "Remove",
+      "confirming": "Removing…",
+      "errors": {
+        "adminMustBeDowngraded": "Downgrade the admin to Member before removing.",
+        "notFound": "This user is no longer a member.",
+        "forbidden": "You do not have permission to remove members.",
+        "generic": "Could not remove the member."
+      }
+    }
   },
   "workspaceSwitcher": {
     "label": "Workspace",
@@ -60,6 +178,36 @@
     "menuAria": "Workspaces menu",
     "collapsedEmpty": "No workspace",
     "loading": "Loading…"
+  },
+  "profileDropdown": {
+    "trigger": "Profile",
+    "menuAria": "Profile menu",
+    "myWorkspacesHeading": "My workspaces",
+    "noWorkspaces": "No workspaces yet."
+  },
+  "adminUserDetail": {
+    "loading": "Loading user…",
+    "loadError": "Could not load user.",
+    "breadcrumb": { "users": "Users" },
+    "pills": { "superAdmin": "Super admin", "deactivated": "Deactivated" },
+    "sections": {
+      "workspaces": "Workspaces",
+      "account": "Account",
+      "audit": "Change history"
+    },
+    "workspaces": { "empty": "This user has no workspace assignments." },
+    "account": {
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "resetPassword": "Reset password",
+      "pendingTooltip": "Available after BL-UM-011/012."
+    },
+    "audit": {
+      "loading": "Loading audit entries…",
+      "empty": "No audit entries for this user.",
+      "undone": "undone",
+      "seeAll": "See all entries"
+    }
   },
   "dashboard": {
     "eyebrow": "Dashboard",

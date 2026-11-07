@@ -13,4 +13,11 @@ interface AuthApi
         string $plaintextPassword,
         ?string $displayName = null,
     ): AuthUser;
+
+    public function createUser(
+        string $email,
+        string $plaintextPassword,
+        bool $isSuperAdmin = false,
+        ?string $displayName = null,
+    ): AuthUser;
 }

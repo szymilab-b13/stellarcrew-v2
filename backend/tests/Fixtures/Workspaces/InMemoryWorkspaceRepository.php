@@ -57,6 +57,23 @@ final class InMemoryWorkspaceRepository implements WorkspaceRepository
         $this->members[] = $member;
     }
 
+    public function removeMembership(WorkspaceMember $member): void
+    {
+        $kept = [];
+        foreach ($this->members as $existing) {
+            if (
+                $existing->workspaceId()->equals($member->workspaceId())
+                && $existing->userId()->equals($member->userId())
+            ) {
+                continue;
+            }
+
+            $kept[] = $existing;
+        }
+
+        $this->members = $kept;
+    }
+
     public function findMembership(WorkspaceId $workspaceId, UserId $userId): ?WorkspaceMember
     {
         foreach ($this->members as $member) {
@@ -88,6 +105,35 @@ final class InMemoryWorkspaceRepository implements WorkspaceRepository
             }
 
             $result[] = $workspace;
+        }
+
+        return $result;
+    }
+
+    public function listForUserWithRoles(UserId $userId): array
+    {
+        $rolesByWorkspaceId = [];
+        foreach ($this->members as $member) {
+            if ($member->userId()->equals($userId)) {
+                $rolesByWorkspaceId[(string) $member->workspaceId()] = $member->role();
+            }
+        }
+
+        $result = [];
+        foreach ($this->workspaces as $workspace) {
+            $key = (string) $workspace->id();
+            if (!isset($rolesByWorkspaceId[$key])) {
+                continue;
+            }
+
+            if ($workspace->isDeleted()) {
+                continue;
+            }
+
+            $result[] = [
+                'workspace' => $workspace,
+                'role' => $rolesByWorkspaceId[$key],
+            ];
         }
 
         return $result;

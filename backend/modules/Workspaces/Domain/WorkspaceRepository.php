@@ -17,12 +17,19 @@ interface WorkspaceRepository
 
     public function saveMembership(WorkspaceMember $member): void;
 
+    public function removeMembership(WorkspaceMember $member): void;
+
     public function findMembership(WorkspaceId $workspaceId, UserId $userId): ?WorkspaceMember;
 
     /**
      * @return list<Workspace>
      */
     public function listForUser(UserId $userId): array;
+
+    /**
+     * @return list<array{workspace: Workspace, role: WorkspaceRole}>
+     */
+    public function listForUserWithRoles(UserId $userId): array;
 
     public function count(): int;
 }

@@ -50,6 +50,20 @@ services:
     Modules\Core\Domain\SystemSettingRepository:
         alias: Modules\Core\Infrastructure\Doctrine\Repository\DoctrineSystemSettingRepository
 
+    # Audit module bindings
+    Modules\Audit\Domain\AuditLogEntryRepository:
+        alias: Modules\Audit\Infrastructure\Doctrine\Repository\DoctrineAuditLogEntryRepository
+
+    Modules\Audit\Application\ReadModel\AuditEntriesReadModel:
+        alias: Modules\Audit\Infrastructure\ReadModel\DbalAuditEntriesReadModel
+
+    Modules\Audit\Api\AuditApi:
+        alias: Modules\Audit\Infrastructure\Service\AuditService
+
+    # Concrete logger from the Audit module replaces the Core no-op sink
+    Modules\Core\Api\AuditLoggerInterface:
+        alias: Modules\Audit\Infrastructure\Service\AuditService
+
     # Auth module bindings
     Modules\Auth\Domain\UserRepository:
         alias: Modules\Auth\Infrastructure\Doctrine\Repository\DoctrineUserRepository
@@ -67,6 +81,19 @@ services:
     Modules\Workspaces\Api\WorkspacesApi:
         alias: Modules\Workspaces\Infrastructure\Api\DefaultWorkspacesApi
 
+    Modules\Workspaces\Application\ReadModel\WorkspaceMembersReadModel:
+        alias: Modules\Workspaces\Infrastructure\ReadModel\DbalWorkspaceMembersReadModel
+
+    # UserManagement module bindings
+    Modules\UserManagement\Domain\UserProfileRepository:
+        alias: Modules\UserManagement\Infrastructure\Doctrine\Repository\DoctrineUserProfileRepository
+
+    Modules\UserManagement\Application\ReadModel\UserProfileReadModel:
+        alias: Modules\UserManagement\Infrastructure\ReadModel\DbalUserProfileReadModel
+
+    Modules\UserManagement\Api\UserManagementApi:
+        alias: Modules\UserManagement\Infrastructure\Api\DefaultUserManagementApi
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
@@ -78,12 +105,19 @@ when@test:
 
         # swap doctrine-backed install adapters with in-memory fakes for endpoint tests
         App\Tests\Fixtures\Core\InMemorySystemSettingRepository: ~
+        App\Tests\Fixtures\Core\SpyAuditLogger: ~
         App\Tests\Fixtures\Auth\SpyAuthApi: ~
         App\Tests\Fixtures\Auth\InMemoryUserRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~
+        App\Tests\Fixtures\Workspaces\InMemoryWorkspaceMembersReadModel: ~
+        App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository: ~
+        App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel: ~
 
         Modules\Core\Domain\SystemSettingRepository:
             alias: App\Tests\Fixtures\Core\InMemorySystemSettingRepository
+
+        Modules\Core\Api\AuditLoggerInterface:
+            alias: App\Tests\Fixtures\Core\SpyAuditLogger
 
         Modules\Auth\Api\AuthApi:
             alias: App\Tests\Fixtures\Auth\SpyAuthApi
@@ -93,6 +127,15 @@ when@test:
 
         Modules\Workspaces\Domain\WorkspaceRepository:
             alias: App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository
+
+        Modules\Workspaces\Application\ReadModel\WorkspaceMembersReadModel:
+            alias: App\Tests\Fixtures\Workspaces\InMemoryWorkspaceMembersReadModel
+
+        Modules\UserManagement\Domain\UserProfileRepository:
+            alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository
+
+        Modules\UserManagement\Application\ReadModel\UserProfileReadModel:
+            alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel
 
         # swap real health checks with always-healthy fakes so endpoint tests do not require live infrastructure
         Modules\Core\Infrastructure\HealthCheck\DbHealthCheck:

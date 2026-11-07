@@ -6,9 +6,11 @@ namespace Modules\Auth\Infrastructure;
 
 use Modules\Auth\Api\AuthApi;
 use Modules\Auth\Api\Dto\AuthUser;
+use Modules\Auth\Api\Exception\EmailTakenException;
 use Modules\Auth\Application\PasswordHasher;
 use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
+use Modules\Auth\Domain\UserRole;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\UuidGenerator;
@@ -36,6 +38,33 @@ final readonly class DefaultAuthApi implements AuthApi
             new UserId($this->uuids->generate()),
             $email,
             $this->hasher->hash($plaintextPassword),
+            $now,
+            $effectiveName,
+        );
+        $this->users->save($user);
+
+        return new AuthUser($user->id(), $user->email(), $now, $user->displayName());
+    }
+
+    public function createUser(
+        string $email,
+        string $plaintextPassword,
+        bool $isSuperAdmin = false,
+        ?string $displayName = null,
+    ): AuthUser {
+        if ($this->users->findByEmail($email) instanceof User) {
+            throw EmailTakenException::forEmail($email);
+        }
+
+        $now = $this->clock->now();
+        $trimmedName = $displayName === null ? null : trim($displayName);
+        $effectiveName = $trimmedName === '' ? null : $trimmedName;
+
+        $user = User::createWithRole(
+            new UserId($this->uuids->generate()),
+            $email,
+            $this->hasher->hash($plaintextPassword),
+            $isSuperAdmin ? UserRole::Admin : UserRole::User,
             $now,
             $effectiveName,
         );

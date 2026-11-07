@@ -65,6 +65,31 @@ final class WorkspacesEndpointTest extends WebTestCase
         self::assertSame('private', $payload[0]['slug']);
         self::assertSame('#8B5CF6', $payload[0]['iconColor']);
         self::assertSame((string) $userId, $payload[0]['ownerId']);
+        self::assertSame('owner', $payload[0]['role']);
+    }
+
+    public function testShouldReturnRolePerWorkspaceForCurrentUser(): void
+    {
+        [$adminUserId, $token] = $this->seedAdminAndLoginWithId();
+        $ownerId = new UserId(Uuid::v7());
+        $this->seedWorkspaceWithOwner($adminUserId, 'Mine', 'mine');
+        $shared = $this->seedWorkspaceWithOwner($ownerId, 'Shared', 'shared');
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($shared->id(), $adminUserId, WorkspaceRole::Admin, $this->now()),
+        );
+
+        $this->get('/api/workspaces', $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertCount(2, $payload);
+        $byName = [];
+        foreach ($payload as $item) {
+            $byName[$item['name']] = $item['role'];
+        }
+
+        self::assertSame('owner', $byName['Mine']);
+        self::assertSame('admin', $byName['Shared']);
     }
 
     public function testShouldNotListDeletedWorkspaces(): void

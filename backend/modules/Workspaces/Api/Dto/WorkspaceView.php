@@ -13,6 +13,7 @@ final readonly class WorkspaceView
         public string $iconColor,
         public string $iconInitials,
         public string $ownerId,
+        public ?string $role = null,
     ) {
     }
 }

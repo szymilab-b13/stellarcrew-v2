@@ -43,15 +43,133 @@
     "sections": {
       "overview": "Przegląd",
       "workspaces": "Workspace’y",
+      "admin": "Administracja",
       "pinned": "Przypięte"
     },
     "items": {
       "dashboard": "Panel",
-      "workspaces": "Workspace’y"
+      "workspaces": "Workspace’y",
+      "users": "Użytkownicy"
     },
     "pinAdd": "Przypnij na górze",
     "pinRemove": "Odepnij",
     "pinLimit": "Maksymalnie {{limit}} przypiętych pozycji"
+  },
+  "userManagement": {
+    "breadcrumb": "Użytkownicy",
+    "title": "Użytkownicy",
+    "subtitle": "Zarządzaj wszystkimi użytkownikami tej instancji.",
+    "addUser": "Dodaj użytkownika",
+    "loading": "Ładuję użytkowników…",
+    "loadError": "Nie udało się załadować użytkowników.",
+    "listAria": "Tabela użytkowników",
+    "total": "Łącznie użytkowników: {{count}}",
+    "filters": {
+      "ariaLabel": "Filtry użytkowników",
+      "search": "Szukaj po e-mailu",
+      "searchPlaceholder": "np. admin@przykład.pl",
+      "workspace": "Workspace",
+      "workspaceAll": "Wszystkie workspace’y",
+      "hasSuperAdmin": "Super admin",
+      "hasSuperAdminAll": "Wszyscy użytkownicy",
+      "hasSuperAdminYes": "Tylko super adminowie",
+      "hasSuperAdminNo": "Tylko zwykli użytkownicy",
+      "onlyDeactivated": "Tylko dezaktywowani"
+    },
+    "columns": {
+      "email": "E-mail",
+      "superAdmin": "Super admin",
+      "workspaces": "Workspace’y",
+      "status": "Status",
+      "createdAt": "Utworzono"
+    },
+    "table": {
+      "empty": "Brak użytkowników dla obecnych filtrów.",
+      "badgeSuperAdmin": "Super admin",
+      "badgeRegular": "Zwykły",
+      "statusActive": "Aktywny",
+      "statusDeactivated": "Dezaktywowany"
+    },
+    "addDialog": {
+      "title": "Dodaj użytkownika",
+      "email": "E-mail",
+      "password": "Hasło",
+      "passwordHint": "Co najmniej 12 znaków.",
+      "passwordConfirm": "Powtórz hasło",
+      "isSuperAdmin": "Nadaj uprawnienia super admina",
+      "submit": "Utwórz",
+      "errors": {
+        "email": {
+          "invalid": "Podaj poprawny adres e-mail."
+        },
+        "password": {
+          "tooShort": "Hasło musi mieć co najmniej 12 znaków."
+        },
+        "passwordConfirm": {
+          "mismatch": "Hasła się różnią."
+        },
+        "server": {
+          "validation": "Serwer odrzucił przesłane dane.",
+          "emailTaken": "Ten e-mail jest już zajęty.",
+          "forbidden": "Tylko super admin może dodawać użytkowników.",
+          "generic": "Coś poszło nie tak. Spróbuj ponownie."
+        }
+      }
+    }
+  },
+  "workspaceMembers": {
+    "breadcrumb": "Członkowie",
+    "title": "Członkowie workspace'a",
+    "subtitle": "Zarządzaj zespołem w tym workspace'ie.",
+    "loading": "Ładuję członków…",
+    "loadError": "Nie udało się załadować członków.",
+    "listAria": "Tabela członków",
+    "total": "Łącznie: {{count}}",
+    "roles": {
+      "owner": "Właściciel",
+      "admin": "Admin",
+      "member": "Członek",
+      "guest": "Gość"
+    },
+    "columns": {
+      "email": "E-mail",
+      "role": "Rola",
+      "joinedAt": "Dołączył"
+    },
+    "table": {
+      "empty": "Brak członków do wyświetlenia.",
+      "remove": "Usuń",
+      "removeAria": "Usuń członka {{email}}",
+      "roleAria": "Zmień rolę {{email}}"
+    },
+    "add": {
+      "title": "Dodaj członka",
+      "email": "E-mail użytkownika",
+      "emailPlaceholder": "np. ktoś@przykład.pl",
+      "role": "Rola",
+      "submit": "Dodaj",
+      "loading": "Szukam…",
+      "candidatesAria": "Sugerowani użytkownicy",
+      "notFoundHint": "Nie znaleziono. Poproś super admina o utworzenie konta.",
+      "errors": {
+        "alreadyMember": "Ten użytkownik już jest członkiem.",
+        "forbidden": "Nie masz uprawnień do dodawania członków.",
+        "validation": "Serwer odrzucił przesłane dane.",
+        "generic": "Coś poszło nie tak. Spróbuj ponownie."
+      }
+    },
+    "remove": {
+      "title": "Usuń członka",
+      "body": "Usunąć członka „{{email}}” z tego workspace'a?",
+      "confirm": "Usuń",
+      "confirming": "Usuwam…",
+      "errors": {
+        "adminMustBeDowngraded": "Zdegraduj admina do roli Członek przed usunięciem.",
+        "notFound": "Ten użytkownik nie jest już członkiem.",
+        "forbidden": "Nie masz uprawnień do usuwania członków.",
+        "generic": "Nie udało się usunąć członka."
+      }
+    }
   },
   "workspaceSwitcher": {
     "label": "Workspace",
@@ -60,6 +178,36 @@
     "menuAria": "Menu workspace’ów",
     "collapsedEmpty": "Brak workspace’a",
     "loading": "Ładuję…"
+  },
+  "profileDropdown": {
+    "trigger": "Profil",
+    "menuAria": "Menu profilu",
+    "myWorkspacesHeading": "Moje workspace’y",
+    "noWorkspaces": "Brak workspace’ów."
+  },
+  "adminUserDetail": {
+    "loading": "Ładuję użytkownika…",
+    "loadError": "Nie udało się załadować użytkownika.",
+    "breadcrumb": { "users": "Użytkownicy" },
+    "pills": { "superAdmin": "Super admin", "deactivated": "Deaktywowany" },
+    "sections": {
+      "workspaces": "Workspace’y",
+      "account": "Konto",
+      "audit": "Historia zmian"
+    },
+    "workspaces": { "empty": "Ten użytkownik nie ma przypisań do workspace." },
+    "account": {
+      "deactivate": "Deaktywuj",
+      "reactivate": "Reaktywuj",
+      "resetPassword": "Reset hasła",
+      "pendingTooltip": "Dostępne po BL-UM-011/012."
+    },
+    "audit": {
+      "loading": "Ładuję wpisy…",
+      "empty": "Brak wpisów audytu dla tego użytkownika.",
+      "undone": "cofnięte",
+      "seeAll": "Zobacz wszystkie wpisy"
+    }
   },
   "dashboard": {
     "eyebrow": "Panel",
