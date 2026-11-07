@@ -77,4 +77,24 @@ describe('RoadmapPanel', () => {
     const description = screen.getByText(/Backend menu registry/i);
     expect(description).toHaveClass('line-through');
   });
+
+  it('should render the WORKSPACES milestone with its BL-WS tasks and commit links', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/WORKSPACES — multi-tenant workspaces/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText('BL-WS-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-WS-005')).toBeInTheDocument();
+    expect(screen.getByText('BL-WS-HOTFIX-002')).toBeInTheDocument();
+
+    const commitLink = screen.getByRole('link', { name: /aced1c8/ });
+    expect(commitLink).toHaveAttribute(
+      'href',
+      'https://github.com/Nessandro/stellarcrew-v2-private/commit/aced1c8',
+    );
+
+    const description = screen.getByText(/Workspaces module/i);
+    expect(description).toHaveClass('line-through');
+  });
 });

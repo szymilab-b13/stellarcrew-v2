@@ -99,6 +99,9 @@
       },
       "ui": {
         "title": "UI — shell aplikacji, menu, Design 2.0 polish"
+      },
+      "workspaces": {
+        "title": "WORKSPACES — wielo-workspace’owość"
       }
     }
   },
