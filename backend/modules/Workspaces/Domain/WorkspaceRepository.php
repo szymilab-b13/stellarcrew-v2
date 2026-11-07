@@ -26,5 +26,10 @@ interface WorkspaceRepository
      */
     public function listForUser(UserId $userId): array;
 
+    /**
+     * @return list<array{workspace: Workspace, role: WorkspaceRole}>
+     */
+    public function listForUserWithRoles(UserId $userId): array;
+
     public function count(): int;
 }

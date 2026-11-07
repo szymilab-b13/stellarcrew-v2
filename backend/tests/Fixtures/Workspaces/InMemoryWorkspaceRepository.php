@@ -110,6 +110,35 @@ final class InMemoryWorkspaceRepository implements WorkspaceRepository
         return $result;
     }
 
+    public function listForUserWithRoles(UserId $userId): array
+    {
+        $rolesByWorkspaceId = [];
+        foreach ($this->members as $member) {
+            if ($member->userId()->equals($userId)) {
+                $rolesByWorkspaceId[(string) $member->workspaceId()] = $member->role();
+            }
+        }
+
+        $result = [];
+        foreach ($this->workspaces as $workspace) {
+            $key = (string) $workspace->id();
+            if (!isset($rolesByWorkspaceId[$key])) {
+                continue;
+            }
+
+            if ($workspace->isDeleted()) {
+                continue;
+            }
+
+            $result[] = [
+                'workspace' => $workspace,
+                'role' => $rolesByWorkspaceId[$key],
+            ];
+        }
+
+        return $result;
+    }
+
     public function count(): int
     {
         return count($this->workspaces);

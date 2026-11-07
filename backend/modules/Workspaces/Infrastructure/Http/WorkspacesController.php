@@ -138,11 +138,11 @@ final readonly class WorkspacesController
     }
 
     /**
-     * @return array{id: string, name: string, slug: string, iconColor: string, iconInitials: string, ownerId: string}
+     * @return array{id: string, name: string, slug: string, iconColor: string, iconInitials: string, ownerId: string, role?: string}
      */
     private function serialise(WorkspaceView $view): array
     {
-        return [
+        $payload = [
             'id' => $view->id,
             'name' => $view->name,
             'slug' => $view->slug,
@@ -150,5 +150,11 @@ final readonly class WorkspacesController
             'iconInitials' => $view->iconInitials,
             'ownerId' => $view->ownerId,
         ];
+
+        if ($view->role !== null) {
+            $payload['role'] = $view->role;
+        }
+
+        return $payload;
     }
 }

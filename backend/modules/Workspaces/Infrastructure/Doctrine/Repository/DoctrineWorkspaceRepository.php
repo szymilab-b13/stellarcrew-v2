@@ -10,6 +10,7 @@ use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Domain\Workspace;
 use Modules\Workspaces\Domain\WorkspaceMember;
 use Modules\Workspaces\Domain\WorkspaceRepository;
+use Modules\Workspaces\Domain\WorkspaceRole;
 
 final readonly class DoctrineWorkspaceRepository implements WorkspaceRepository
 {
@@ -68,6 +69,33 @@ final readonly class DoctrineWorkspaceRepository implements WorkspaceRepository
 
         /** @var list<Workspace> $rows */
         return $rows;
+    }
+
+    public function listForUserWithRoles(UserId $userId): array
+    {
+        $rows = $this->em->createQueryBuilder()
+            ->select('w', 'm.role AS role')
+            ->from(Workspace::class, 'w')
+            ->innerJoin(WorkspaceMember::class, 'm', 'WITH', 'm.workspaceId = w.id')
+            ->where('m.userId = :userId')
+            ->andWhere('w.deletedAt IS NULL')
+            ->orderBy('w.createdAt', 'ASC')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getResult();
+
+        /** @var list<array{0: Workspace, role: WorkspaceRole|string}> $rows */
+        $result = [];
+        foreach ($rows as $row) {
+            $workspace = $row[0];
+            $role = $row['role'];
+            $result[] = [
+                'workspace' => $workspace,
+                'role' => $role instanceof WorkspaceRole ? $role : WorkspaceRole::from((string) $role),
+            ];
+        }
+
+        return $result;
     }
 
     public function count(): int
