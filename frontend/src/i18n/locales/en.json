@@ -76,8 +76,12 @@
       }
     }
   },
+  "breadcrumbs": {
+    "aria": "Breadcrumbs",
+    "home": "Home"
+  },
   "workspaces": {
-    "eyebrow": "Workspaces",
+    "breadcrumb": "Workspaces",
     "title": "Workspaces",
     "subtitle": "Group projects, agents and knowledge.",
     "loading": "Loading workspaces…",

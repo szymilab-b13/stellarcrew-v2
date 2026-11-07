@@ -1,6 +1,8 @@
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
 
 import {
   useCreateWorkspace,
@@ -25,6 +27,9 @@ export function WorkspacesLandingPage() {
   const createMutation = useCreateWorkspace();
   const updateMutation = useUpdateWorkspace();
   const deleteMutation = useDeleteWorkspace();
+
+  const breadcrumbs = useMemo(() => [{ label: t('workspaces.breadcrumb') }], [t]);
+  usePageBreadcrumbs(breadcrumbs);
 
   const [dialog, setDialog] = useState<DialogState | null>(null);
   const [toDelete, setToDelete] = useState<Workspace | null>(null);
@@ -71,9 +76,6 @@ export function WorkspacesLandingPage() {
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-10">
       <header className="flex flex-col gap-2">
-        <span className="text-xs font-semibold uppercase tracking-widest text-sc-text-muted">
-          {t('workspaces.eyebrow')}
-        </span>
         <h1 className="text-3xl font-semibold tracking-tight">{t('workspaces.title')}</h1>
         <p className="text-sm text-sc-text-muted">{t('workspaces.subtitle')}</p>
       </header>

@@ -76,8 +76,12 @@
       }
     }
   },
+  "breadcrumbs": {
+    "aria": "Nawigacja okruszkowa",
+    "home": "Strona główna"
+  },
   "workspaces": {
-    "eyebrow": "Workspace’y",
+    "breadcrumb": "Workspace’y",
     "title": "Workspace’y",
     "subtitle": "Zbieraj projekty, agentów i wiedzę w jednym miejscu.",
     "loading": "Ładuję workspace’y…",
