@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -58,7 +58,7 @@ describe('WorkspaceOverviewPage', () => {
     expect(await screen.findByText('Shared Workspace')).toBeInTheDocument();
   });
 
-  it('should render the shell placeholder for the upcoming BL-WSUX-004 widget grid', async () => {
+  it('should render a 2-row widget grid with 5 slots in row 1 and 3 slots in row 2', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
@@ -66,7 +66,61 @@ describe('WorkspaceOverviewPage', () => {
 
     renderPage();
 
-    expect(await screen.findByText(/coming after the workspace_ux milestone/i)).toBeInTheDocument();
+    await screen.findByRole('heading', { name: /overview/i });
+
+    const row1 = screen.getByRole('region', { name: /row 1/i });
+    const row2 = screen.getByRole('region', { name: /row 2/i });
+    expect(within(row1).getAllByRole('article')).toHaveLength(5);
+    expect(within(row2).getAllByRole('article')).toHaveLength(3);
+  });
+
+  it('should render a PROTOTYP badge and BL reference for each widget slot', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
+    );
+
+    renderPage();
+
+    await screen.findByRole('heading', { name: /overview/i });
+
+    expect(screen.getAllByText('PROTOTYP')).toHaveLength(8);
+    for (const bl of [
+      'BL-WSUX-005',
+      'BL-WSUX-006',
+      'BL-WSUX-007',
+      'BL-WSUX-008',
+      'BL-WSUX-009',
+      'BL-WSUX-010',
+      'BL-WSUX-011',
+      'BL-WSUX-012',
+    ]) {
+      expect(screen.getByText(new RegExp(bl))).toBeInTheDocument();
+    }
+  });
+
+  it('should render localized widget titles for each of the 8 slots', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
+    );
+
+    renderPage();
+
+    await screen.findByRole('heading', { name: /overview/i });
+
+    for (const title of [
+      'Active Tasks',
+      'Active Agents',
+      'Tasks Progress',
+      'Milestones',
+      'Projects',
+      'Boss Actions',
+      'Last Agents Activity',
+      'Workspace Info',
+    ]) {
+      expect(screen.getByRole('heading', { level: 2, name: title })).toBeInTheDocument();
+    }
   });
 
   it('should redirect to /workspaces when wsId is missing from the loaded list', async () => {

@@ -145,7 +145,22 @@
   "workspaceOverview": {
     "breadcrumb": "Overview",
     "title": "Overview",
-    "comingSoon": "Widgety pojawią się po zakończeniu milestone'u WORKSPACE_UX."
+    "prototypeBadge": "PROTOTYP",
+    "comingIn": "Dostępne w {{bl}}",
+    "rows": {
+      "row1": "Widgety overview rząd 1",
+      "row2": "Widgety overview rząd 2"
+    },
+    "slots": {
+      "activeTasks": { "title": "Active Tasks" },
+      "activeAgents": { "title": "Active Agents" },
+      "tasksProgress": { "title": "Tasks Progress" },
+      "milestones": { "title": "Milestones" },
+      "projects": { "title": "Projects" },
+      "bossActions": { "title": "Boss Actions" },
+      "lastAgentsActivity": { "title": "Last Agents Activity" },
+      "workspaceInfo": { "title": "Workspace Info" }
+    }
   },
   "workspaceMembers": {
     "breadcrumb": "Członkowie",
