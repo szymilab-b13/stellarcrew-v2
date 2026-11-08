@@ -74,7 +74,7 @@ describe('WorkspaceOverviewPage', () => {
     expect(within(row2).getAllByRole('article')).toHaveLength(3);
   });
 
-  it('should render a PROTOTYP badge and BL reference for each widget slot', async () => {
+  it('should render a PROTOTYP badge and BL reference for each stub widget slot', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
@@ -86,7 +86,6 @@ describe('WorkspaceOverviewPage', () => {
 
     expect(screen.getAllByText('PROTOTYP')).toHaveLength(8);
     for (const bl of [
-      'BL-WSUX-005',
       'BL-WSUX-006',
       'BL-WSUX-007',
       'BL-WSUX-008',
@@ -97,6 +96,8 @@ describe('WorkspaceOverviewPage', () => {
     ]) {
       expect(screen.getByText(new RegExp(bl))).toBeInTheDocument();
     }
+    expect(screen.queryByText(/BL-WSUX-005/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Coming after AGENTS milestone/i)).toBeInTheDocument();
   });
 
   it('should render localized widget titles for each of the 8 slots', async () => {

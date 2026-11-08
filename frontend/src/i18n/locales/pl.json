@@ -160,6 +160,17 @@
       "bossActions": { "title": "Boss Actions" },
       "lastAgentsActivity": { "title": "Last Agents Activity" },
       "workspaceInfo": { "title": "Workspace Info" }
+    },
+    "widgets": {
+      "activeTasks": {
+        "previewLabel": "Podgląd aktywnych zadań",
+        "comingAfter": "Dostępne po milestone AGENTS",
+        "samples": {
+          "0": "Przygotuj brief onboardingowy",
+          "1": "Przejrzyj członków workspace'a",
+          "2": "Zaplanuj sync agentów"
+        }
+      }
     }
   },
   "workspaceMembers": {
