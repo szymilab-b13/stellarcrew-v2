@@ -561,6 +561,9 @@
       "BL-UM-VISIBLE-ADMIN-FIX": {
         "story": "Super admin widzi wszystkich użytkowników w autocomplete „Dodaj członka” — koniec z filtrowaniem po wspólnych workspace'ach dla konta z rolą admin."
       },
+      "BL-UM-MEMBERS-KEBAB": {
+        "story": "Akcja „Usuń członka” w tabeli członków workspace'a przeniesiona pod kebab (spójnie z UserTable i tabelą audytu) — koniec z inline przyciskami w kolumnie akcji."
+      },
       "BL-AUDIT-001": {
         "story": "Mamy schemat i tabelę audit_log — aktor, akcja, zasób, before/after jako JSONB, pola cofnięcia, indeksy."
       },

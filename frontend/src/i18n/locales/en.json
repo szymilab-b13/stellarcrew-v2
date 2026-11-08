@@ -561,6 +561,9 @@
       "BL-UM-VISIBLE-ADMIN-FIX": {
         "story": "Super admin sees every user in the Add-member autocomplete — the shared-workspace filter no longer applies to admin accounts."
       },
+      "BL-UM-MEMBERS-KEBAB": {
+        "story": "The Remove member action in the workspace members table moved under a kebab menu (consistent with UserTable and the audit table) — no more inline buttons in the actions column."
+      },
       "BL-AUDIT-001": {
         "story": "Audit schema and audit_log table are in place — actor, action, resource, before/after as JSONB, undo markers, indexes."
       },
