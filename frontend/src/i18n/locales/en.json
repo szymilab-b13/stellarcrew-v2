@@ -43,12 +43,15 @@
     "sections": {
       "overview": "Overview",
       "workspaces": "Workspaces",
+      "workspace": "Workspace",
       "admin": "Administration",
       "pinned": "Pinned"
     },
     "items": {
       "dashboard": "Dashboard",
       "workspaces": "Workspaces",
+      "workspaceOverview": "Overview",
+      "workspaceMembers": "Members",
       "users": "Users",
       "auditLog": "Audit log"
     },
