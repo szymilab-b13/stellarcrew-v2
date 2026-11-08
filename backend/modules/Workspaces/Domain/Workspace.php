@@ -152,6 +152,16 @@ class Workspace
         $this->updatedAt = $now;
     }
 
+    public function restore(DateTimeImmutable $now): void
+    {
+        if (!$this->deletedAt instanceof DateTimeImmutable) {
+            return;
+        }
+
+        $this->deletedAt = null;
+        $this->updatedAt = $now;
+    }
+
     private function guardName(string $name): void
     {
         $trimmed = trim($name);
