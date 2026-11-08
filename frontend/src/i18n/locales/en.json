@@ -228,6 +228,22 @@
           "paused": "PAUSED",
           "archived": "ARCHIVED"
         }
+      },
+      "bossActions": {
+        "previewLabel": "Boss Actions preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": "New project",
+          "1": "Invite member",
+          "2": "Start milestone",
+          "3": "Send broadcast"
+        },
+        "types": {
+          "create": "CREATE",
+          "invite": "INVITE",
+          "launch": "LAUNCH",
+          "broadcast": "BROADCAST"
+        }
       }
     }
   },

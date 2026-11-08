@@ -228,6 +228,22 @@
           "paused": "PAUSED",
           "archived": "ARCHIVED"
         }
+      },
+      "bossActions": {
+        "previewLabel": "Podgląd akcji Szefa",
+        "comingAfter": "Dostępne po milestone AGENTS",
+        "samples": {
+          "0": "Nowy projekt",
+          "1": "Zaproś członka",
+          "2": "Rozpocznij milestone",
+          "3": "Wyślij ogłoszenie"
+        },
+        "types": {
+          "create": "CREATE",
+          "invite": "INVITE",
+          "launch": "LAUNCH",
+          "broadcast": "BROADCAST"
+        }
       }
     }
   },
