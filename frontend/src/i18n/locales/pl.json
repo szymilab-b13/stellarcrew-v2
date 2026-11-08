@@ -51,9 +51,22 @@
       "dashboard": "Panel",
       "workspaces": "Workspace’y",
       "workspaceOverview": "Przegląd",
+      "workspaceProjects": "Projekty",
       "workspaceMembers": "Członkowie",
+      "workspaceAgents": "Agenci",
+      "workspaceScheduler": "Scheduler",
+      "workspaceSettings": "Ustawienia",
       "users": "Użytkownicy",
       "auditLog": "Dziennik audytu"
+    },
+    "workspaceContext": {
+      "comingSoon": "Dostępne po milestone {{milestone}}",
+      "milestones": {
+        "projects": "PROJECTS",
+        "agents": "AGENTS",
+        "scheduler": "SCHEDULER",
+        "settings": "WORKSPACE_SETTINGS"
+      }
     },
     "pinAdd": "Przypnij na górze",
     "pinRemove": "Odepnij",

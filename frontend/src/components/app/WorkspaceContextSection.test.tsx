@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -40,7 +40,7 @@ describe('WorkspaceContextSection', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('should render Overview and Members links scoped to the current wsId', () => {
+  it('should render Overview and Members as active links scoped to the current wsId', () => {
     renderAt('/workspace/ws-abc/overview');
 
     const overviewLink = screen.getByRole('link', { name: 'Overview' });
@@ -48,6 +48,21 @@ describe('WorkspaceContextSection', () => {
 
     expect(overviewLink).toHaveAttribute('href', '/workspace/ws-abc/overview');
     expect(membersLink).toHaveAttribute('href', '/workspace/ws-abc/settings/members');
+  });
+
+  it('should render Projects, Agents, Scheduler and Settings as disabled placeholders with a milestone tooltip', () => {
+    renderAt('/workspace/ws-abc/overview');
+
+    const list = screen.getByRole('list');
+    const placeholderTexts = ['Projects', 'Agents', 'Scheduler', 'Settings'];
+
+    for (const label of placeholderTexts) {
+      expect(within(list).queryByRole('link', { name: label })).toBeNull();
+      const placeholder = within(list).getByText(label);
+      const row = placeholder.closest('span[aria-disabled="true"]');
+      expect(row).not.toBeNull();
+      expect(row).toHaveAttribute('title', expect.stringMatching(/coming after/i));
+    }
   });
 
   it('should render a collapsible section header labelled Workspace', async () => {
@@ -64,7 +79,7 @@ describe('WorkspaceContextSection', () => {
     expect(screen.queryByRole('link', { name: 'Overview' })).not.toBeInTheDocument();
   });
 
-  it('should hide the section header and keep item icons visible when sidebar is collapsed', () => {
+  it('should hide the section header and keep active item icons visible when sidebar is collapsed', () => {
     renderAt('/workspace/ws-1/overview', { collapsed: true });
 
     expect(screen.queryByRole('button', { name: /workspace/i })).not.toBeInTheDocument();

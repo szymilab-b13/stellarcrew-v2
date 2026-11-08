@@ -51,9 +51,22 @@
       "dashboard": "Dashboard",
       "workspaces": "Workspaces",
       "workspaceOverview": "Overview",
+      "workspaceProjects": "Projects",
       "workspaceMembers": "Members",
+      "workspaceAgents": "Agents",
+      "workspaceScheduler": "Scheduler",
+      "workspaceSettings": "Settings",
       "users": "Users",
       "auditLog": "Audit log"
+    },
+    "workspaceContext": {
+      "comingSoon": "Coming after the {{milestone}} milestone",
+      "milestones": {
+        "projects": "PROJECTS",
+        "agents": "AGENTS",
+        "scheduler": "SCHEDULER",
+        "settings": "WORKSPACE_SETTINGS"
+      }
     },
     "pinAdd": "Pin to top",
     "pinRemove": "Unpin",
