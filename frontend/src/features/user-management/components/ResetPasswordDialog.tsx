@@ -1,5 +1,6 @@
 import { KeyRound, Loader2, X } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/Button';
@@ -43,7 +44,7 @@ export function ResetPasswordDialog({
     onSubmit(newPassword);
   }
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -52,7 +53,7 @@ export function ResetPasswordDialog({
     >
       <form
         onSubmit={submit}
-        className="flex w-full max-w-md flex-col gap-5 rounded-xl border border-sc-border bg-sc-bg-card p-7 shadow-xl"
+        className="flex w-full max-w-2xl flex-col gap-5 rounded-xl border border-sc-border bg-sc-bg-card p-7 shadow-xl"
       >
         <header className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -145,7 +146,8 @@ export function ResetPasswordDialog({
           </Button>
         </div>
       </form>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

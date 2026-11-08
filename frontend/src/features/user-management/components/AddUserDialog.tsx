@@ -64,7 +64,7 @@ export function AddUserDialog({ isSubmitting, error, onClose, onSubmit }: AddUse
       aria-labelledby="add-user-dialog-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     >
-      <div className="flex w-full max-w-md flex-col gap-5 rounded-lg border border-sc-border bg-sc-bg-card p-6 shadow-xl">
+      <div className="flex w-full max-w-2xl flex-col gap-5 rounded-lg border border-sc-border bg-sc-bg-card p-6 shadow-xl">
         <header className="flex items-start justify-between gap-3">
           <h2 id="add-user-dialog-title" className="text-lg font-semibold text-sc-text">
             {t('userManagement.addDialog.title')}

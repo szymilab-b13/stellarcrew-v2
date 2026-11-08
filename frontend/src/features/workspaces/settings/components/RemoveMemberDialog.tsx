@@ -31,7 +31,7 @@ export function RemoveMemberDialog({
       aria-labelledby="remove-member-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     >
-      <div className="flex w-full max-w-md flex-col gap-5 rounded-xl border border-sc-border bg-sc-bg-card p-7 shadow-xl">
+      <div className="flex w-full max-w-2xl flex-col gap-5 rounded-xl border border-sc-border bg-sc-bg-card p-7 shadow-xl">
         <header className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <span

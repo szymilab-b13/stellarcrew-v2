@@ -1,4 +1,5 @@
 import { AlertTriangle, Loader2, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/Button';
@@ -27,14 +28,14 @@ export function DeactivationConfirmDialog({
   const prefix = mode === 'deactivate' ? 'deactivate' : 'reactivate';
   const serverMessage = resolveServerMessage(error, t);
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby={`${prefix}-dialog-title`}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     >
-      <div className="flex w-full max-w-md flex-col gap-5 rounded-xl border border-sc-border bg-sc-bg-card p-7 shadow-xl">
+      <div className="flex w-full max-w-2xl flex-col gap-5 rounded-xl border border-sc-border bg-sc-bg-card p-7 shadow-xl">
         <header className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             <span
@@ -72,7 +73,7 @@ export function DeactivationConfirmDialog({
 
         <div className="flex flex-col gap-2">
           <Button
-            variant={mode === 'deactivate' ? 'destructive' : 'primary'}
+            variant="destructive"
             onClick={onConfirm}
             disabled={isSubmitting}
             className="w-full justify-center px-4 py-3 text-base"
@@ -93,7 +94,8 @@ export function DeactivationConfirmDialog({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
