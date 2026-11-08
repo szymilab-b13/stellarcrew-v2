@@ -212,6 +212,22 @@
           "planned": "PLANNED",
           "blocked": "BLOCKED"
         }
+      },
+      "projects": {
+        "previewLabel": "Podgląd projektów",
+        "comingAfter": "Dostępne po milestone AGENTS",
+        "samples": {
+          "0": "Talent Bridge",
+          "1": "StellarCrew Core",
+          "2": "Mentar",
+          "3": "Musaned legacy"
+        },
+        "statuses": {
+          "active": "ACTIVE",
+          "planned": "PLANNED",
+          "paused": "PAUSED",
+          "archived": "ARCHIVED"
+        }
       }
     }
   },

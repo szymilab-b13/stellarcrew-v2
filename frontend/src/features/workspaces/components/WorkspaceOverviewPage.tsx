@@ -8,14 +8,13 @@ import { useWorkspacesList } from '../api/useWorkspaces';
 import { ActiveAgentsWidget } from './ActiveAgentsWidget';
 import { ActiveTasksWidget } from './ActiveTasksWidget';
 import { MilestonesWidget } from './MilestonesWidget';
+import { ProjectsWidget } from './ProjectsWidget';
 import { TasksProgressWidget } from './TasksProgressWidget';
 
 type WidgetSlot = {
   key: string;
   bl: string;
 };
-
-const ROW_1_SLOTS: WidgetSlot[] = [{ key: 'projects', bl: 'BL-WSUX-009' }];
 
 const ROW_2_SLOTS: WidgetSlot[] = [
   { key: 'bossActions', bl: 'BL-WSUX-010' },
@@ -67,9 +66,7 @@ export function WorkspaceOverviewPage() {
         <ActiveAgentsWidget />
         <TasksProgressWidget />
         <MilestonesWidget />
-        {ROW_1_SLOTS.map((slot) => (
-          <WidgetSlotCard key={slot.key} slot={slot} />
-        ))}
+        <ProjectsWidget />
       </section>
 
       <section
