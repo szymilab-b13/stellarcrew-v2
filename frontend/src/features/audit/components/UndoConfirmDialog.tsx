@@ -36,14 +36,9 @@ export function UndoConfirmDialog({
     >
       <div className="flex w-full max-w-2xl flex-col gap-5 rounded-xl border border-sc-border bg-sc-bg-card p-7 shadow-xl">
         <header className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span
-              aria-hidden
-              className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-full bg-amber-500/10 text-amber-600"
-            >
-              <AlertTriangle size={20} />
-            </span>
-            <h2 id="undo-dialog-title" className="text-xl font-semibold text-sc-text">
+          <div className="flex items-center gap-3 text-sc-text">
+            <AlertTriangle size={20} aria-hidden />
+            <h2 id="undo-dialog-title" className="text-xl font-semibold">
               {t('audit.undoDialog.title')}
             </h2>
           </div>
