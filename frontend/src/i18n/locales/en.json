@@ -459,6 +459,9 @@
       "BL-UI-POLISH-004": {
         "story": "Confirm modals keep a stable minimum height on the body text section — a short one-sentence message no longer collapses at the top of the modal."
       },
+      "BL-UI-POLISH-005": {
+        "story": "The audit log view stretches to full width — no more inner max-w-6xl plus double padding (AppLayout `<main>` already uses p-7)."
+      },
       "BL-WS-001": {
         "story": "The workspace domain is in place — Workspace, Member, Invitation; on install a Default workspace owned by the admin is seeded."
       },

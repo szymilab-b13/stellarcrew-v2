@@ -459,6 +459,9 @@
       "BL-UI-POLISH-004": {
         "story": "Sekcja tekstu w modalach potwierdzeń trzyma stabilną minimalną wysokość — krótki jednozdaniowy komunikat nie zapada się u góry modala."
       },
+      "BL-UI-POLISH-005": {
+        "story": "Widok audit log rozciąga się na pełną szerokość — koniec z wewnętrznym max-w-6xl i podwójnym paddingiem (AppLayout `<main>` ma już p-7)."
+      },
       "BL-WS-001": {
         "story": "Masz domenę workspace’ów — Workspace, Member, Invitation; przy instalacji powstaje Default workspace należący do admina."
       },
