@@ -396,6 +396,9 @@
       "aiEngine": {
         "title": "AI ENGINE — model orchestration, memory strategy"
       },
+      "plugins": {
+        "title": "PLUGINS — per-workspace modules (plugin architecture)"
+      },
       "authRefresh": {
         "title": "AUTH refresh tokens — rotation + revocation"
       },
@@ -575,6 +578,9 @@
       },
       "BL-AUDIT-WS-CRUD": {
         "story": "Workspace lifecycle is audited — create, edit (name, icon color, initials) and delete all land in the audit log with state snapshots, each reversible through the dedicated Undoer (restore previous state or revive the deleted workspace)."
+      },
+      "BL-PLUGIN-ARCH": {
+        "story": "Plugin architecture — modules installed per workspace (not instance-wide), scoped routing, menu, API endpoints and tables. Research in `knowledge/discovery/plugin-architecture.md`, waiting for an ADR."
       },
       "BL-AUDIT-007": {
         "story": "You can undo 6 User Management actions: user creation, deactivation and reactivation, member assignment, removal and role change."

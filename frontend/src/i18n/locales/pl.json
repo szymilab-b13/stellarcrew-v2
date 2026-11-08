@@ -396,6 +396,9 @@
       "aiEngine": {
         "title": "AI ENGINE — model orchestration, memory strategy"
       },
+      "plugins": {
+        "title": "PLUGINS — moduły per workspace (plugin architecture)"
+      },
       "authRefresh": {
         "title": "AUTH refresh tokens — rotacja + revokacja"
       },
@@ -578,6 +581,9 @@
       },
       "BL-AUDIT-WS-CRUD": {
         "story": "Lifecycle workspace’a trafia do audit log — utworzenie, edycja nazwy/koloru/inicjałów, usunięcie — każde ze snapshotem stanu i Undoerem (cofnięcie przywraca poprzedni stan lub restore’uje usunięty workspace)."
+      },
+      "BL-PLUGIN-ARCH": {
+        "story": "Plugin architecture — moduły instalowane na workspace (nie na instancję), ze scope’em per workspace dla routingu, menu, API i tabel. Research w `knowledge/discovery/plugin-architecture.md`, czeka na ADR."
       },
       "BL-PERM-001": {
         "story": "Każdy moduł dostaje własne uprawnienia (workspaces.view, workspaces.manage, agents.view i kolejne) — UserRole jako skrót na pełny komplet w workspace’ie."
