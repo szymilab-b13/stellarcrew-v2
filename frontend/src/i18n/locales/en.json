@@ -567,6 +567,9 @@
       "BL-AUDIT-LOGIN": {
         "story": "The audit log records successful logins and logouts — with IP, user-agent and account e-mail. Logout now requires a JWT (POST /api/auth/logout with Bearer)."
       },
+      "BL-AUDIT-UI-ACTIONS": {
+        "story": "The audit table has an Actions kebab menu — Details opens a modal with the full before/after state and metadata; Undo stays the same (disabled for non-reversible or already undone entries)."
+      },
       "BL-AUDIT-007": {
         "story": "You can undo 6 User Management actions: user creation, deactivation and reactivation, member assignment, removal and role change."
       },

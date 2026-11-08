@@ -570,6 +570,9 @@
       "BL-AUDIT-LOGIN": {
         "story": "Audit log rejestruje udane logowania i wylogowania — z adresem IP, user-agentem i e-mailem konta. Login wymaga teraz tokenu JWT (logout idzie na /api/auth/logout z Bearer)."
       },
+      "BL-AUDIT-UI-ACTIONS": {
+        "story": "Tabela audytu ma menu „Akcje” w kebabie — Detale otwierają modal z pełnym stanem before/after i metadanymi, Cofnij działa jak wcześniej (ukryte dla wpisów nieodwracalnych i już cofniętych)."
+      },
       "BL-PERM-001": {
         "story": "Każdy moduł dostaje własne uprawnienia (workspaces.view, workspaces.manage, agents.view i kolejne) — UserRole jako skrót na pełny komplet w workspace’ie."
       },
