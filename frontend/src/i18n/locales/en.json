@@ -186,6 +186,16 @@
           "discovery": "DISCOVERY",
           "idle": "IDLE"
         }
+      },
+      "tasksProgress": {
+        "previewLabel": "Tasks progress preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "percent": "{{value}}%",
+        "segments": {
+          "inProgress": "In progress",
+          "done": "Done",
+          "blocked": "Blocked"
+        }
       }
     }
   },

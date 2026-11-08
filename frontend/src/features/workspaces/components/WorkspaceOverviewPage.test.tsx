@@ -85,18 +85,12 @@ describe('WorkspaceOverviewPage', () => {
     await screen.findByRole('heading', { name: /overview/i });
 
     expect(screen.getAllByText('PROTOTYP')).toHaveLength(8);
-    for (const bl of [
-      'BL-WSUX-007',
-      'BL-WSUX-008',
-      'BL-WSUX-009',
-      'BL-WSUX-010',
-      'BL-WSUX-011',
-      'BL-WSUX-012',
-    ]) {
+    for (const bl of ['BL-WSUX-008', 'BL-WSUX-009', 'BL-WSUX-010', 'BL-WSUX-011', 'BL-WSUX-012']) {
       expect(screen.getByText(new RegExp(bl))).toBeInTheDocument();
     }
     expect(screen.queryByText(/BL-WSUX-005/)).not.toBeInTheDocument();
     expect(screen.queryByText(/BL-WSUX-006/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/BL-WSUX-007/)).not.toBeInTheDocument();
     expect(screen.getAllByText(/Coming after AGENTS milestone/i).length).toBeGreaterThanOrEqual(1);
   });
 
