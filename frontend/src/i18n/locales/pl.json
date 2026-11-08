@@ -314,6 +314,9 @@
       "user_management.user.deactivated": "Dezaktywowano użytkownika",
       "user_management.user.reactivated": "Reaktywowano użytkownika",
       "user_management.user.password_reset": "Zresetowano hasło",
+      "workspaces.workspace.created": "Utworzono workspace",
+      "workspaces.workspace.updated": "Zaktualizowano workspace",
+      "workspaces.workspace.deleted": "Usunięto workspace",
       "workspace_member.assigned": "Dodano członka workspace’a",
       "workspace_member.role_changed": "Zmieniono rolę członka",
       "workspace_member.removed": "Usunięto członka workspace’a"
@@ -572,6 +575,9 @@
       },
       "BL-AUDIT-UI-ACTIONS": {
         "story": "Tabela audytu ma menu „Akcje” w kebabie — Detale otwierają modal z pełnym stanem before/after i metadanymi, Cofnij działa jak wcześniej (ukryte dla wpisów nieodwracalnych i już cofniętych)."
+      },
+      "BL-AUDIT-WS-CRUD": {
+        "story": "Lifecycle workspace’a trafia do audit log — utworzenie, edycja nazwy/koloru/inicjałów, usunięcie — każde ze snapshotem stanu i Undoerem (cofnięcie przywraca poprzedni stan lub restore’uje usunięty workspace)."
       },
       "BL-PERM-001": {
         "story": "Każdy moduł dostaje własne uprawnienia (workspaces.view, workspaces.manage, agents.view i kolejne) — UserRole jako skrót na pełny komplet w workspace’ie."

@@ -13,5 +13,6 @@ export const AUDIT_MILESTONE: RoadmapMilestone = {
     { id: 'BL-AUDIT-007', status: 'done', commit: 'ae2bb97' },
     { id: 'BL-AUDIT-LOGIN', status: 'done', commit: 'bfe8364' },
     { id: 'BL-AUDIT-UI-ACTIONS', status: 'done', commit: 'a0ce7e4' },
+    { id: 'BL-AUDIT-WS-CRUD', status: 'done', commit: '83d641f' },
   ],
 };

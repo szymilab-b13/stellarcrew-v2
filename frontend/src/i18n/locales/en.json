@@ -314,6 +314,9 @@
       "user_management.user.deactivated": "Deactivated user",
       "user_management.user.reactivated": "Reactivated user",
       "user_management.user.password_reset": "Reset password",
+      "workspaces.workspace.created": "Created workspace",
+      "workspaces.workspace.updated": "Updated workspace",
+      "workspaces.workspace.deleted": "Deleted workspace",
       "workspace_member.assigned": "Added workspace member",
       "workspace_member.role_changed": "Changed member role",
       "workspace_member.removed": "Removed workspace member"
@@ -569,6 +572,9 @@
       },
       "BL-AUDIT-UI-ACTIONS": {
         "story": "The audit table has an Actions kebab menu — Details opens a modal with the full before/after state and metadata; Undo stays the same (disabled for non-reversible or already undone entries)."
+      },
+      "BL-AUDIT-WS-CRUD": {
+        "story": "Workspace lifecycle is audited — create, edit (name, icon color, initials) and delete all land in the audit log with state snapshots, each reversible through the dedicated Undoer (restore previous state or revive the deleted workspace)."
       },
       "BL-AUDIT-007": {
         "story": "You can undo 6 User Management actions: user creation, deactivation and reactivation, member assignment, removal and role change."

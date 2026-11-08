@@ -17,6 +17,9 @@ export const AUDIT_ACTIONS: ReadonlyArray<{ group: string; actions: string[] }> 
   {
     group: 'workspaces',
     actions: [
+      'workspaces.workspace.created',
+      'workspaces.workspace.updated',
+      'workspaces.workspace.deleted',
       'workspace_member.assigned',
       'workspace_member.role_changed',
       'workspace_member.removed',
@@ -54,6 +57,9 @@ const REVERSIBLE_ACTIONS = new Set<string>([
   'workspace_member.assigned',
   'workspace_member.role_changed',
   'workspace_member.removed',
+  'workspaces.workspace.created',
+  'workspaces.workspace.updated',
+  'workspaces.workspace.deleted',
 ]);
 
 export function isReversibleAction(action: string): boolean {
