@@ -2,7 +2,7 @@ import type { RoadmapMilestone } from '../types';
 
 export const WORKSPACE_UX_MILESTONE: RoadmapMilestone = {
   key: 'workspaceUx',
-  status: 'inProgress',
+  status: 'done',
   note: 'Workspace UX polish before PROJECTS: 4-column workspace grid, context-aware Workspace sidebar section, Workspace Overview dashboard with 8 PROTOTYP widgets (Active Tasks, Active Agents with mode, Tasks Progress, Milestones, Projects, Boss Actions, Last Agents Activity, Workspace Info).',
   tasks: [
     { id: 'BL-WSUX-001', status: 'done', commit: '0179029' },
@@ -16,6 +16,6 @@ export const WORKSPACE_UX_MILESTONE: RoadmapMilestone = {
     { id: 'BL-WSUX-009', status: 'done', commit: '507b0f7' },
     { id: 'BL-WSUX-010', status: 'done', commit: '8f65296' },
     { id: 'BL-WSUX-011', status: 'done', commit: 'be65819' },
-    { id: 'BL-WSUX-012', status: 'planned' },
+    { id: 'BL-WSUX-012', status: 'done', commit: '607993f' },
   ],
 };
