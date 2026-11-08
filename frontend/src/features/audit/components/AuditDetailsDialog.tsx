@@ -27,14 +27,9 @@ export function AuditDetailsDialog({ entry, onClose }: AuditDetailsDialogProps) 
     >
       <div className="flex w-full max-w-3xl flex-col gap-5 rounded-xl border border-sc-border bg-sc-bg-card p-7 shadow-xl">
         <header className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span
-              aria-hidden
-              className="inline-flex h-10 w-10 flex-none items-center justify-center rounded-full bg-sky-500/10 text-sky-600"
-            >
-              <FileText size={20} />
-            </span>
-            <h2 id="audit-details-dialog-title" className="text-xl font-semibold text-sc-text">
+          <div className="flex items-center gap-3 text-sc-text">
+            <FileText size={20} aria-hidden />
+            <h2 id="audit-details-dialog-title" className="text-xl font-semibold">
               {t('audit.detailsDialog.title')}
             </h2>
           </div>
