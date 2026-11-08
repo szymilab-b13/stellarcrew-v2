@@ -393,14 +393,38 @@
       "permissions": {
         "title": "PERMISSIONS — fine-grained per-workspace access"
       },
+      "projectsLayer": {
+        "title": "PROJECTS — Workspace → Project layer (settings, members, tasks)"
+      },
+      "variables": {
+        "title": "VARIABLES — variables/secrets, global + per workspace/project"
+      },
       "agents": {
         "title": "AGENTS — catalog, user agents, assignments, memory"
       },
       "aiEngine": {
         "title": "AI ENGINE — model orchestration, memory strategy"
       },
+      "knowledge": {
+        "title": "KNOWLEDGE — in-system knowledge base (shared + per agent)"
+      },
+      "skills": {
+        "title": "SKILLS — atomic skills per action (shared + per agent)"
+      },
+      "flows": {
+        "title": "FLOWS — Flow Builder, agent orchestration, approval gates"
+      },
+      "agentRuntime": {
+        "title": "AGENT RUNTIME — states, workers, context protection, prompt sync"
+      },
       "plugins": {
         "title": "PLUGINS — per-workspace modules (plugin architecture)"
+      },
+      "scheduler": {
+        "title": "SCHEDULER — cron-like recurring agent tasks"
+      },
+      "projectDashboards": {
+        "title": "PROJECT DASHBOARDS — Page Builder + widgets (roadmap, gantt, phases)"
       },
       "authRefresh": {
         "title": "AUTH refresh tokens — rotation + revocation"
@@ -632,6 +656,39 @@
       },
       "BL-AGENTS-007": {
         "story": "Pinned agents live in the sidebar next to the workspace switcher — with a scope badge and a quick jump."
+      },
+      "BL-PROJ-ARCH": {
+        "story": "Project layer between Workspace and agents — a workspace holds multiple projects (e.g., TalentBridge API/APP/Yii), each with its own settings/agents/members/skills/flow/tasks. Foundation for most of the remaining vision. Needs brief."
+      },
+      "BL-VAR-ARCH": {
+        "story": "Variables/secrets system — keys global + per workspace/project (IP_SERVERA, API_TOKEN). Agents reference via `$VAR_NAME` without exposing values in prompts. Needs brief."
+      },
+      "BL-KB-ARCH": {
+        "story": "In-system knowledge base (not files) — shared level + dedicated per agent. Decisions: storage, retrieval, scope visibility. Needs brief."
+      },
+      "BL-SKILL-ARCH": {
+        "story": "Skills system — atomic procedures per action (`new Symfony module`, `write SQL`, `verify branch`). Shared base + dedicated per agent. Needs brief."
+      },
+      "BL-FLOW-ARCH": {
+        "story": "Flow Builder — agent orchestration in a project (Maja → brief → mockups → programming → CR → security) with optional approval gates. Core product feature. Needs brief."
+      },
+      "BL-RUNTIME-STATES": {
+        "story": "Agent state machine — discovery/builder/analytics modes with auto-transitions (e.g., builder → listener when no work). Needs brief."
+      },
+      "BL-RUNTIME-WORKERS": {
+        "story": "Worker split / thread orchestration — the agent (Viktor) branches work across isolated workers (worker-1/2/3); workers do not know about each other. Needs brief."
+      },
+      "BL-RUNTIME-COMPACT": {
+        "story": "Context overflow safeguard — `is_first` flag + force-clear after context compact, agent rebuilds context from DB instead of using the compacted copy. Needs brief."
+      },
+      "BL-RUNTIME-PROMPT-SYNC": {
+        "story": "Smart prompt sync — do not send the full prompt every time, the agent confirms it has up-to-date context, token savings. Needs brief."
+      },
+      "BL-SCHED-ARCH": {
+        "story": "Cron-like scheduler for agents on workspace + project (e.g., daily content run in Agentic-Social-Media). Needs brief."
+      },
+      "BL-DASH-ARCH": {
+        "story": "Page Builder for a project — widgets (roadmap, gantt, phases, metrics). Dedicated tabs per project. Ties into PLUGINS. Needs brief."
       },
       "BL-AUTH-004": {
         "story": "Short-lived access tokens (15 min) and an HttpOnly refresh cookie (14 d) that rotates on every refresh."

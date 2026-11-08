@@ -1,4 +1,5 @@
 import type { RoadmapMilestone } from '../types';
+import { AGENT_RUNTIME_MILESTONE } from './agentRuntime';
 import { AGENTS_MILESTONE } from './agents';
 import { AI_ENGINE_MILESTONE } from './aiEngine';
 import { AUDIT_MILESTONE } from './audit';
@@ -6,12 +7,19 @@ import { AUTH_MILESTONE } from './auth';
 import { AUTH_REFRESH_MILESTONE } from './authRefresh';
 import { CHAT_MILESTONE } from './chat';
 import { CORE_MILESTONE } from './core';
+import { FLOWS_MILESTONE } from './flows';
 import { INTEGRATION_TESTS_MILESTONE } from './integrationTests';
+import { KNOWLEDGE_MILESTONE } from './knowledge';
 import { PERMISSIONS_MILESTONE } from './permissions';
 import { PLUGINS_MILESTONE } from './plugins';
+import { PROJECT_DASHBOARDS_MILESTONE } from './projectDashboards';
+import { PROJECTS_MILESTONE } from './projects';
+import { SCHEDULER_MILESTONE } from './scheduler';
+import { SKILLS_MILESTONE } from './skills';
 import { THREADS_MILESTONE } from './threads';
 import { UI_MILESTONE } from './ui';
 import { USER_MANAGEMENT_MILESTONE } from './userManagement';
+import { VARIABLES_MILESTONE } from './variables';
 import { WORKSPACES_MILESTONE } from './workspaces';
 
 export const ROADMAP: RoadmapMilestone[] = [
@@ -23,9 +31,17 @@ export const ROADMAP: RoadmapMilestone[] = [
   AUDIT_MILESTONE,
   INTEGRATION_TESTS_MILESTONE,
   PERMISSIONS_MILESTONE,
+  PROJECTS_MILESTONE,
+  VARIABLES_MILESTONE,
   AGENTS_MILESTONE,
   AI_ENGINE_MILESTONE,
+  KNOWLEDGE_MILESTONE,
+  SKILLS_MILESTONE,
+  FLOWS_MILESTONE,
+  AGENT_RUNTIME_MILESTONE,
   PLUGINS_MILESTONE,
+  SCHEDULER_MILESTONE,
+  PROJECT_DASHBOARDS_MILESTONE,
   AUTH_REFRESH_MILESTONE,
   CHAT_MILESTONE,
   THREADS_MILESTONE,
