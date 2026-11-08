@@ -387,6 +387,9 @@
       "audit": {
         "title": "AUDIT — audit log + mechanizm cofania"
       },
+      "integrationTests": {
+        "title": "INTEGRATION TESTS — fundament atomowych testów integracyjnych"
+      },
       "permissions": {
         "title": "PERMISSIONS — uprawnienia per workspace"
       },
@@ -596,6 +599,9 @@
       },
       "BL-PLUGIN-ARCH": {
         "story": "Plugin architecture — moduły instalowane na workspace (nie na instancję), ze scope’em per workspace dla routingu, menu, API i tabel. Research w `knowledge/discovery/plugin-architecture.md`, czeka na ADR."
+      },
+      "BL-INT-FOUNDATION": {
+        "story": "Fundament atomowych testów integracyjnych — DAMA DoctrineTestBundle (rollback transakcji per test), IntegrationTestCase jako baza, TracingDomainEventDispatcher do asercji wyemitowanych eventów, Test + DataProvider jako rozdzielone pliki. Pokrywa też follow-up BL-UM-004 (real-DB ListUsersIntegrationTest). Brief: `knowledge/briefs/1e-integration-tests.md`, czeka na 6 decyzji."
       },
       "BL-PERM-001": {
         "story": "Każdy moduł dostaje własne uprawnienia (workspaces.view, workspaces.manage, agents.view i kolejne) — UserRole jako skrót na pełny komplet w workspace’ie."

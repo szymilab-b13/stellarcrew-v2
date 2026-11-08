@@ -6,6 +6,7 @@ import { AUTH_MILESTONE } from './auth';
 import { AUTH_REFRESH_MILESTONE } from './authRefresh';
 import { CHAT_MILESTONE } from './chat';
 import { CORE_MILESTONE } from './core';
+import { INTEGRATION_TESTS_MILESTONE } from './integrationTests';
 import { PERMISSIONS_MILESTONE } from './permissions';
 import { PLUGINS_MILESTONE } from './plugins';
 import { THREADS_MILESTONE } from './threads';
@@ -20,6 +21,7 @@ export const ROADMAP: RoadmapMilestone[] = [
   WORKSPACES_MILESTONE,
   USER_MANAGEMENT_MILESTONE,
   AUDIT_MILESTONE,
+  INTEGRATION_TESTS_MILESTONE,
   PERMISSIONS_MILESTONE,
   AGENTS_MILESTONE,
   AI_ENGINE_MILESTONE,

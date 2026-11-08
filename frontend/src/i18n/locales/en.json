@@ -387,6 +387,9 @@
       "audit": {
         "title": "AUDIT — audit log + undo dispatcher"
       },
+      "integrationTests": {
+        "title": "INTEGRATION TESTS — atomic integration test foundation"
+      },
       "permissions": {
         "title": "PERMISSIONS — fine-grained per-workspace access"
       },
@@ -596,6 +599,9 @@
       },
       "BL-AUDIT-007": {
         "story": "You can undo 6 User Management actions: user creation, deactivation and reactivation, member assignment, removal and role change."
+      },
+      "BL-INT-FOUNDATION": {
+        "story": "Foundation for atomic integration tests — DAMA DoctrineTestBundle (transaction rollback per test), IntegrationTestCase base class, TracingDomainEventDispatcher for asserting dispatched events, split Test + DataProvider files. Also covers BL-UM-004 follow-up (real-DB ListUsersIntegrationTest). Brief: `knowledge/briefs/1e-integration-tests.md`, 6 decisions pending."
       },
       "BL-PERM-001": {
         "story": "Per-module permissions (workspaces.view, workspaces.manage, agents.view, and so on) — UserRole as shorthand for the full set in a workspace."
