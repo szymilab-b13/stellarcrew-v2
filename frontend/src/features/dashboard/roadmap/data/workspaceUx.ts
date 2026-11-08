@@ -8,7 +8,7 @@ export const WORKSPACE_UX_MILESTONE: RoadmapMilestone = {
     { id: 'BL-WSUX-001', status: 'done', commit: '0179029' },
     { id: 'BL-WSUX-002', status: 'done', commit: '2c7974a' },
     { id: 'BL-WSUX-003', status: 'done', commit: '89a4f9b' },
-    { id: 'BL-WSUX-004', status: 'planned' },
+    { id: 'BL-WSUX-004', status: 'done', commit: 'eb1c5d2' },
     { id: 'BL-WSUX-005', status: 'planned' },
     { id: 'BL-WSUX-006', status: 'planned' },
     { id: 'BL-WSUX-007', status: 'planned' },
