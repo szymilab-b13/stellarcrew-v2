@@ -1,9 +1,8 @@
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/Button';
-
 import { ASSIGNABLE_ROLES, type WorkspaceMember, type WorkspaceRole } from '../types';
+import { MemberRowActionsMenu } from './MemberRowActionsMenu';
 
 interface MembersTableProps {
   members: WorkspaceMember[];
@@ -91,20 +90,15 @@ export function MembersTable({
                 {canManage ? (
                   <td className="px-4 py-3 text-right">
                     {!isOwner ? (
-                      <Button
-                        variant="secondary"
-                        onClick={() => onRemoveClick(member)}
-                        aria-label={t('workspaceMembers.table.removeAria', { email: member.email })}
-                        leadingIcon={
-                          pendingRoleUserId === member.userId ? (
-                            <Loader2 className="animate-spin" size={14} aria-hidden />
-                          ) : (
-                            <Trash2 size={14} aria-hidden />
-                          )
-                        }
-                      >
-                        {t('workspaceMembers.table.remove')}
-                      </Button>
+                      pendingRoleUserId === member.userId ? (
+                        <Loader2
+                          className="inline-block animate-spin text-sc-text-muted"
+                          size={14}
+                          aria-hidden
+                        />
+                      ) : (
+                        <MemberRowActionsMenu member={member} onRemoveClick={onRemoveClick} />
+                      )
                     ) : null}
                   </td>
                 ) : null}

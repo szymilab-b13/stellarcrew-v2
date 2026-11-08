@@ -239,7 +239,8 @@ describe('MembersSettingsPage', () => {
     await userEvent.click(
       within(row).getByRole('button', { name: /Remove member adm@example.com/i }),
     );
-    await userEvent.click(screen.getByRole('button', { name: /^Remove$/i }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: /^Remove$/i }));
+    await userEvent.click(await screen.findByRole('button', { name: /^Remove$/i }));
 
     expect(
       await screen.findByText(/Downgrade the admin to Member before removing/i),
