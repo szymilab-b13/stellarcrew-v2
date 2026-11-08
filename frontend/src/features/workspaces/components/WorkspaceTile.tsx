@@ -1,5 +1,6 @@
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 import { RolePill } from '@/features/user-management/components/RolePill';
 
@@ -39,6 +40,14 @@ export function WorkspaceTile({ workspace, onEdit, onDelete }: WorkspaceTileProp
       </div>
 
       <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+        <Link
+          to={`/workspace/${workspace.id}/settings/members`}
+          aria-label={t('workspaces.tile.membersAria', { name: workspace.name })}
+          title={t('workspaces.tile.members')}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-sc-text-muted transition-colors hover:bg-sc-bg hover:text-sc-text"
+        >
+          <Users size={14} aria-hidden />
+        </Link>
         <button
           type="button"
           onClick={() => onEdit(workspace)}

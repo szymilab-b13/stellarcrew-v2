@@ -647,7 +647,9 @@
       "edit": "Zmień nazwę",
       "editAria": "Zmień nazwę workspace’a {{name}}",
       "delete": "Usuń",
-      "deleteAria": "Usuń workspace {{name}}"
+      "deleteAria": "Usuń workspace {{name}}",
+      "members": "Członkowie",
+      "membersAria": "Zarządzaj członkami workspace’a {{name}}"
     },
     "dialog": {
       "createTitle": "Utwórz workspace",
