@@ -453,6 +453,12 @@
       "BL-UI-STRETCH": {
         "story": "Content stretches to full width — unified padding, no narrow container from earlier iterations."
       },
+      "BL-UI-POLISH-003": {
+        "story": "Confirm modals are wider (max-w-2xl), the Reactivate CTA is red like Deactivate/Delete, user-management dialogs render via a portal — no more inherited text-align: right from the row actions cell."
+      },
+      "BL-UI-POLISH-004": {
+        "story": "Confirm modals keep a stable minimum height on the body text section — a short one-sentence message no longer collapses at the top of the modal."
+      },
       "BL-WS-001": {
         "story": "The workspace domain is in place — Workspace, Member, Invitation; on install a Default workspace owned by the admin is seeded."
       },

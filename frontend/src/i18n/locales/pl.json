@@ -453,6 +453,12 @@
       "BL-UI-STRETCH": {
         "story": "Zawartość widoków rozciąga się na pełną szerokość — jednolite paddingi, bez węższego kontenera z poprzednich iteracji."
       },
+      "BL-UI-POLISH-003": {
+        "story": "Modale potwierdzeń są szersze (max-w-2xl), przycisk Reaktywuj czerwony jak Dezaktywuj/Usuń, dialogi user-management renderują się przez portal — koniec z dziedziczeniem text-align: right z komórki akcji w tabeli."
+      },
+      "BL-UI-POLISH-004": {
+        "story": "Sekcja tekstu w modalach potwierdzeń trzyma stabilną minimalną wysokość — krótki jednozdaniowy komunikat nie zapada się u góry modala."
+      },
       "BL-WS-001": {
         "story": "Masz domenę workspace’ów — Workspace, Member, Invitation; przy instalacji powstaje Default workspace należący do admina."
       },

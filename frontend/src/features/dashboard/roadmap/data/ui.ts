@@ -15,5 +15,7 @@ export const UI_MILESTONE: RoadmapMilestone = {
     { id: 'BL-UI-POLISH-002', status: 'done', commit: '202c3df' },
     { id: 'BL-WS-UI-002', status: 'done', commit: 'bc3d98c' },
     { id: 'BL-UI-STRETCH', status: 'done', commit: '4365702' },
+    { id: 'BL-UI-POLISH-003', status: 'done', commit: '30c8a80' },
+    { id: 'BL-UI-POLISH-004', status: 'done', commit: '94f3794' },
   ],
 };
