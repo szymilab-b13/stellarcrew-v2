@@ -393,6 +393,9 @@
       "permissions": {
         "title": "PERMISSIONS — uprawnienia per workspace"
       },
+      "workspaceUx": {
+        "title": "WORKSPACE UX — overview dashboard + context-aware menu + 4-col grid"
+      },
       "projectsLayer": {
         "title": "PROJECTS — warstwa Workspace → Project (settings, members, tasks)"
       },
@@ -656,6 +659,42 @@
       },
       "BL-AGENTS-007": {
         "story": "Przypięci agenci siedzą w sidebarze obok przełącznika workspace’ów — z badge scope i szybkim skokiem."
+      },
+      "BL-WSUX-001": {
+        "story": "Siatka workspace'ów na dużych ekranach (≥1280px) pokazuje 4 kafelki w rzędzie zamiast 3 — lepsze wykorzystanie szerokości ekranu."
+      },
+      "BL-WSUX-002": {
+        "story": "Wejście w workspace z listy przenosi od razu do strony Overview workspace'u (nowa warstwa URL `/workspace/{id}/overview`)."
+      },
+      "BL-WSUX-003": {
+        "story": "Sidebar pokazuje kontekstową sekcję Workspace (Overview/Projects/Members/Agents/Scheduler/Settings) gdy jestem w workspace'ie — niedostępne pozycje wyszarzone z informacją o milestone."
+      },
+      "BL-WSUX-004": {
+        "story": "Strona Overview workspace'u ma układ dashboardu z 2 rzędami widgetów (rząd 1: 5 widgetów, rząd 2: 3 widgety)."
+      },
+      "BL-WSUX-005": {
+        "story": "Widget „Aktywne taski\" pokazuje co dzisiaj robione + spędzony czas (PROTOTYP, docelowo po milestone TASKS)."
+      },
+      "BL-WSUX-006": {
+        "story": "Widget „Aktywni agenci\" pokazuje liczbę aktywnych agentów + listę z trybem każdego (BUILDER/LISTENER/DISCOVERY/IDLE). PROTOTYP."
+      },
+      "BL-WSUX-007": {
+        "story": "Widget „Postęp tasków\" pokazuje ogólny progress + 3 ostatnie taski ze statusem i %. PROTOTYP."
+      },
+      "BL-WSUX-008": {
+        "story": "Widget „Milestones\" pokazuje aktualny milestone i postęp. PROTOTYP."
+      },
+      "BL-WSUX-009": {
+        "story": "Widget „Projekty\" pokazuje liczbę projektów + preview tiles (PROTOTYP, docelowo po milestone PROJECTS)."
+      },
+      "BL-WSUX-010": {
+        "story": "Widget „Akcje dla Szefa\" pokazuje co agenci czekają na decyzję (Code Review, Testy, ...). PROTOTYP."
+      },
+      "BL-WSUX-011": {
+        "story": "Widget „Ostatnia aktywność agentów\" pokazuje listę zrealizowanych BL w formacie `BL-ID opis commit-hash` + badge statusu (merged/pending/in-progress). PROTOTYP."
+      },
+      "BL-WSUX-012": {
+        "story": "Widget „Workspace Info\" pokazuje avatar workspace'u, opis, kto utworzył, kiedy, przycisk kopiowania ID workspace'u. PROTOTYP."
       },
       "BL-PROJ-ARCH": {
         "story": "Warstwa Project między Workspace a agentami — workspace ma wiele projektów (np. TalentBridge API/APP/Yii), każdy z własnymi settings/agents/members/skills/flow/tasks. Fundament pod większość reszty wizji. Needs brief."

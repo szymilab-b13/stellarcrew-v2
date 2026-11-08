@@ -20,6 +20,7 @@ import { THREADS_MILESTONE } from './threads';
 import { UI_MILESTONE } from './ui';
 import { USER_MANAGEMENT_MILESTONE } from './userManagement';
 import { VARIABLES_MILESTONE } from './variables';
+import { WORKSPACE_UX_MILESTONE } from './workspaceUx';
 import { WORKSPACES_MILESTONE } from './workspaces';
 
 export const ROADMAP: RoadmapMilestone[] = [
@@ -29,6 +30,7 @@ export const ROADMAP: RoadmapMilestone[] = [
   WORKSPACES_MILESTONE,
   USER_MANAGEMENT_MILESTONE,
   AUDIT_MILESTONE,
+  WORKSPACE_UX_MILESTONE,
   INTEGRATION_TESTS_MILESTONE,
   PERMISSIONS_MILESTONE,
   PROJECTS_MILESTONE,
