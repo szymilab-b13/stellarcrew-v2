@@ -8,8 +8,12 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
+use Modules\Core\Api\AuditLoggerInterface;
+use Modules\Core\Api\Dto\AuditEntry;
+use Modules\Shared\Kernel\Clock;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -19,10 +23,18 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 final readonly class AuthController
 {
+    public const string AUDIT_ACTION_LOGIN_SUCCESS = 'auth.user.login.success';
+
+    public const string AUDIT_ACTION_LOGOUT = 'auth.user.logout';
+
+    public const string AUDIT_RESOURCE_TYPE = 'user';
+
     public function __construct(
         private UserRepository $users,
         private UserPasswordHasherInterface $passwords,
         private JWTTokenManagerInterface $tokens,
+        private AuditLoggerInterface $audit,
+        private Clock $clock,
     ) {
     }
 
@@ -38,7 +50,7 @@ final readonly class AuthController
             new OA\Response(response: 422, description: 'Validation error'),
         ],
     )]
-    public function login(#[MapRequestPayload] LoginRequest $input): JsonResponse
+    public function login(#[MapRequestPayload] LoginRequest $input, Request $request): JsonResponse
     {
         $domainUser = $this->users->findByEmail($input->email);
 
@@ -55,6 +67,17 @@ final readonly class AuthController
         if ($domainUser->isDeactivated()) {
             return new JsonResponse(['error' => 'account_deactivated'], Response::HTTP_FORBIDDEN);
         }
+
+        $this->audit->log(new AuditEntry(
+            userId: $domainUser->id(),
+            action: self::AUDIT_ACTION_LOGIN_SUCCESS,
+            occurredAt: $this->clock->now(),
+            resourceType: self::AUDIT_RESOURCE_TYPE,
+            resourceId: (string) $domainUser->id(),
+            metadata: ['email' => $domainUser->email()],
+            ip: $request->getClientIp(),
+            userAgent: $request->headers->get('User-Agent'),
+        ));
 
         return new JsonResponse([
             'token' => $this->tokens->create($securityUser),
@@ -80,14 +103,28 @@ final readonly class AuthController
     #[Route('/api/auth/logout', name: 'auth_logout', methods: ['POST'])]
     #[OA\Post(
         path: '/api/auth/logout',
-        summary: 'Logout (no-op for JWT; client discards the access token).',
+        summary: 'Logout (JWT is discarded client-side; the server records an audit entry).',
         tags: ['auth'],
         responses: [
             new OA\Response(response: 204, description: 'Logged out'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
         ],
     )]
-    public function logout(): JsonResponse
+    public function logout(#[CurrentUser] SecurityUser $user, Request $request): JsonResponse
     {
+        $domain = $user->domainUser();
+
+        $this->audit->log(new AuditEntry(
+            userId: $domain->id(),
+            action: self::AUDIT_ACTION_LOGOUT,
+            occurredAt: $this->clock->now(),
+            resourceType: self::AUDIT_RESOURCE_TYPE,
+            resourceId: (string) $domain->id(),
+            metadata: ['email' => $domain->email()],
+            ip: $request->getClientIp(),
+            userAgent: $request->headers->get('User-Agent'),
+        ));
+
         return new JsonResponse(status: Response::HTTP_NO_CONTENT);
     }
 

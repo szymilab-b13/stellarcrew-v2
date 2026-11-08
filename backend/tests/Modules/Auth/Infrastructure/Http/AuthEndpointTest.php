@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Auth\Infrastructure\Http;
 
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use DateTimeImmutable;
 use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
+use Modules\Auth\Infrastructure\Http\AuthController;
 use Modules\Auth\Infrastructure\Security\HashablePlaintextUser;
+use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Shared\Kernel\UserId;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -98,11 +101,104 @@ final class AuthEndpointTest extends WebTestCase
         self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testShouldReturn204OnLogout(): void
+    public function testShouldReturn204OnLogoutWhenAuthenticated(): void
+    {
+        $this->seedAdmin('admin@example.com', 'secret-pass-long-enough');
+        $token = $this->login('admin@example.com', 'secret-pass-long-enough');
+
+        $this->client->request(
+            'POST',
+            '/api/auth/logout',
+            server: ['HTTP_AUTHORIZATION' => 'Bearer '.$token],
+        );
+
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn401OnLogoutWithoutToken(): void
     {
         $this->client->request('POST', '/api/auth/logout');
 
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldRecordAuditEntryOnSuccessfulLogin(): void
+    {
+        $this->seedAdmin('admin@example.com', 'secret-pass-long-enough', displayName: 'Tomek');
+        $spy = $this->spyAuditLogger();
+
+        $this->client->request(
+            'POST',
+            '/api/auth/login',
+            server: [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_USER_AGENT' => 'FirefoxTest/1.0',
+                'REMOTE_ADDR' => '10.11.12.13',
+            ],
+            content: json_encode(
+                ['email' => 'admin@example.com', 'password' => 'secret-pass-long-enough'],
+                JSON_THROW_ON_ERROR,
+            ),
+        );
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        self::assertCount(1, $spy->entries);
+
+        $entry = $spy->entries[0];
+        self::assertSame(AuthController::AUDIT_ACTION_LOGIN_SUCCESS, $entry->action);
+        self::assertSame(AuthController::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame('admin@example.com', $entry->metadata['email'] ?? null);
+        self::assertSame('10.11.12.13', $entry->ip);
+        self::assertSame('FirefoxTest/1.0', $entry->userAgent);
+        self::assertNotNull($entry->userId);
+    }
+
+    public function testShouldNotRecordAuditEntryOnFailedLogin(): void
+    {
+        $this->seedAdmin('admin@example.com', 'secret-pass-long-enough');
+        $spy = $this->spyAuditLogger();
+
+        $this->postJson('/api/auth/login', ['email' => 'admin@example.com', 'password' => 'wrong-password']);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+        self::assertSame([], $spy->entries);
+    }
+
+    public function testShouldRecordAuditEntryOnLogout(): void
+    {
+        $this->seedAdmin('admin@example.com', 'secret-pass-long-enough');
+        $token = $this->login('admin@example.com', 'secret-pass-long-enough');
+        $spy = $this->spyAuditLogger();
+        $spy->entries = [];
+
+        $this->client->request(
+            'POST',
+            '/api/auth/logout',
+            server: [
+                'HTTP_AUTHORIZATION' => 'Bearer '.$token,
+                'HTTP_USER_AGENT' => 'ChromeTest/2.0',
+                'REMOTE_ADDR' => '198.51.100.7',
+            ],
+        );
+
         self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+        self::assertCount(1, $spy->entries);
+
+        $entry = $spy->entries[0];
+        self::assertSame(AuthController::AUDIT_ACTION_LOGOUT, $entry->action);
+        self::assertSame(AuthController::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame('admin@example.com', $entry->metadata['email'] ?? null);
+        self::assertSame('198.51.100.7', $entry->ip);
+        self::assertSame('ChromeTest/2.0', $entry->userAgent);
+        self::assertNotNull($entry->userId);
+    }
+
+    private function spyAuditLogger(): SpyAuditLogger
+    {
+        $logger = self::getContainer()->get(AuditLoggerInterface::class);
+        self::assertInstanceOf(SpyAuditLogger::class, $logger);
+
+        return $logger;
     }
 
     private function seedAdmin(string $email, string $plaintextPassword, ?string $displayName = null): void

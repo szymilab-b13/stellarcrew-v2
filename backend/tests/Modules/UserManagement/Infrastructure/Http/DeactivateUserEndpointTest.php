@@ -94,6 +94,7 @@ final class DeactivateUserEndpointTest extends WebTestCase
         $admin = $this->seedUser(self::ADMIN_EMAIL, self::PLAIN_PASSWORD, UserRole::Admin);
         $token = $this->login(self::ADMIN_EMAIL, self::PLAIN_PASSWORD);
         $targetId = $this->seedProfile();
+        $this->spyAudit()->entries = [];
 
         $this->postJson('/api/user-management/users/'.$targetId.'/deactivate', $token);
 
