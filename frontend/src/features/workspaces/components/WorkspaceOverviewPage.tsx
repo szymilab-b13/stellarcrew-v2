@@ -8,6 +8,7 @@ import { useWorkspacesList } from '../api/useWorkspaces';
 import { ActiveAgentsWidget } from './ActiveAgentsWidget';
 import { ActiveTasksWidget } from './ActiveTasksWidget';
 import { BossActionsWidget } from './BossActionsWidget';
+import { LastAgentsActivityWidget } from './LastAgentsActivityWidget';
 import { MilestonesWidget } from './MilestonesWidget';
 import { ProjectsWidget } from './ProjectsWidget';
 import { TasksProgressWidget } from './TasksProgressWidget';
@@ -17,10 +18,7 @@ type WidgetSlot = {
   bl: string;
 };
 
-const ROW_2_SLOTS: WidgetSlot[] = [
-  { key: 'lastAgentsActivity', bl: 'BL-WSUX-011' },
-  { key: 'workspaceInfo', bl: 'BL-WSUX-012' },
-];
+const ROW_2_SLOTS: WidgetSlot[] = [{ key: 'workspaceInfo', bl: 'BL-WSUX-012' }];
 
 export function WorkspaceOverviewPage() {
   const { t } = useTranslation();
@@ -75,6 +73,7 @@ export function WorkspaceOverviewPage() {
         className="grid grid-cols-1 gap-4 md:grid-cols-3"
       >
         <BossActionsWidget />
+        <LastAgentsActivityWidget />
         {ROW_2_SLOTS.map((slot) => (
           <WidgetSlotCard key={slot.key} slot={slot} />
         ))}

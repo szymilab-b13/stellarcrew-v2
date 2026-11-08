@@ -244,6 +244,21 @@
           "launch": "LAUNCH",
           "broadcast": "BROADCAST"
         }
+      },
+      "lastAgentsActivity": {
+        "previewLabel": "Last agents activity preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": { "bl": "BL-UM-014", "commit": "aa5b789" },
+          "1": { "bl": "BL-AUDIT-WS", "commit": "868ec80" },
+          "2": { "bl": "BL-AUTH-LOGIN", "commit": "bfe8364" },
+          "3": { "bl": "BL-PLUGIN-ARCH", "commit": "1edbdcb" }
+        },
+        "statuses": {
+          "merged": "MERGED",
+          "inProgress": "IN PROGRESS",
+          "pending": "PENDING"
+        }
       }
     }
   },
