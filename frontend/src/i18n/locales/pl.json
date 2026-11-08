@@ -381,6 +381,207 @@
       "threads": {
         "title": "Wątki pozamilestone’owe — DX i dokumentacja"
       }
+    },
+    "tasks": {
+      "BL-SETUP-003": {
+        "story": "System jest pocięty na moduły (Core, Auth, Workspaces i kolejne) — każda funkcja ma swoje miejsce i może rozwijać się osobno."
+      },
+      "BL-CORE-001": {
+        "story": "Sprawdzisz, czy serwisy platformy (baza, cache, kolejka) są zdrowe — jednym zapytaniem do /api/health."
+      },
+      "BL-CORE-002": {
+        "story": "Instalujesz StellarCrew z linii poleceń — jedna komenda tworzy pierwszego admina i oznacza instancję jako zainstalowaną."
+      },
+      "BL-CORE-003A": {
+        "story": "User jako obywatel modułu Auth — inne moduły korzystają z niego jako gotowego portu, bez zaglądania w środki."
+      },
+      "BL-CORE-003B": {
+        "story": "Panel instalacyjny rozmawia z API — kontrola statusu i wysłanie formularza przez /api/install/status i /api/install."
+      },
+      "BL-CORE-003C": {
+        "story": "Instalujesz StellarCrew przez przeglądarkę — formularz z walidacją w czasie rzeczywistym."
+      },
+      "BL-CORE-003C-hotfix": {
+        "story": "Strona główna / poprawnie przekierowuje do instalatora, dopóki system nie został zainstalowany."
+      },
+      "BL-CORE-003D-a": {
+        "story": "Instalator prowadzi cię przez 5 kroków — administrator, branding, logo, pierwszy workspace, podsumowanie."
+      },
+      "BL-CORE-006": {
+        "story": "Identyfikatory i czas są typowane w jednym miejscu — mniejsze ryzyko pomyłek na granicy modułów."
+      },
+      "BL-CORE-007": {
+        "story": "Błędy backendu lądują na froncie w jednym formacie JSON — czytelne komunikaty zamiast surowych 500-tek."
+      },
+      "BL-AUTH-001": {
+        "story": "Logujesz się e-mailem i hasłem — API zwraca token JWT ważny godzinę."
+      },
+      "BL-AUTH-002": {
+        "story": "Front pamięta twój token — każde żądanie leci z Authorization: Bearer automatycznie."
+      },
+      "BL-AUTH-003": {
+        "story": "Strona główna jest chroniona — niezalogowani lecą na /login; w topbarze widzisz swoją tożsamość i masz Wyloguj."
+      },
+      "BL-UI-001": {
+        "story": "Menu w sidebarze zbiera się z modułów — każdy moduł zgłasza swoje pozycje przez MenuContributor, z uwzględnieniem twojej roli."
+      },
+      "BL-UI-002": {
+        "story": "Aplikacja ma shell: sidebar (240 px), logo, strzałka zwijająca, sekcje, stopka — z /dashboard, /workspaces i tłumaczeniami PL/EN."
+      },
+      "BL-UI-003": {
+        "story": "Pod logo stoi placeholder przełącznika workspace’ów — pierwsza wersja z jednym Default workspace."
+      },
+      "BL-UI-TOPBAR": {
+        "story": "Masz topbar z menu profilu — Wyloguj, język i motyw przeniesione z sidebara do prawego górnego rogu."
+      },
+      "BL-UI-FIX-01": { "story": "Deptrac jest zielony — DTO menu nie łamie granic modułów." },
+      "BL-UI-004": {
+        "story": "Przypinasz pozycje menu — gwiazdka obok itema, przypięte lądują na górze (do 5), zapamiętane w localStorage."
+      },
+      "BL-UI-POLISH-001": {
+        "story": "Jednolite komponenty Button i Input — warianty primary/secondary/destructive, aria-invalid na błędach, Design 2.0."
+      },
+      "BL-WS-UI-001": {
+        "story": "Modale workspace’a (tworzenie, edycja, usunięcie) używają jednolitych Buttonów i Inputów — spójny look Design 2.0."
+      },
+      "BL-UI-POLISH-002": {
+        "story": "W topbarze są breadcrumbs — ikona Home i ścieżka szewronami do bieżącego widoku, zasilane przez usePageBreadcrumbs."
+      },
+      "BL-WS-UI-002": {
+        "story": "Dialog usuwania workspace’a wymaga potwierdzenia checkboxem — mniejsze ryzyko przypadkowego kliknięcia."
+      },
+      "BL-UI-STRETCH": {
+        "story": "Zawartość widoków rozciąga się na pełną szerokość — jednolite paddingi, bez węższego kontenera z poprzednich iteracji."
+      },
+      "BL-WS-001": {
+        "story": "Masz domenę workspace’ów — Workspace, Member, Invitation; przy instalacji powstaje Default workspace należący do admina."
+      },
+      "BL-WS-002": {
+        "story": "Zarządzasz workspace’ami przez API — tworzysz, zmieniasz, usuwasz (soft delete), z guardami uprawnień."
+      },
+      "BL-WS-003": {
+        "story": "Definiujesz własne Workspace’y — kafelki na /workspaces, dialog z nazwą, kolorem i inicjałami, usuwanie z potwierdzeniem."
+      },
+      "BL-WS-004": {
+        "story": "Front pamięta, który workspace wybrałeś — wraca do niego po odświeżeniu i po logowaniu, czyści przy wylogowaniu."
+      },
+      "BL-WS-005": {
+        "story": "W sidebarze jest prawdziwy przełącznik workspace’ów — popover z listą, link do zarządzania, kafelek w trybie zwiniętym."
+      },
+      "BL-WS-HOTFIX-001": {
+        "story": "Hotfix: front przestał wysyłać kolory jako hex — temat zamknięty przez HOTFIX-002, finalnie zostajemy przy hex."
+      },
+      "BL-WS-HOTFIX-002": {
+        "story": "Kolor workspace’a jest trzymany jako #RRGGBB — walidacja regexem, dowolny kolor z palety na froncie."
+      },
+      "BL-UM-001": {
+        "story": "Każdy użytkownik ma profil — osobny schemat user_management, przy instalacji seed profilu admina."
+      },
+      "BL-UM-002": {
+        "story": "Tworzysz użytkowników przez API — każde utworzenie trafia do audytu z after_state (e-mail, flaga super admin)."
+      },
+      "BL-UM-003": {
+        "story": "Super admin dodaje użytkowników przez POST /api/user-management/users — DTO z walidacją (unikalny e-mail, min. 12 znaków hasła)."
+      },
+      "BL-UM-004": {
+        "story": "Listujesz użytkowników z filtrami — po e-mailu, workspace, roli super admin, dezaktywowanych; z paginacją."
+      },
+      "BL-UM-005": {
+        "story": "Super admin ma widok /admin/users — tabela, filtry, modal „Dodaj użytkownika”, pozycja w sidebarze."
+      },
+      "BL-UM-006": {
+        "story": "Zarządzasz członkami workspace’a — przypisujesz, zmieniasz role, usuwasz; admina trzeba najpierw zdegradować."
+      },
+      "BL-UM-007": {
+        "story": "API członków workspace’a — POST/PATCH/DELETE pod /workspace-assignments, 422 przy próbie usunięcia admina."
+      },
+      "BL-UM-008": {
+        "story": "Właściciel workspace’a zarządza członkami w UI — tabela, autocomplete do dodania, select roli, modal usunięcia."
+      },
+      "BL-UM-009": {
+        "story": "Widzisz swoją rolę w każdym workspace’ie — role pills (owner, admin, member, guest) na kafelkach, w switcherze i w profilu."
+      },
+      "BL-UM-010": {
+        "story": "Szczegóły użytkownika na /admin/users/{id} — status, przypisania do workspace’ów, konto, ostatnie 20 wpisów audytu z linkiem do pełnej historii."
+      },
+      "BL-UM-011": {
+        "story": "Dezaktywujesz i reaktywujesz konto — modale potwierdzenia, audit log, obie akcje odwracalne."
+      },
+      "BL-UM-012": {
+        "story": "Super admin resetuje hasło użytkownikowi — modal z dwoma polami, wpis w audycie bez hasła (nieodwracalny)."
+      },
+      "BL-UM-013": {
+        "story": "W tabeli użytkowników masz menu akcji — trzy opcje: Detale, Dezaktywuj/Aktywuj, Resetuj hasło."
+      },
+      "BL-UM-014": {
+        "story": "Każda akcja administracyjna niesie ID prawdziwego aktora do audytu — koniec z 500-kami przy dezaktywacji, reaktywacji, resecie hasła, zmianie roli członka i usunięciu członka."
+      },
+      "BL-AUDIT-001": {
+        "story": "Mamy schemat i tabelę audit_log — aktor, akcja, zasób, before/after jako JSONB, pola cofnięcia, indeksy."
+      },
+      "BL-AUDIT-002": {
+        "story": "Moduły logują do audytu — AuditApi::log jako implementacja wspólnego AuditLoggerInterface."
+      },
+      "BL-AUDIT-003": {
+        "story": "Przeszukujesz audit log po API — GET /api/audit/entries z filtrami (aktor, akcja, zasób, zakres dat, odwracalne, cofnięte), super admin only."
+      },
+      "BL-AUDIT-004": {
+        "story": "Cofasz wpis z audytu — dispatcher zbiera Undoer per moduł, POST /api/audit/entries/{id}/undo zwraca nowy entry id, z mapowaniem błędów 404/409/410/422."
+      },
+      "BL-AUDIT-005": {
+        "story": "Masz widok /admin/audit — tabela z filtrami (autocomplete aktora, akcja per moduł, zasób, zakres dat) i przycisk cofnij z opisem skutku."
+      },
+      "BL-AUDIT-006": {
+        "story": "W sidebarze widoczna jest pozycja „Dziennik audytu” (tylko dla super admina)."
+      },
+      "BL-AUDIT-007": {
+        "story": "Cofniesz 6 akcji z modułu User Management: utworzenie, dezaktywację i reaktywację użytkownika, przypisanie, usunięcie i zmianę roli członka."
+      },
+      "BL-PERM-001": {
+        "story": "Każdy moduł dostaje własne uprawnienia (workspaces.view, workspaces.manage, agents.view i kolejne) — UserRole jako skrót na pełny komplet w workspace’ie."
+      },
+      "BL-PERM-002": {
+        "story": "Symfony voters sprawdzają członkostwo i uprawnienie per workspace — zastępują flagę Admin/User na granicy polityki."
+      },
+      "BL-PERM-003": {
+        "story": "Właściciel workspace’a zarządza rolami członków i pojedynczymi uprawnieniami w UI."
+      },
+      "BL-AGENTS-001": {
+        "story": "Admin seeduje katalog predefiniowanych agentów (Maja, Viktor, Diego i kolejni) z CLI lub panelu."
+      },
+      "BL-AGENTS-002": {
+        "story": "Kopiujesz agenta z katalogu do własnej listy albo tworzysz swojego od zera."
+      },
+      "BL-AGENTS-003": {
+        "story": "Przypisujesz agenta do workspace’a lub projektu — jeden agent w jednym miejscu (unikalna para scope + scope_id)."
+      },
+      "BL-AGENTS-004": {
+        "story": "Dostosowujesz nazwę, instrukcje, kolor i pamięć swojego agenta bez ruszania wzorca z katalogu."
+      },
+      "BL-AGENTS-005": {
+        "story": "Każdy agent ma pamięć — typy konwersacja / dokument / embedding / notatka; pamięć może być osobista lub współdzielona."
+      },
+      "BL-AGENTS-006": {
+        "story": "Agent ma własną strategię doboru kontekstu — reguły wyboru (RAG top-K, świeżość, waga) definiowane per agent."
+      },
+      "BL-AGENTS-007": {
+        "story": "Przypięci agenci siedzą w sidebarze obok przełącznika workspace’ów — z badge scope i szybkim skokiem."
+      },
+      "BL-AUTH-004": {
+        "story": "Access tokeny krócej żyją (15 min), a refresh token w HttpOnly cookie (14 dni) rotuje się przy każdym odświeżeniu."
+      },
+      "BL-AUTH-005": {
+        "story": "Lista unieważnionych tokenów w Redisie — wylogowanie zewsząd lub zmiana hasła natychmiast unieważnia sesje."
+      },
+      "BL-DX-001": {
+        "story": "CI korzysta z usług ci/services (postgres, redis, rabbit) zamiast zaślepek — gdy testy wyjdą poza warstwę API."
+      },
+      "BL-DOC-001": {
+        "story": "Każdy wymergowany milestone ma w opisie PR krótki release note w stylu changelog — bez wnętrzności."
+      },
+      "BL-DOC-002": {
+        "story": "Audyt stellarcrew.dev — porównanie copy, feature’ów i roadmapy z realem v2, lista braków i stale’ów przed zmianą strony."
+      }
     }
   },
   "workspaces": {

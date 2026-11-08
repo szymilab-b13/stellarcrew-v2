@@ -21,7 +21,7 @@ describe('RoadmapPanel', () => {
     await userEvent.click(screen.getByText(/CORE — platform foundation/i));
 
     expect(screen.getByText(/BL-CORE-002/)).toBeInTheDocument();
-    expect(screen.getByText(/HealthController/i)).toBeInTheDocument();
+    expect(screen.getByText(/install StellarCrew from the command line/i)).toBeInTheDocument();
   });
 
   it('should render done tasks with a strikethrough and a linked commit hash', async () => {
@@ -34,8 +34,8 @@ describe('RoadmapPanel', () => {
       'https://github.com/Nessandro/stellarcrew-v2-private/commit/f52b949',
     );
 
-    const description = screen.getByText(/User moved from Core to Auth/i);
-    expect(description).toHaveClass('line-through');
+    const story = screen.getByText(/User lives inside the Auth module/i);
+    expect(story).toHaveClass('line-through');
   });
 
   it('should render the AUTH milestone with its BL-AUTH tasks and commit links', async () => {
@@ -54,8 +54,8 @@ describe('RoadmapPanel', () => {
       'https://github.com/Nessandro/stellarcrew-v2-private/commit/ac605d5',
     );
 
-    const description = screen.getByText(/lexik\/jwt-authentication-bundle/i);
-    expect(description).toHaveClass('line-through');
+    const story = screen.getByText(/sign in with e-mail and password/i);
+    expect(story).toHaveClass('line-through');
   });
 
   it('should render the UI milestone with its BL-UI tasks and commit links', async () => {
@@ -74,8 +74,8 @@ describe('RoadmapPanel', () => {
       'https://github.com/Nessandro/stellarcrew-v2-private/commit/ad1ac4d',
     );
 
-    const description = screen.getByText(/Backend menu registry/i);
-    expect(description).toHaveClass('line-through');
+    const story = screen.getByText(/sidebar menu assembles from modules/i);
+    expect(story).toHaveClass('line-through');
   });
 
   it('should render the WORKSPACES milestone with its BL-WS tasks and commit links', async () => {
@@ -94,8 +94,8 @@ describe('RoadmapPanel', () => {
       'https://github.com/Nessandro/stellarcrew-v2-private/commit/aced1c8',
     );
 
-    const description = screen.getByText(/Workspaces module/i);
-    expect(description).toHaveClass('line-through');
+    const story = screen.getByText(/workspace domain is in place/i);
+    expect(story).toHaveClass('line-through');
   });
 
   it('should render the PERMISSIONS milestone as planned with its BL-PERM tasks and no commit links', async () => {
@@ -108,8 +108,8 @@ describe('RoadmapPanel', () => {
     expect(screen.getByText('BL-PERM-002')).toBeInTheDocument();
     expect(screen.getByText('BL-PERM-003')).toBeInTheDocument();
 
-    const description = screen.getByText(/Permission enum per module/i);
-    expect(description).not.toHaveClass('line-through');
+    const story = screen.getByText(/Per-module permissions/i);
+    expect(story).not.toHaveClass('line-through');
     expect(screen.queryByRole('link', { name: /BL-PERM-/i })).not.toBeInTheDocument();
   });
 
@@ -124,8 +124,8 @@ describe('RoadmapPanel', () => {
     expect(screen.getByText('BL-AGENTS-003')).toBeInTheDocument();
     expect(screen.getByText('BL-AGENTS-007')).toBeInTheDocument();
 
-    const description = screen.getByText(/Predefined agents catalog/i);
-    expect(description).not.toHaveClass('line-through');
+    const story = screen.getByText(/Admin seeds a catalog of predefined agents/i);
+    expect(story).not.toHaveClass('line-through');
     expect(screen.queryByRole('link', { name: /BL-AGENTS-/i })).not.toBeInTheDocument();
   });
 
@@ -140,7 +140,7 @@ describe('RoadmapPanel', () => {
     expect(screen.queryByRole('link', { name: /BL-AI-/i })).not.toBeInTheDocument();
   });
 
-  it('should render the USER MANAGEMENT milestone as planned with BL-UM tasks and no Needs discussion pill', async () => {
+  it('should render the USER MANAGEMENT milestone as done with BL-UM tasks and no Needs discussion pill', async () => {
     render(<RoadmapPanel />);
 
     const header = screen.getByText(
@@ -154,7 +154,7 @@ describe('RoadmapPanel', () => {
 
     expect(screen.getByText('BL-UM-001')).toBeInTheDocument();
     expect(screen.getByText('BL-UM-012')).toBeInTheDocument();
-    expect(screen.getByText(/UserProfile entity/i)).toBeInTheDocument();
+    expect(screen.getByText(/Each user has a profile/i)).toBeInTheDocument();
   });
 
   it('should render the AUDIT milestone with BL-AUDIT tasks', async () => {
@@ -165,7 +165,7 @@ describe('RoadmapPanel', () => {
 
     expect(screen.getByText('BL-AUDIT-001')).toBeInTheDocument();
     expect(screen.getByText('BL-AUDIT-007')).toBeInTheDocument();
-    expect(screen.getByText(/UndoerInterface/i)).toBeInTheDocument();
+    expect(screen.getByText(/undo an audit entry/i)).toBeInTheDocument();
   });
 
   it('should flag the AI ENGINE milestone with a Needs discussion pill next to the status', () => {
@@ -215,8 +215,8 @@ describe('RoadmapPanel', () => {
     expect(screen.getByText('BL-AUTH-004')).toBeInTheDocument();
     expect(screen.getByText('BL-AUTH-005')).toBeInTheDocument();
 
-    const description = screen.getByText(/Short-lived access/i);
-    expect(description).not.toHaveClass('line-through');
+    const story = screen.getByText(/Short-lived access tokens/i);
+    expect(story).not.toHaveClass('line-through');
     expect(screen.queryByRole('link', { name: /BL-AUTH-00[45]/i })).not.toBeInTheDocument();
   });
 
@@ -239,8 +239,8 @@ describe('RoadmapPanel', () => {
     expect(screen.getByText('BL-DX-001')).toBeInTheDocument();
     expect(screen.getByText('BL-DOC-001')).toBeInTheDocument();
 
-    const description = screen.getByText(/ad-hoc fake health checks/i);
-    expect(description).not.toHaveClass('line-through');
+    const story = screen.getByText(/instead of ad-hoc fakes/i);
+    expect(story).not.toHaveClass('line-through');
     expect(screen.queryByRole('link', { name: /BL-(DX|DOC)-/i })).not.toBeInTheDocument();
   });
 });

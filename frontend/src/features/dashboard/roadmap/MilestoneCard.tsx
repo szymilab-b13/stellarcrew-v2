@@ -69,15 +69,15 @@ export function MilestoneCard({ milestone }: MilestoneCardProps) {
 }
 
 function TaskRow({ task }: { task: RoadmapTask }) {
+  const { t } = useTranslation();
   const isDone = task.status === 'done';
+  const story = t(`roadmap.tasks.${task.id}.story`);
   return (
     <li className="flex items-start gap-2 text-sm">
       <TaskCheckbox status={task.status} />
       <div className="min-w-0 flex-1">
         <span className="font-mono text-xs text-sc-text-muted">{task.id}</span>{' '}
-        <span className={isDone ? 'line-through text-sc-text-muted' : 'text-sc-text'}>
-          {task.description}
-        </span>
+        <span className={isDone ? 'line-through text-sc-text-muted' : 'text-sc-text'}>{story}</span>
         {task.commit ? (
           <>
             {' '}
