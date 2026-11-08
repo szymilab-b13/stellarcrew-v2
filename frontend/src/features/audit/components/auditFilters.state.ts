@@ -2,6 +2,10 @@ import type { AuditFilters } from '../types';
 
 export const AUDIT_ACTIONS: ReadonlyArray<{ group: string; actions: string[] }> = [
   {
+    group: 'auth',
+    actions: ['auth.user.login.success', 'auth.user.logout'],
+  },
+  {
     group: 'user_management',
     actions: [
       'user_management.user.created',

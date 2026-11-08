@@ -289,6 +289,8 @@
       "undoUnavailable": "—"
     },
     "actions": {
+      "auth.user.login.success": "Login",
+      "auth.user.logout": "Logout",
       "user_management.user.created": "Created user",
       "user_management.user.deactivated": "Deactivated user",
       "user_management.user.reactivated": "Reactivated user",
@@ -542,6 +544,9 @@
       },
       "BL-AUDIT-006": {
         "story": "The Audit log menu item appears in the sidebar (super admin only)."
+      },
+      "BL-AUDIT-LOGIN": {
+        "story": "The audit log records successful logins and logouts — with IP, user-agent and account e-mail. Logout now requires a JWT (POST /api/auth/logout with Bearer)."
       },
       "BL-AUDIT-007": {
         "story": "You can undo 6 User Management actions: user creation, deactivation and reactivation, member assignment, removal and role change."

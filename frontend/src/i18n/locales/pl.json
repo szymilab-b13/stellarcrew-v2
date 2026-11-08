@@ -289,6 +289,8 @@
       "undoUnavailable": "—"
     },
     "actions": {
+      "auth.user.login.success": "Logowanie",
+      "auth.user.logout": "Wylogowanie",
       "user_management.user.created": "Utworzono użytkownika",
       "user_management.user.deactivated": "Dezaktywowano użytkownika",
       "user_management.user.reactivated": "Reaktywowano użytkownika",
@@ -545,6 +547,9 @@
       },
       "BL-AUDIT-007": {
         "story": "Cofniesz 6 akcji z modułu User Management: utworzenie, dezaktywację i reaktywację użytkownika, przypisanie, usunięcie i zmianę roli członka."
+      },
+      "BL-AUDIT-LOGIN": {
+        "story": "Audit log rejestruje udane logowania i wylogowania — z adresem IP, user-agentem i e-mailem konta. Login wymaga teraz tokenu JWT (logout idzie na /api/auth/logout z Bearer)."
       },
       "BL-PERM-001": {
         "story": "Każdy moduł dostaje własne uprawnienia (workspaces.view, workspaces.manage, agents.view i kolejne) — UserRole jako skrót na pełny komplet w workspace’ie."
