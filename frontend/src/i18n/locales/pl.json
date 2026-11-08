@@ -259,6 +259,21 @@
           "inProgress": "IN PROGRESS",
           "pending": "PENDING"
         }
+      },
+      "workspaceInfo": {
+        "previewLabel": "Podgląd informacji o workspace",
+        "metadataLabel": "Podgląd metadanych workspace",
+        "comingAfter": "Dostępne po milestone AGENTS",
+        "avatarInitials": "SW",
+        "sampleName": "Sample Workspace",
+        "copyId": "Kopiuj ID",
+        "copyIdAria": "Kopiuj ID workspace'a",
+        "fields": {
+          "id": { "label": "ID", "value": "ws-sample-123" },
+          "created": { "label": "Utworzony", "value": "1 lis 2026" },
+          "members": { "label": "Członkowie", "value": "4" },
+          "visibility": { "label": "Widoczność", "value": "PRIVATE" }
+        }
       }
     }
   },

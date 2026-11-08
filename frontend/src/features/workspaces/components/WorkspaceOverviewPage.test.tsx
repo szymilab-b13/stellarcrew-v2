@@ -85,7 +85,6 @@ describe('WorkspaceOverviewPage', () => {
     await screen.findByRole('heading', { name: /overview/i });
 
     expect(screen.getAllByText('PROTOTYP')).toHaveLength(8);
-    expect(screen.getByText(/BL-WSUX-012/)).toBeInTheDocument();
     expect(screen.queryByText(/BL-WSUX-005/)).not.toBeInTheDocument();
     expect(screen.queryByText(/BL-WSUX-006/)).not.toBeInTheDocument();
     expect(screen.queryByText(/BL-WSUX-007/)).not.toBeInTheDocument();
@@ -93,6 +92,7 @@ describe('WorkspaceOverviewPage', () => {
     expect(screen.queryByText(/BL-WSUX-009/)).not.toBeInTheDocument();
     expect(screen.queryByText(/BL-WSUX-010/)).not.toBeInTheDocument();
     expect(screen.queryByText(/BL-WSUX-011/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/BL-WSUX-012/)).not.toBeInTheDocument();
     expect(screen.getAllByText(/Coming after AGENTS milestone/i).length).toBeGreaterThanOrEqual(1);
   });
 

@@ -12,13 +12,7 @@ import { LastAgentsActivityWidget } from './LastAgentsActivityWidget';
 import { MilestonesWidget } from './MilestonesWidget';
 import { ProjectsWidget } from './ProjectsWidget';
 import { TasksProgressWidget } from './TasksProgressWidget';
-
-type WidgetSlot = {
-  key: string;
-  bl: string;
-};
-
-const ROW_2_SLOTS: WidgetSlot[] = [{ key: 'workspaceInfo', bl: 'BL-WSUX-012' }];
+import { WorkspaceInfoWidget } from './WorkspaceInfoWidget';
 
 export function WorkspaceOverviewPage() {
   const { t } = useTranslation();
@@ -74,30 +68,8 @@ export function WorkspaceOverviewPage() {
       >
         <BossActionsWidget />
         <LastAgentsActivityWidget />
-        {ROW_2_SLOTS.map((slot) => (
-          <WidgetSlotCard key={slot.key} slot={slot} />
-        ))}
+        <WorkspaceInfoWidget />
       </section>
     </div>
-  );
-}
-
-function WidgetSlotCard({ slot }: { slot: WidgetSlot }) {
-  const { t } = useTranslation();
-  const title = t(`workspaceOverview.slots.${slot.key}.title`);
-
-  return (
-    <article className="relative flex min-h-[9rem] flex-col gap-2 rounded-lg border border-dashed border-sc-border bg-sc-bg-card/40 p-4">
-      <span
-        aria-label={t('workspaceOverview.prototypeBadge')}
-        className="absolute right-3 top-3 rounded-full bg-sc-bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-sc-text-muted"
-      >
-        {t('workspaceOverview.prototypeBadge')}
-      </span>
-      <h2 className="pr-16 text-sm font-semibold text-sc-text">{title}</h2>
-      <p className="mt-auto text-xs text-sc-text-muted">
-        {t('workspaceOverview.comingIn', { bl: slot.bl })}
-      </p>
-    </article>
   );
 }

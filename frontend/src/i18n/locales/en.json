@@ -259,6 +259,21 @@
           "inProgress": "IN PROGRESS",
           "pending": "PENDING"
         }
+      },
+      "workspaceInfo": {
+        "previewLabel": "Workspace info preview",
+        "metadataLabel": "Workspace metadata preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "avatarInitials": "SW",
+        "sampleName": "Sample Workspace",
+        "copyId": "Copy ID",
+        "copyIdAria": "Copy workspace ID",
+        "fields": {
+          "id": { "label": "ID", "value": "ws-sample-123" },
+          "created": { "label": "Created", "value": "Nov 1, 2026" },
+          "members": { "label": "Members", "value": "4" },
+          "visibility": { "label": "Visibility", "value": "PRIVATE" }
+        }
       }
     }
   },
