@@ -126,6 +126,11 @@
       }
     }
   },
+  "workspaceOverview": {
+    "breadcrumb": "Overview",
+    "title": "Overview",
+    "comingSoon": "Widgets coming after the WORKSPACE_UX milestone."
+  },
   "workspaceMembers": {
     "breadcrumb": "Members",
     "title": "Workspace members",

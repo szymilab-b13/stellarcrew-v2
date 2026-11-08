@@ -6,6 +6,7 @@ import { LoginPage } from './features/auth';
 import { AdminAuditPage } from './features/audit';
 import { AdminUserDetailPage, AdminUsersPage } from './features/user-management';
 import { CurrentWorkspaceGuard } from './features/workspaces/components/CurrentWorkspaceGuard';
+import { WorkspaceOverviewPage } from './features/workspaces/components/WorkspaceOverviewPage';
 import { MembersSettingsPage } from './features/workspaces/settings';
 import { HomePage } from './routes/HomePage';
 import { InstallPage } from './routes/InstallPage';
@@ -23,6 +24,8 @@ export function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<AppLayout />}>
             <Route path="/workspaces" element={<WorkspacesPage />} />
+            <Route path="/workspace/:wsId" element={<Navigate to="overview" replace />} />
+            <Route path="/workspace/:wsId/overview" element={<WorkspaceOverviewPage />} />
             <Route path="/workspace/:wsId/settings/members" element={<MembersSettingsPage />} />
             <Route element={<CurrentWorkspaceGuard />}>
               <Route path="/dashboard" element={<DashboardPage />} />
