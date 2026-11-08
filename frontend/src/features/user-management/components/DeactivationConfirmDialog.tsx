@@ -58,7 +58,7 @@ export function DeactivationConfirmDialog({
           </button>
         </header>
 
-        <p className="text-sm text-sc-text">
+        <p className="min-h-[6.5rem] text-sm text-sc-text">
           {t(`adminUserDetail.account.${prefix}Dialog.body`, { email })}
         </p>
 

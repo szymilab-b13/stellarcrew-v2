@@ -63,7 +63,7 @@ export function DeleteConfirmDialog({
           </button>
         </header>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex min-h-[6.5rem] flex-col gap-2">
           <p className="text-sm text-sc-text">
             {t('workspaces.delete.body', { name: workspace.name })}
           </p>

@@ -54,7 +54,7 @@ export function RemoveMemberDialog({
           </button>
         </header>
 
-        <p className="text-sm text-sc-text">
+        <p className="min-h-[6.5rem] text-sm text-sc-text">
           {t('workspaceMembers.remove.body', { email: member.email })}
         </p>
 

@@ -57,7 +57,7 @@ export function UndoConfirmDialog({
           </button>
         </header>
 
-        <div className="flex flex-col gap-2 text-sm text-sc-text">
+        <div className="flex min-h-[6.5rem] flex-col gap-2 text-sm text-sc-text">
           <p>{t('audit.undoDialog.summary', { action: actionLabel })}</p>
           {describe.isPending ? (
             <p className="inline-flex items-center gap-2 text-sc-text-muted">
