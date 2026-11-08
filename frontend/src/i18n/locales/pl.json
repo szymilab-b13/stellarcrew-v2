@@ -558,6 +558,9 @@
       "BL-UM-MEMBERS-LINK": {
         "story": "Kafelek workspace'a ma teraz ikonę Członkowie — jedno kliknięcie prowadzi do `/workspace/{id}/settings/members`, gdzie można dodawać/usuwać członków i zmieniać ich role."
       },
+      "BL-UM-VISIBLE-ADMIN-FIX": {
+        "story": "Super admin widzi wszystkich użytkowników w autocomplete „Dodaj członka” — koniec z filtrowaniem po wspólnych workspace'ach dla konta z rolą admin."
+      },
       "BL-AUDIT-001": {
         "story": "Mamy schemat i tabelę audit_log — aktor, akcja, zasób, before/after jako JSONB, pola cofnięcia, indeksy."
       },

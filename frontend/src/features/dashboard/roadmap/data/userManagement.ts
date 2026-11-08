@@ -19,5 +19,6 @@ export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
     { id: 'BL-UM-013', status: 'done', commit: '5908052' },
     { id: 'BL-UM-014', status: 'done', commit: '8b656fc' },
     { id: 'BL-UM-MEMBERS-LINK', status: 'done', commit: 'c5d079d' },
+    { id: 'BL-UM-VISIBLE-ADMIN-FIX', status: 'done', commit: '8b6bb18' },
   ],
 };

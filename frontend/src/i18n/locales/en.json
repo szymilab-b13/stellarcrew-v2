@@ -558,6 +558,9 @@
       "BL-UM-MEMBERS-LINK": {
         "story": "The workspace tile now has a Members icon — one click opens `/workspace/{id}/settings/members` where you can add/remove members and change their roles."
       },
+      "BL-UM-VISIBLE-ADMIN-FIX": {
+        "story": "Super admin sees every user in the Add-member autocomplete — the shared-workspace filter no longer applies to admin accounts."
+      },
       "BL-AUDIT-001": {
         "story": "Audit schema and audit_log table are in place — actor, action, resource, before/after as JSONB, undo markers, indexes."
       },
