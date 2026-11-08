@@ -489,6 +489,9 @@
       "BL-UI-POLISH-005": {
         "story": "The audit log view stretches to full width — no more inner max-w-6xl plus double padding (AppLayout `<main>` already uses p-7)."
       },
+      "BL-UI-POLISH-006": {
+        "story": "Informational and warning modals (ResetPasswordDialog, UndoConfirmDialog, AuditDetailsDialog) show the icon in the header text color with no colored pill — only Danger/Delete keeps the red circle."
+      },
       "BL-WS-001": {
         "story": "The workspace domain is in place — Workspace, Member, Invitation; on install a Default workspace owned by the admin is seeded."
       },
@@ -551,6 +554,9 @@
       },
       "BL-UM-014": {
         "story": "Every admin action carries the real actor id to the audit log — no more 500s on deactivate, reactivate, password reset, member role change and member removal."
+      },
+      "BL-UM-MEMBERS-LINK": {
+        "story": "The workspace tile now has a Members icon — one click opens `/workspace/{id}/settings/members` where you can add/remove members and change their roles."
       },
       "BL-AUDIT-001": {
         "story": "Audit schema and audit_log table are in place — actor, action, resource, before/after as JSONB, undo markers, indexes."

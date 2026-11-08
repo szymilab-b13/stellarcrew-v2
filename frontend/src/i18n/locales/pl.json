@@ -489,6 +489,9 @@
       "BL-UI-POLISH-005": {
         "story": "Widok audit log rozciąga się na pełną szerokość — koniec z wewnętrznym max-w-6xl i podwójnym paddingiem (AppLayout `<main>` ma już p-7)."
       },
+      "BL-UI-POLISH-006": {
+        "story": "Modale informacyjne i warning (ResetPasswordDialog, UndoConfirmDialog, AuditDetailsDialog) mają ikonę w kolorze tekstu nagłówka, bez kolorowego kółka — tylko Danger/Delete zachowuje czerwony pill."
+      },
       "BL-WS-001": {
         "story": "Masz domenę workspace’ów — Workspace, Member, Invitation; przy instalacji powstaje Default workspace należący do admina."
       },
@@ -551,6 +554,9 @@
       },
       "BL-UM-014": {
         "story": "Każda akcja administracyjna niesie ID prawdziwego aktora do audytu — koniec z 500-kami przy dezaktywacji, reaktywacji, resecie hasła, zmianie roli członka i usunięciu członka."
+      },
+      "BL-UM-MEMBERS-LINK": {
+        "story": "Kafelek workspace'a ma teraz ikonę Członkowie — jedno kliknięcie prowadzi do `/workspace/{id}/settings/members`, gdzie można dodawać/usuwać członków i zmieniać ich role."
       },
       "BL-AUDIT-001": {
         "story": "Mamy schemat i tabelę audit_log — aktor, akcja, zasób, before/after jako JSONB, pola cofnięcia, indeksy."
