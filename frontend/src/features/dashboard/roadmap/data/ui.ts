@@ -74,5 +74,12 @@ export const UI_MILESTONE: RoadmapMilestone = {
       status: 'done',
       commit: 'bc3d98c',
     },
+    {
+      id: 'BL-UI-STRETCH',
+      description:
+        'Stretch app content to full width: AppLayout <main> gets p-7 (28px) padding globally; AdminUsersPage/AdminUserDetailPage/MembersSettingsPage/WorkspacesLandingPage/DashboardPage drop their mx-auto max-w-* px-6 py-* wrappers in favor of flex w-full flex-col gap-6. InstallWizardLayout untouched (pre-auth). AdminAuditPage pending after feat/audit-undo merges. Padding iterated from px-4 py-5 → p-3.5 → p-5 → p-7 per Szef feedback.',
+      status: 'done',
+      commit: '4365702',
+    },
   ],
 };

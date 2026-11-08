@@ -101,5 +101,11 @@ export const USER_MANAGEMENT_MILESTONE: RoadmapMilestone = {
         'Thread actor user id through UM + Workspaces audit flows: 4 UM commands (CreateUser/DeactivateUser/ReactivateUser/ResetUserPassword) + 2 Workspaces commands (ChangeMemberRole/RemoveMember) + AssignMember carry UserId $actorUserId; UserManagementApi / WorkspacesApi methods expose actor; controllers inject #[CurrentUser] SecurityUser. SpyAuditLogger now enforces the AuditService contract (LogicException when userId is null) so tests reproduce the prod bug. Fixes 500 from deactivate/reactivate/reset/create and workspace change-role/remove endpoints.',
       status: 'done',
     },
+    {
+      id: 'BL-UM-013',
+      description:
+        'List row actions burger menu on /admin/users: MoreHorizontal trigger + dropdown role="menu" (styled as UserMenu from topbar) with three actions — Details (Eye icon, navigates to /admin/users/{id}), Deactivate/Reactivate (UserX/UserCheck icon, opens reused DeactivationConfirmDialog) and Reset password (KeyRound icon, opens reused ResetPasswordDialog). FT-UM-002 reopened to in-progress.',
+      status: 'planned',
+    },
   ],
 };

@@ -92,7 +92,7 @@ export function MembersSettingsPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-6 py-8">
+    <div className="flex w-full flex-col gap-6">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight text-sc-text">
           {t('workspaceMembers.title')}

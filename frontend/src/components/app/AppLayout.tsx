@@ -37,7 +37,7 @@ export function AppLayout() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <AppTopbar user={me.data} />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto p-7">
           <Outlet />
         </main>
       </div>
