@@ -8,6 +8,7 @@ import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
 import { useAuditEntries } from '../hooks/useAuditEntries';
 import { useUndoEntry } from '../hooks/useUndoEntry';
 import type { AuditEntry } from '../types';
+import { AuditDetailsDialog } from './AuditDetailsDialog';
 import { AuditFilters } from './AuditFilters';
 import { AuditTable } from './AuditTable';
 import { UndoConfirmDialog } from './UndoConfirmDialog';
@@ -24,6 +25,7 @@ export function AdminAuditPage() {
   const initialFilters = useMemo(() => filtersFromSearchParams(searchParams), [searchParams]);
   const [filters, setFilters] = useState<AuditFiltersValue>(initialFilters);
   const [entryToUndo, setEntryToUndo] = useState<AuditEntry | null>(null);
+  const [entryToShow, setEntryToShow] = useState<AuditEntry | null>(null);
 
   const breadcrumbs = useMemo(() => [{ label: t('audit.breadcrumb') }], [t]);
   usePageBreadcrumbs(breadcrumbs);
@@ -53,6 +55,14 @@ export function AdminAuditPage() {
     undoMutation.mutate(entryToUndo.id, { onSuccess: closeUndoDialog });
   }
 
+  function openDetailsDialog(entry: AuditEntry) {
+    setEntryToShow(entry);
+  }
+
+  function closeDetailsDialog() {
+    setEntryToShow(null);
+  }
+
   return (
     <div className="flex w-full flex-col gap-6">
       <header className="flex flex-col gap-1">
@@ -76,7 +86,11 @@ export function AdminAuditPage() {
           <p className="text-xs text-sc-text-muted">
             {t('audit.total', { count: entriesQuery.data.total })}
           </p>
-          <AuditTable entries={visibleEntries} onUndoClick={openUndoDialog} />
+          <AuditTable
+            entries={visibleEntries}
+            onDetailsClick={openDetailsDialog}
+            onUndoClick={openUndoDialog}
+          />
         </>
       )}
 
@@ -89,6 +103,8 @@ export function AdminAuditPage() {
           onConfirm={confirmUndo}
         />
       ) : null}
+
+      {entryToShow ? <AuditDetailsDialog entry={entryToShow} onClose={closeDetailsDialog} /> : null}
     </div>
   );
 }

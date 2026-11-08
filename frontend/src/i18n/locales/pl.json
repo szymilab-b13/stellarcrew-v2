@@ -279,7 +279,8 @@
       "action": "Akcja",
       "resource": "Zasób",
       "status": "Status",
-      "undo": "Cofnięcie"
+      "undo": "Cofnięcie",
+      "actions": "Akcje"
     },
     "table": {
       "empty": "Brak wpisów spełniających kryteria.",
@@ -287,6 +288,24 @@
       "badgeUndone": "cofnięty",
       "undoAction": "Cofnij",
       "undoUnavailable": "—"
+    },
+    "row": {
+      "actionDetails": "Detale",
+      "actionUndo": "Cofnij",
+      "actionsAria": "Akcje wiersza"
+    },
+    "detailsDialog": {
+      "title": "Detale wpisu audytu",
+      "action": "Akcja",
+      "occurredAt": "Kiedy",
+      "actor": "Osoba",
+      "resource": "Zasób",
+      "entryId": "ID wpisu",
+      "undoneAt": "Cofnięto",
+      "beforeState": "Stan przed",
+      "afterState": "Stan po",
+      "metadata": "Metadane",
+      "empty": "— brak danych —"
     },
     "actions": {
       "auth.user.login.success": "Logowanie",

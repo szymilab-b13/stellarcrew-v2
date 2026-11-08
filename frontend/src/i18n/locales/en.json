@@ -279,7 +279,8 @@
       "action": "Action",
       "resource": "Resource",
       "status": "Status",
-      "undo": "Undo"
+      "undo": "Undo",
+      "actions": "Actions"
     },
     "table": {
       "empty": "No entries match the current filters.",
@@ -287,6 +288,24 @@
       "badgeUndone": "undone",
       "undoAction": "Undo",
       "undoUnavailable": "—"
+    },
+    "row": {
+      "actionDetails": "Details",
+      "actionUndo": "Undo",
+      "actionsAria": "Row actions"
+    },
+    "detailsDialog": {
+      "title": "Audit entry details",
+      "action": "Action",
+      "occurredAt": "When",
+      "actor": "Actor",
+      "resource": "Resource",
+      "entryId": "Entry ID",
+      "undoneAt": "Undone",
+      "beforeState": "Before state",
+      "afterState": "After state",
+      "metadata": "Metadata",
+      "empty": "— no data —"
     },
     "actions": {
       "auth.user.login.success": "Login",

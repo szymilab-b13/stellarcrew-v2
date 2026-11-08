@@ -175,11 +175,57 @@ describe('AdminAuditPage', () => {
     const user = userEvent.setup();
     render(<AdminAuditPage />, { wrapper: makeWrapper('/admin/audit') });
 
-    const undoButton = await screen.findByRole('button', { name: /^undo$/i });
-    await user.click(undoButton);
+    const rowActionsButton = await screen.findByRole('button', { name: /row actions/i });
+    await user.click(rowActionsButton);
+
+    const undoMenuItem = await screen.findByRole('menuitem', { name: /^undo$/i });
+    await user.click(undoMenuItem);
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
     expect(await screen.findByText(/Restore user admin@example.com/)).toBeInTheDocument();
+  });
+
+  it('should open the details dialog with the before/after/metadata sections when Details is clicked', async () => {
+    vi.mocked(fetch).mockImplementation(async (input) => {
+      const url = typeof input === 'string' ? input : (input as Request).url;
+      if (url.startsWith('/api/user-management/users/visible')) {
+        return mockResponse({ body: { items: [] } });
+      }
+      if (url.startsWith('/api/audit/entries')) {
+        return mockResponse({
+          body: {
+            items: [
+              auditEntryPayload({
+                before_state: { role: 'member' },
+                after_state: { role: 'admin' },
+                metadata: { reason: 'promotion' },
+              }),
+            ],
+            total: 1,
+            page: 1,
+            per_page: 50,
+          },
+        });
+      }
+      return mockResponse({ status: 404 });
+    });
+
+    const user = userEvent.setup();
+    render(<AdminAuditPage />, { wrapper: makeWrapper('/admin/audit') });
+
+    const rowActionsButton = await screen.findByRole('button', { name: /row actions/i });
+    await user.click(rowActionsButton);
+
+    const detailsMenuItem = await screen.findByRole('menuitem', { name: /details/i });
+    await user.click(detailsMenuItem);
+
+    expect(await screen.findByRole('dialog', { name: /audit entry details/i })).toBeInTheDocument();
+    expect(screen.getByText(/before state/i)).toBeInTheDocument();
+    expect(screen.getByText(/after state/i)).toBeInTheDocument();
+    expect(screen.getByText(/metadata/i)).toBeInTheDocument();
+    expect(screen.getByText(/"role": "member"/)).toBeInTheDocument();
+    expect(screen.getByText(/"role": "admin"/)).toBeInTheDocument();
+    expect(screen.getByText(/"reason": "promotion"/)).toBeInTheDocument();
   });
 
   it('should POST the undo endpoint on confirm, close the dialog and refetch the list', async () => {
@@ -213,7 +259,8 @@ describe('AdminAuditPage', () => {
     const user = userEvent.setup();
     render(<AdminAuditPage />, { wrapper: makeWrapper('/admin/audit') });
 
-    await user.click(await screen.findByRole('button', { name: /^undo$/i }));
+    await user.click(await screen.findByRole('button', { name: /row actions/i }));
+    await user.click(await screen.findByRole('menuitem', { name: /^undo$/i }));
     await screen.findByRole('dialog');
     await user.click(screen.getByRole('button', { name: /^undo action$/i }));
 

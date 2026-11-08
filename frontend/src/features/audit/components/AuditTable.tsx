@@ -1,17 +1,16 @@
-import { RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/Button';
-
 import type { AuditEntry } from '../types';
+import { AuditRowActionsMenu } from './AuditRowActionsMenu';
 import { isReversibleAction } from './auditFilters.state';
 
 interface AuditTableProps {
   entries: AuditEntry[];
+  onDetailsClick: (entry: AuditEntry) => void;
   onUndoClick: (entry: AuditEntry) => void;
 }
 
-export function AuditTable({ entries, onUndoClick }: AuditTableProps) {
+export function AuditTable({ entries, onDetailsClick, onUndoClick }: AuditTableProps) {
   const { t, i18n } = useTranslation();
 
   const dateFormatter = new Intl.DateTimeFormat(i18n.resolvedLanguage ?? 'en', {
@@ -42,8 +41,8 @@ export function AuditTable({ entries, onUndoClick }: AuditTableProps) {
             <th scope="col" className="px-4 py-3 font-semibold">
               {t('audit.columns.status')}
             </th>
-            <th scope="col" className="px-4 py-3 font-semibold">
-              {t('audit.columns.undo')}
+            <th scope="col" className="px-4 py-3 text-right font-semibold">
+              {t('audit.columns.actions')}
             </th>
           </tr>
         </thead>
@@ -79,20 +78,13 @@ export function AuditTable({ entries, onUndoClick }: AuditTableProps) {
                     </span>
                   )}
                 </td>
-                <td className="px-4 py-3">
-                  {canUndo ? (
-                    <Button
-                      variant="secondary"
-                      onClick={() => onUndoClick(entry)}
-                      leadingIcon={<RotateCcw size={14} aria-hidden />}
-                    >
-                      {t('audit.table.undoAction')}
-                    </Button>
-                  ) : (
-                    <span className="text-xs text-sc-text-muted">
-                      {t('audit.table.undoUnavailable')}
-                    </span>
-                  )}
+                <td className="px-4 py-3 text-right">
+                  <AuditRowActionsMenu
+                    entry={entry}
+                    canUndo={canUndo}
+                    onDetailsClick={onDetailsClick}
+                    onUndoClick={onUndoClick}
+                  />
                 </td>
               </tr>
             );
