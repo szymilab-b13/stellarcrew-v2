@@ -5,6 +5,7 @@ import { Navigate, useParams } from 'react-router-dom';
 import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
 
 import { useWorkspacesList } from '../api/useWorkspaces';
+import { ActiveAgentsWidget } from './ActiveAgentsWidget';
 import { ActiveTasksWidget } from './ActiveTasksWidget';
 
 type WidgetSlot = {
@@ -13,7 +14,6 @@ type WidgetSlot = {
 };
 
 const ROW_1_SLOTS: WidgetSlot[] = [
-  { key: 'activeAgents', bl: 'BL-WSUX-006' },
   { key: 'tasksProgress', bl: 'BL-WSUX-007' },
   { key: 'milestones', bl: 'BL-WSUX-008' },
   { key: 'projects', bl: 'BL-WSUX-009' },
@@ -66,6 +66,7 @@ export function WorkspaceOverviewPage() {
         className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
       >
         <ActiveTasksWidget />
+        <ActiveAgentsWidget />
         {ROW_1_SLOTS.map((slot) => (
           <WidgetSlotCard key={slot.key} slot={slot} />
         ))}

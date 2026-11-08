@@ -86,7 +86,6 @@ describe('WorkspaceOverviewPage', () => {
 
     expect(screen.getAllByText('PROTOTYP')).toHaveLength(8);
     for (const bl of [
-      'BL-WSUX-006',
       'BL-WSUX-007',
       'BL-WSUX-008',
       'BL-WSUX-009',
@@ -97,7 +96,8 @@ describe('WorkspaceOverviewPage', () => {
       expect(screen.getByText(new RegExp(bl))).toBeInTheDocument();
     }
     expect(screen.queryByText(/BL-WSUX-005/)).not.toBeInTheDocument();
-    expect(screen.getByText(/Coming after AGENTS milestone/i)).toBeInTheDocument();
+    expect(screen.queryByText(/BL-WSUX-006/)).not.toBeInTheDocument();
+    expect(screen.getAllByText(/Coming after AGENTS milestone/i).length).toBeGreaterThanOrEqual(1);
   });
 
   it('should render localized widget titles for each of the 8 slots', async () => {

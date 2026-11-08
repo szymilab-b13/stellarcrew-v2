@@ -170,6 +170,22 @@
           "1": "Review workspace members",
           "2": "Schedule agent sync"
         }
+      },
+      "activeAgents": {
+        "previewLabel": "Active agents preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": "Hefajstos",
+          "1": "Maja",
+          "2": "Viktor",
+          "3": "Luna"
+        },
+        "modes": {
+          "builder": "BUILDER",
+          "listener": "LISTENER",
+          "discovery": "DISCOVERY",
+          "idle": "IDLE"
+        }
       }
     }
   },

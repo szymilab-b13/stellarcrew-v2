@@ -170,6 +170,22 @@
           "1": "Przejrzyj członków workspace'a",
           "2": "Zaplanuj sync agentów"
         }
+      },
+      "activeAgents": {
+        "previewLabel": "Podgląd aktywnych agentów",
+        "comingAfter": "Dostępne po milestone AGENTS",
+        "samples": {
+          "0": "Hefajstos",
+          "1": "Maja",
+          "2": "Viktor",
+          "3": "Luna"
+        },
+        "modes": {
+          "builder": "BUILDER",
+          "listener": "LISTENER",
+          "discovery": "DISCOVERY",
+          "idle": "IDLE"
+        }
       }
     }
   },
