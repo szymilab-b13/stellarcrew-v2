@@ -196,6 +196,22 @@
           "done": "Done",
           "blocked": "Blocked"
         }
+      },
+      "milestones": {
+        "previewLabel": "Milestones preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": "Launch MVP",
+          "1": "Team onboarding",
+          "2": "Q1 roadmap",
+          "3": "Compliance review"
+        },
+        "statuses": {
+          "done": "DONE",
+          "inProgress": "IN PROGRESS",
+          "planned": "PLANNED",
+          "blocked": "BLOCKED"
+        }
       }
     }
   },

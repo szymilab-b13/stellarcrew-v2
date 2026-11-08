@@ -7,6 +7,7 @@ import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
 import { useWorkspacesList } from '../api/useWorkspaces';
 import { ActiveAgentsWidget } from './ActiveAgentsWidget';
 import { ActiveTasksWidget } from './ActiveTasksWidget';
+import { MilestonesWidget } from './MilestonesWidget';
 import { TasksProgressWidget } from './TasksProgressWidget';
 
 type WidgetSlot = {
@@ -14,10 +15,7 @@ type WidgetSlot = {
   bl: string;
 };
 
-const ROW_1_SLOTS: WidgetSlot[] = [
-  { key: 'milestones', bl: 'BL-WSUX-008' },
-  { key: 'projects', bl: 'BL-WSUX-009' },
-];
+const ROW_1_SLOTS: WidgetSlot[] = [{ key: 'projects', bl: 'BL-WSUX-009' }];
 
 const ROW_2_SLOTS: WidgetSlot[] = [
   { key: 'bossActions', bl: 'BL-WSUX-010' },
@@ -68,6 +66,7 @@ export function WorkspaceOverviewPage() {
         <ActiveTasksWidget />
         <ActiveAgentsWidget />
         <TasksProgressWidget />
+        <MilestonesWidget />
         {ROW_1_SLOTS.map((slot) => (
           <WidgetSlotCard key={slot.key} slot={slot} />
         ))}

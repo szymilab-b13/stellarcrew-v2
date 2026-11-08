@@ -196,6 +196,22 @@
           "done": "Ukończone",
           "blocked": "Zablokowane"
         }
+      },
+      "milestones": {
+        "previewLabel": "Podgląd milestone'ów",
+        "comingAfter": "Dostępne po milestone AGENTS",
+        "samples": {
+          "0": "Uruchomienie MVP",
+          "1": "Onboarding zespołu",
+          "2": "Roadmapa Q1",
+          "3": "Audyt zgodności"
+        },
+        "statuses": {
+          "done": "DONE",
+          "inProgress": "IN PROGRESS",
+          "planned": "PLANNED",
+          "blocked": "BLOCKED"
+        }
       }
     }
   },
