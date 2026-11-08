@@ -105,27 +105,32 @@ final readonly class DbalUserProfileReadModel implements UserProfileReadModel
 
     public function listVisibleTo(UserId $viewerId, ?string $q = null): array
     {
-        $viewerWorkspaceIds = $this->connection->fetchFirstColumn(
-            'SELECT workspace_id FROM workspaces.workspace_members WHERE user_id = :viewer_id',
+        $viewerRole = $this->connection->fetchOne(
+            'SELECT role FROM auth.users WHERE id = :viewer_id',
             ['viewer_id' => (string) $viewerId],
             ['viewer_id' => ParameterType::STRING],
         );
-
-        if ($viewerWorkspaceIds === []) {
-            return [];
-        }
+        $isSuperAdmin = $viewerRole === self::ROLE_ADMIN;
 
         $conditions = ['u.id <> :viewer_id'];
-        $params = [
-            'viewer_id' => (string) $viewerId,
-            'workspace_ids' => $viewerWorkspaceIds,
-        ];
-        $types = [
-            'viewer_id' => ParameterType::STRING,
-            'workspace_ids' => ArrayParameterType::STRING,
-        ];
+        $params = ['viewer_id' => (string) $viewerId];
+        $types = ['viewer_id' => ParameterType::STRING];
 
-        $conditions[] = 'u.id IN (SELECT wm.user_id FROM workspaces.workspace_members wm WHERE wm.workspace_id IN (:workspace_ids))';
+        if (!$isSuperAdmin) {
+            $viewerWorkspaceIds = $this->connection->fetchFirstColumn(
+                'SELECT workspace_id FROM workspaces.workspace_members WHERE user_id = :viewer_id',
+                ['viewer_id' => (string) $viewerId],
+                ['viewer_id' => ParameterType::STRING],
+            );
+
+            if ($viewerWorkspaceIds === []) {
+                return [];
+            }
+
+            $params['workspace_ids'] = $viewerWorkspaceIds;
+            $types['workspace_ids'] = ArrayParameterType::STRING;
+            $conditions[] = 'u.id IN (SELECT wm.user_id FROM workspaces.workspace_members wm WHERE wm.workspace_id IN (:workspace_ids))';
+        }
 
         if ($q !== null && $q !== '') {
             $conditions[] = 'u.email ILIKE :q';

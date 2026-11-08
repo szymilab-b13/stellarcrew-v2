@@ -61,6 +61,29 @@ final class ListVisibleUsersEndpointTest extends WebTestCase
         self::assertSame('peer@example.com', $payload['items'][0]['email']);
     }
 
+    public function testShould200WithAllOtherUsersWhenSuperAdminEvenWithoutSharedWorkspaces(): void
+    {
+        $adminId = (string) Uuid::v7();
+        $this->seedAuthUser($adminId, 'admin@example.com', UserRole::Admin);
+        $token = $this->login('admin@example.com');
+
+        $readModel = $this->readModel();
+        $otherId1 = (string) Uuid::v7();
+        $otherId2 = (string) Uuid::v7();
+        $readModel->seedUser($adminId, 'admin@example.com', true, new DateTimeImmutable('2026-11-01T10:00:00+00:00'), workspaceIds: []);
+        $readModel->seedUser($otherId1, 'alice@example.com', false, new DateTimeImmutable('2026-11-02T10:00:00+00:00'), workspaceIds: []);
+        $readModel->seedUser($otherId2, 'bob@example.com', false, new DateTimeImmutable('2026-11-03T10:00:00+00:00'), workspaceIds: [(string) Uuid::v7()]);
+
+        $this->getJson('/api/user-management/users/visible', $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        $emails = array_map(static fn(array $item) => $item['email'], $payload['items']);
+        self::assertContains('alice@example.com', $emails);
+        self::assertContains('bob@example.com', $emails);
+        self::assertNotContains('admin@example.com', $emails);
+    }
+
     private function seedAuthUser(string $id, string $email, UserRole $role): void
     {
         /** @var UserPasswordHasherInterface $hasher */

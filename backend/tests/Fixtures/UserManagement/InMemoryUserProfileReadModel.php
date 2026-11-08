@@ -109,7 +109,9 @@ final class InMemoryUserProfileReadModel implements UserProfileReadModel
             }
         }
 
-        if ($viewer === null || $viewer['workspaceIds'] === []) {
+        $isSuperAdmin = $viewer !== null && $viewer['isSuperAdmin'];
+
+        if (!$isSuperAdmin && ($viewer === null || $viewer['workspaceIds'] === [])) {
             return [];
         }
 
@@ -117,21 +119,23 @@ final class InMemoryUserProfileReadModel implements UserProfileReadModel
 
         $matched = array_values(array_filter(
             $this->users,
-            static function (array $u) use ($viewerId, $viewerWorkspaces, $q): bool {
+            static function (array $u) use ($viewerId, $viewerWorkspaces, $isSuperAdmin, $q): bool {
                 if ($u['id'] === (string) $viewerId) {
                     return false;
                 }
 
-                $shared = false;
-                foreach ($u['workspaceIds'] as $wsId) {
-                    if (in_array($wsId, $viewerWorkspaces, true)) {
-                        $shared = true;
-                        break;
+                if (!$isSuperAdmin) {
+                    $shared = false;
+                    foreach ($u['workspaceIds'] as $wsId) {
+                        if (in_array($wsId, $viewerWorkspaces, true)) {
+                            $shared = true;
+                            break;
+                        }
                     }
-                }
 
-                if (!$shared) {
-                    return false;
+                    if (!$shared) {
+                        return false;
+                    }
                 }
 
                 if ($q !== null && $q !== '' && !str_contains(strtolower($u['email']), strtolower($q))) {
