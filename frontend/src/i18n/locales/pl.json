@@ -857,6 +857,9 @@
       "BL-WSUX-TILE-LINK": {
         "story": "Kafelek workspace'u (avatar + nazwa + slug + pill roli) jest opakowany w link do `/workspace/:id/overview`. Akcje hover (członkowie, edycja, usuń) zostają osobno i zachowują własne cele."
       },
+      "BL-WSUX-PROJ-SHELL": {
+        "story": "Route `/workspace/:id/projects` serwuje stronę-placeholder (nagłówek + komunikat „Dostępne po milestone PROJECTS\"). Sekcja Workspace w sidebarze wyciąga Projects z disabled i zamienia na aktywny link. Przygotowuje cel linka pod CTA widgetu Project Overviews."
+      },
       "BL-PROJ-ARCH": {
         "story": "Warstwa Project między Workspace a agentami — workspace ma wiele projektów (np. TalentBridge API/APP/Yii), każdy z własnymi settings/agents/members/skills/flow/tasks. Fundament pod większość reszty wizji. Needs brief."
       },
