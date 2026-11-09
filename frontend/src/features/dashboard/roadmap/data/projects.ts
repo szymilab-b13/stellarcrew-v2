@@ -15,7 +15,7 @@ export const PROJECTS_MILESTONE: RoadmapMilestone = {
     { id: 'BL-PROJ-008', status: 'planned' },
     { id: 'BL-PROJ-009', status: 'planned' },
     { id: 'BL-PROJ-010', status: 'planned' },
-    { id: 'BL-PROJ-011', status: 'planned' },
+    { id: 'BL-PROJ-011', status: 'done', commit: '6ee9ad8' },
     { id: 'BL-PROJ-012', status: 'planned' },
     { id: 'BL-PROJ-013', status: 'planned' },
     { id: 'BL-PROJ-014', status: 'planned' },
