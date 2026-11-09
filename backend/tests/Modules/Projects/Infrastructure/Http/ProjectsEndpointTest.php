@@ -165,6 +165,86 @@ final class ProjectsEndpointTest extends WebTestCase
         self::assertStringStartsWith('alpha-', $payload['slug']);
     }
 
+    public function testShouldReturn401OnListWithoutToken(): void
+    {
+        $workspaceId = Uuid::v7()->toRfc4122();
+
+        $this->getJson("/api/workspaces/{$workspaceId}/projects", null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnListWhenWorkspaceDoesNotExist(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $missing = Uuid::v7()->toRfc4122();
+
+        $this->getJson("/api/workspaces/{$missing}/projects", $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnListWhenCallerIsNotWorkspaceMember(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $otherOwnerId = new UserId(Uuid::v7());
+        $ws = $this->seedWorkspaceWithOwner($otherOwnerId, 'Other', 'other-ws');
+
+        $this->getJson("/api/workspaces/{$ws->id()}/projects", $token);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturnEmptyListWhenWorkspaceHasNoProjects(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+
+        $this->getJson("/api/workspaces/{$ws->id()}/projects", $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame(['items' => []], $payload);
+    }
+
+    public function testShouldReturnProjectsOfWorkspaceAsOwner(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Beta'], $token);
+
+        $this->getJson("/api/workspaces/{$ws->id()}/projects", $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertCount(2, $payload['items']);
+        $slugs = array_map(static fn (array $item): string => (string) $item['slug'], $payload['items']);
+        self::assertSame(['alpha', 'beta'], $slugs);
+        self::assertSame((string) $ws->id(), $payload['items'][0]['workspaceId']);
+    }
+
+    public function testShouldAllowGuestMemberToListProjects(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($ownerId, 'Shared', 'shared');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $ownerToken);
+
+        $guestEmail = 'guest@example.com';
+        $guest = $this->seedAdmin($guestEmail, self::DEFAULT_PASSWORD);
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($ws->id(), $guest->id(), WorkspaceRole::Guest, $this->now()),
+        );
+        $guestToken = $this->login($guestEmail, self::DEFAULT_PASSWORD);
+
+        $this->getJson("/api/workspaces/{$ws->id()}/projects", $guestToken);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertCount(1, $payload['items']);
+        self::assertSame('alpha', $payload['items'][0]['slug']);
+    }
+
     private function seedAdminAndLogin(): string
     {
         $this->seedAdmin(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
@@ -249,6 +329,16 @@ final class ProjectsEndpointTest extends WebTestCase
         }
 
         $this->client->request('POST', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
+    }
+
+    private function getJson(string $path, ?string $token): void
+    {
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        if ($token !== null) {
+            $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
+        }
+
+        $this->client->request('GET', $path, server: $server);
     }
 
     /**

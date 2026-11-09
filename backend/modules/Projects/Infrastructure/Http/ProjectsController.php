@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Modules\Projects\Infrastructure\Http;
 
+use function array_map;
+use function array_values;
+
 use DateTimeInterface;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Projects\Application\CreateProjectCommand;
 use Modules\Projects\Application\CreateProjectCommandHandler;
+use Modules\Projects\Application\Query\ListProjectsByWorkspaceQuery;
+use Modules\Projects\Application\Query\ListProjectsByWorkspaceQueryHandler;
 use Modules\Projects\Domain\Project;
 use Modules\Shared\Kernel\WorkspaceId;
 use OpenApi\Attributes as OA;
@@ -21,8 +26,10 @@ final readonly class ProjectsController
 {
     private const string WORKSPACE_ID_REQUIREMENT = '[0-9a-fA-F-]{36}';
 
-    public function __construct(private CreateProjectCommandHandler $create)
-    {
+    public function __construct(
+        private CreateProjectCommandHandler $create,
+        private ListProjectsByWorkspaceQueryHandler $listByWorkspace,
+    ) {
     }
 
     #[Route(
@@ -59,6 +66,38 @@ final readonly class ProjectsController
         ));
 
         return new JsonResponse($this->serialise($project), Response::HTTP_CREATED);
+    }
+
+    #[Route(
+        '/api/workspaces/{workspaceId}/projects',
+        name: 'projects_list_by_workspace',
+        requirements: ['workspaceId' => self::WORKSPACE_ID_REQUIREMENT],
+        methods: ['GET'],
+    )]
+    #[OA\Get(
+        path: '/api/workspaces/{workspaceId}/projects',
+        summary: 'List projects of the given workspace (ordered by creation time ascending).',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 200, description: 'Projects list'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to view projects'),
+            new OA\Response(response: 404, description: 'Workspace not found'),
+        ],
+    )]
+    public function list(
+        string $workspaceId,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $projects = ($this->listByWorkspace)(new ListProjectsByWorkspaceQuery(
+            actorId: $user->domainUser()->id(),
+            workspaceId: WorkspaceId::fromString($workspaceId),
+        ));
+
+        $items = array_values(array_map($this->serialise(...), $projects));
+
+        return new JsonResponse(['items' => $items], Response::HTTP_OK);
     }
 
     /**

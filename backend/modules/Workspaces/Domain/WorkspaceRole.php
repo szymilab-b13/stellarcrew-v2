@@ -45,6 +45,11 @@ enum WorkspaceRole: string
         };
     }
 
+    public function canViewProjects(): bool
+    {
+        return true;
+    }
+
     public function canReadMessages(): bool
     {
         return true;
