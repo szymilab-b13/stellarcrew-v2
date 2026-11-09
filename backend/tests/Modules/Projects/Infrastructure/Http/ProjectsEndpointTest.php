@@ -9,6 +9,7 @@ use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
 use Modules\Auth\Infrastructure\Security\HashablePlaintextUser;
 use Modules\Projects\Domain\ProjectRepository;
+use Modules\Shared\Kernel\ProjectId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Domain\Workspace;
@@ -243,6 +244,101 @@ final class ProjectsEndpointTest extends WebTestCase
         $payload = $this->decode();
         self::assertCount(1, $payload['items']);
         self::assertSame('alpha', $payload['items'][0]['slug']);
+    }
+
+    public function testShouldReturn401OnGetWithoutToken(): void
+    {
+        $projectId = Uuid::v7()->toRfc4122();
+
+        $this->getJson("/api/projects/{$projectId}", null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnGetWhenProjectDoesNotExist(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $missing = Uuid::v7()->toRfc4122();
+
+        $this->getJson("/api/projects/{$missing}", $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnGetWhenCallerIsNotWorkspaceMember(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $otherOwnerId = new UserId(Uuid::v7());
+        $ws = $this->seedWorkspaceWithOwner($otherOwnerId, 'Other', 'other-ws');
+        $otherOwner = $this->seedAdmin('other@example.com', self::DEFAULT_PASSWORD);
+        $otherToken = $this->login('other@example.com', self::DEFAULT_PASSWORD);
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($ws->id(), $otherOwner->id(), WorkspaceRole::Owner, $this->now()),
+        );
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $otherToken);
+        $created = $this->decode();
+
+        $this->getJson("/api/projects/{$created['id']}", $token);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturnProjectAsOwner(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", [
+            'name' => 'Talent Bridge',
+            'description' => 'Flagship',
+        ], $token);
+        $created = $this->decode();
+
+        $this->getJson("/api/projects/{$created['id']}", $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame($created['id'], $payload['id']);
+        self::assertSame((string) $ws->id(), $payload['workspaceId']);
+        self::assertSame('Talent Bridge', $payload['name']);
+        self::assertSame('talent-bridge', $payload['slug']);
+        self::assertSame('Flagship', $payload['description']);
+    }
+
+    public function testShouldReturnProjectAsGuestMember(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($ownerId, 'Shared', 'shared');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $ownerToken);
+        $created = $this->decode();
+
+        $guestEmail = 'guest@example.com';
+        $guest = $this->seedAdmin($guestEmail, self::DEFAULT_PASSWORD);
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($ws->id(), $guest->id(), WorkspaceRole::Guest, $this->now()),
+        );
+        $guestToken = $this->login($guestEmail, self::DEFAULT_PASSWORD);
+
+        $this->getJson("/api/projects/{$created['id']}", $guestToken);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('alpha', $payload['slug']);
+    }
+
+    public function testShouldReturn404OnGetWhenProjectIsSoftDeleted(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+        $project = $this->projects()->findById(ProjectId::fromString((string) $created['id']));
+        self::assertNotNull($project);
+        $project->softDelete($this->now());
+        $this->projects()->save($project);
+
+        $this->getJson("/api/projects/{$created['id']}", $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
     }
 
     private function seedAdminAndLogin(): string

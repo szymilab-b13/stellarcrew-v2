@@ -11,9 +11,12 @@ use DateTimeInterface;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Projects\Application\CreateProjectCommand;
 use Modules\Projects\Application\CreateProjectCommandHandler;
+use Modules\Projects\Application\Query\GetProjectQuery;
+use Modules\Projects\Application\Query\GetProjectQueryHandler;
 use Modules\Projects\Application\Query\ListProjectsByWorkspaceQuery;
 use Modules\Projects\Application\Query\ListProjectsByWorkspaceQueryHandler;
 use Modules\Projects\Domain\Project;
+use Modules\Shared\Kernel\ProjectId;
 use Modules\Shared\Kernel\WorkspaceId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,9 +29,12 @@ final readonly class ProjectsController
 {
     private const string WORKSPACE_ID_REQUIREMENT = '[0-9a-fA-F-]{36}';
 
+    private const string PROJECT_ID_REQUIREMENT = '[0-9a-fA-F-]{36}';
+
     public function __construct(
         private CreateProjectCommandHandler $create,
         private ListProjectsByWorkspaceQueryHandler $listByWorkspace,
+        private GetProjectQueryHandler $get,
     ) {
     }
 
@@ -98,6 +104,36 @@ final readonly class ProjectsController
         $items = array_values(array_map($this->serialise(...), $projects));
 
         return new JsonResponse(['items' => $items], Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/projects/{id}',
+        name: 'projects_get',
+        requirements: ['id' => self::PROJECT_ID_REQUIREMENT],
+        methods: ['GET'],
+    )]
+    #[OA\Get(
+        path: '/api/projects/{id}',
+        summary: 'Get a single project by id.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 200, description: 'Project'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to view the project'),
+            new OA\Response(response: 404, description: 'Project not found'),
+        ],
+    )]
+    public function get(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $project = ($this->get)(new GetProjectQuery(
+            actorId: $user->domainUser()->id(),
+            projectId: ProjectId::fromString($id),
+        ));
+
+        return new JsonResponse($this->serialise($project), Response::HTTP_OK);
     }
 
     /**
