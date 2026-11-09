@@ -847,6 +847,9 @@
       "BL-WSUX-012": {
         "story": "Widget „Workspace Info\" pokazuje avatar workspace'u, opis, kto utworzył, kiedy, przycisk kopiowania ID workspace'u. PROTOTYP."
       },
+      "BL-WSUX-TILE-LINK": {
+        "story": "Kafelek workspace'u (avatar + nazwa + slug + pill roli) jest opakowany w link do `/workspace/:id/overview`. Akcje hover (członkowie, edycja, usuń) zostają osobno i zachowują własne cele."
+      },
       "BL-PROJ-ARCH": {
         "story": "Warstwa Project między Workspace a agentami — workspace ma wiele projektów (np. TalentBridge API/APP/Yii), każdy z własnymi settings/agents/members/skills/flow/tasks. Fundament pod większość reszty wizji. Needs brief."
       },
