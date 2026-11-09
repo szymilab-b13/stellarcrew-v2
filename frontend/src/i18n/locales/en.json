@@ -283,48 +283,27 @@
         "openAllAria": "Open all projects",
         "showMore": "Show more",
         "showMoreAria": "Show more projects",
-        "percent": "{{value}}%",
-        "sparklineAria": "{{name}} progress trend",
-        "progressAria": "{{name}} completion",
-        "statuses": {
-          "active": "ACTIVE",
-          "frozen": "FROZEN",
-          "archived": "ARCHIVED"
-        },
-        "samples": {
-          "stellarcrew": { "name": "StellarCrew", "subtitle": "AI Team Platform" },
-          "jobSearch": { "name": "Job Search", "subtitle": "Automated job scanning" },
-          "gymPlan": { "name": "Gym Plan", "subtitle": "Strength training program" },
-          "questilo": { "name": "Questilo", "subtitle": "Gamified Habit Tracker" },
-          "englishLearning": {
-            "name": "English Learning",
-            "subtitle": "AI-powered language tutor"
-          },
-          "readingChallenge": { "name": "Reading Challenge", "subtitle": "24 books in 2026" },
-          "businessPlan": { "name": "Business Plan", "subtitle": "SaaS product strategy" }
-        },
-        "footer": {
-          "agents": "{{count}} agents",
-          "tasks": "{{done}}/{{total}} tasks",
-          "ago": {
-            "stellarcrew": "2 min ago",
-            "jobSearch": "1h ago",
-            "gymPlan": "5h ago",
-            "questilo": "3 days ago",
-            "englishLearning": "1 day ago",
-            "readingChallenge": "2 days ago",
-            "businessPlan": "2 weeks ago"
-          }
-        }
+        "loading": "Loading projects…",
+        "loadError": "Could not load projects.",
+        "empty": "No projects in this workspace yet."
       }
     }
   },
   "workspaceProjects": {
     "breadcrumb": "Projects",
-    "title": "Projects",
-    "placeholderAria": "Projects placeholder",
-    "placeholderTitle": "Coming after PROJECTS milestone",
-    "placeholderBody": "Project management for this workspace will land with the PROJECTS milestone. For now, use the Project Overviews widget on the Overview page to preview the layout."
+    "title": "Projects"
+  },
+  "projects": {
+    "loading": "Loading projects…",
+    "loadError": "Could not load projects.",
+    "listAria": "Projects list",
+    "emptyAria": "No projects yet",
+    "emptyTitle": "No projects yet",
+    "emptyBody": "Create the first project in this workspace to organize agents, tasks and skills.",
+    "tile": {
+      "aria": "Project {{name}}",
+      "createdAt": "Created {{date}}"
+    }
   },
   "workspaceMembers": {
     "breadcrumb": "Members",

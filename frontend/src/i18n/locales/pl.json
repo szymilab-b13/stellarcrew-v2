@@ -283,45 +283,27 @@
         "openAllAria": "Otwórz wszystkie projekty",
         "showMore": "Pokaż więcej",
         "showMoreAria": "Pokaż więcej projektów",
-        "percent": "{{value}}%",
-        "sparklineAria": "Trend postępu — {{name}}",
-        "progressAria": "Postęp — {{name}}",
-        "statuses": {
-          "active": "ACTIVE",
-          "frozen": "FROZEN",
-          "archived": "ARCHIVED"
-        },
-        "samples": {
-          "stellarcrew": { "name": "StellarCrew", "subtitle": "Platforma zespołu AI" },
-          "jobSearch": { "name": "Job Search", "subtitle": "Automatyczne skanowanie ofert" },
-          "gymPlan": { "name": "Gym Plan", "subtitle": "Plan treningu siłowego" },
-          "questilo": { "name": "Questilo", "subtitle": "Grywalizacja nawyków" },
-          "englishLearning": { "name": "English Learning", "subtitle": "Tutor języka AI" },
-          "readingChallenge": { "name": "Reading Challenge", "subtitle": "24 książki w 2026" },
-          "businessPlan": { "name": "Business Plan", "subtitle": "Strategia produktu SaaS" }
-        },
-        "footer": {
-          "agents": "{{count}} agentów",
-          "tasks": "{{done}}/{{total}} zadań",
-          "ago": {
-            "stellarcrew": "2 min temu",
-            "jobSearch": "1 godz. temu",
-            "gymPlan": "5 godz. temu",
-            "questilo": "3 dni temu",
-            "englishLearning": "1 dzień temu",
-            "readingChallenge": "2 dni temu",
-            "businessPlan": "2 tyg. temu"
-          }
-        }
+        "loading": "Ładuję projekty…",
+        "loadError": "Nie udało się załadować projektów.",
+        "empty": "Brak projektów w tym workspace'ie."
       }
     }
   },
   "workspaceProjects": {
     "breadcrumb": "Projekty",
-    "title": "Projekty",
-    "placeholderAria": "Placeholder projektów",
-    "placeholderTitle": "Dostępne po milestone PROJECTS",
-    "placeholderBody": "Zarządzanie projektami w tym workspace'ie pojawi się wraz z milestone'em PROJECTS. Na razie podglądaj widget Project Overviews na stronie Overview."
+    "title": "Projekty"
+  },
+  "projects": {
+    "loading": "Ładuję projekty…",
+    "loadError": "Nie udało się załadować projektów.",
+    "listAria": "Lista projektów",
+    "emptyAria": "Brak projektów",
+    "emptyTitle": "Brak projektów",
+    "emptyBody": "Dodaj pierwszy projekt w tym workspace'ie, żeby zorganizować agentów, zadania i skille.",
+    "tile": {
+      "aria": "Projekt {{name}}",
+      "createdAt": "Utworzono {{date}}"
+    }
   },
   "workspaceMembers": {
     "breadcrumb": "Członkowie",
