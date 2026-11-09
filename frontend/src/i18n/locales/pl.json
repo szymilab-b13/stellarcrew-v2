@@ -909,6 +909,7 @@
     },
     "tile": {
       "aria": "Workspace {{name}}",
+      "openAria": "Otwórz workspace {{name}}",
       "edit": "Zmień nazwę",
       "editAria": "Zmień nazwę workspace’a {{name}}",
       "delete": "Usuń",

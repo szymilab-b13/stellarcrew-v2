@@ -45,4 +45,11 @@ describe('WorkspaceTile', () => {
     const link = screen.getByRole('link', { name: /manage members of workspace default/i });
     expect(link).toHaveAttribute('href', `/workspace/${baseWorkspace.id}/settings/members`);
   });
+
+  it('renders an overview link wrapping the tile heading', () => {
+    renderInRouter(<WorkspaceTile workspace={baseWorkspace} onEdit={vi.fn()} onDelete={vi.fn()} />);
+
+    const link = screen.getByRole('link', { name: /open workspace default/i });
+    expect(link).toHaveAttribute('href', `/workspace/${baseWorkspace.id}/overview`);
+  });
 });
