@@ -17,6 +17,10 @@ export async function fetchProjectsByWorkspace(workspaceId: string): Promise<Pro
   return response.items;
 }
 
+export async function fetchProjectById(projectId: string): Promise<Project> {
+  return apiFetch<Project>(`/api/projects/${projectId}`);
+}
+
 export async function createProject(
   workspaceId: string,
   input: CreateProjectInput,

@@ -1,15 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { createProject, fetchProjectsByWorkspace, type CreateProjectInput } from './projectsApi';
+import {
+  createProject,
+  fetchProjectById,
+  fetchProjectsByWorkspace,
+  type CreateProjectInput,
+} from './projectsApi';
 import type { Project } from '../types';
 
 export const projectsQueryKey = (workspaceId: string) => ['projects', workspaceId] as const;
+export const projectQueryKey = (projectId: string) => ['project', projectId] as const;
 
 export function useProjectsList(workspaceId: string | null) {
   return useQuery<Project[]>({
     queryKey: workspaceId ? projectsQueryKey(workspaceId) : ['projects', 'disabled'],
     queryFn: () => fetchProjectsByWorkspace(workspaceId as string),
     enabled: workspaceId !== null,
+    staleTime: 30_000,
+  });
+}
+
+export function useProject(projectId: string | null) {
+  return useQuery<Project>({
+    queryKey: projectId ? projectQueryKey(projectId) : ['project', 'disabled'],
+    queryFn: () => fetchProjectById(projectId as string),
+    enabled: projectId !== null,
     staleTime: 30_000,
   });
 }

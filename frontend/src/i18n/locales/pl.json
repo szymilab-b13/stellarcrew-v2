@@ -331,6 +331,41 @@
       }
     }
   },
+  "projectOverview": {
+    "breadcrumb": "Overview",
+    "title": "Overview projektu",
+    "loading": "Ładuję projekt…",
+    "loadError": "Nie udało się załadować projektu.",
+    "shellAria": "Widgety overview projektu",
+    "prototype": "Prototyp",
+    "comingSoon": "Wkrótce, w kolejnym milestone.",
+    "slots": {
+      "agents": {
+        "title": "Agenci",
+        "body": "Agenci projektu pojawią się tutaj po dostarczeniu modułu Agents."
+      },
+      "tasks": {
+        "title": "Zadania",
+        "body": "Backlog, aktywne i zakończone zadania projektu."
+      },
+      "milestones": {
+        "title": "Milestones",
+        "body": "Oś milestones z badge'ami statusu."
+      },
+      "knowledge": {
+        "title": "Knowledge",
+        "body": "Baza wiedzy powiązana z tym projektem."
+      },
+      "activity": {
+        "title": "Aktywność",
+        "body": "Ostatnie commity, przebiegi agentów i akcje Szefa w tym projekcie."
+      },
+      "settings": {
+        "title": "Ustawienia",
+        "body": "Skrót do ustawień projektu (nazwa, slug, opis, usunięcie)."
+      }
+    }
+  },
   "workspaceMembers": {
     "breadcrumb": "Członkowie",
     "title": "Członkowie workspace'a",

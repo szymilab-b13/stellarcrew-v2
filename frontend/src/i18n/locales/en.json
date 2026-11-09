@@ -331,6 +331,41 @@
       }
     }
   },
+  "projectOverview": {
+    "breadcrumb": "Overview",
+    "title": "Project overview",
+    "loading": "Loading project…",
+    "loadError": "Could not load the project.",
+    "shellAria": "Project overview widgets",
+    "prototype": "Prototype",
+    "comingSoon": "Coming after next milestone.",
+    "slots": {
+      "agents": {
+        "title": "Agents",
+        "body": "Project agents will appear here once the Agents module ships."
+      },
+      "tasks": {
+        "title": "Tasks",
+        "body": "Backlog, in-progress and done tasks for this project."
+      },
+      "milestones": {
+        "title": "Milestones",
+        "body": "Milestone timeline with status badges."
+      },
+      "knowledge": {
+        "title": "Knowledge",
+        "body": "Knowledge base attached to this project."
+      },
+      "activity": {
+        "title": "Activity",
+        "body": "Latest commits, agent runs and boss actions scoped to this project."
+      },
+      "settings": {
+        "title": "Settings",
+        "body": "Shortcut to project settings (rename, slug, description, delete)."
+      }
+    }
+  },
   "workspaceMembers": {
     "breadcrumb": "Members",
     "title": "Workspace members",

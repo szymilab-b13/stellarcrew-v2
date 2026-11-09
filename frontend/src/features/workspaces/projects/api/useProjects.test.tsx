@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { clearAuthToken, writeAuthToken } from '@/lib/authToken';
 
-import { useProjectsList } from './useProjects';
+import { useProject, useProjectsList } from './useProjects';
 
 function mockResponse(body: unknown, status = 200): Response {
   return new Response(body == null ? null : JSON.stringify(body), {
@@ -56,6 +56,46 @@ describe('useProjectsList', () => {
 
   it('should stay disabled when workspaceId is null', () => {
     const { result } = renderHook(() => useProjectsList(null), { wrapper: wrapper() });
+
+    expect(result.current.isPending).toBe(true);
+    expect(result.current.fetchStatus).toBe('idle');
+    expect(vi.mocked(fetch)).not.toHaveBeenCalled();
+  });
+});
+
+describe('useProject', () => {
+  beforeEach(() => {
+    writeAuthToken('test-token');
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  afterEach(() => {
+    clearAuthToken();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it('should request the single project endpoint and return the entity', async () => {
+    const project = {
+      id: '33333333-3333-4333-8333-333333333333',
+      workspaceId: 'ws-1',
+      name: 'Talent Bridge',
+      slug: 'talent-bridge',
+      description: 'HR integration',
+      createdAt: '2026-11-09T10:00:00+00:00',
+      updatedAt: '2026-11-09T10:00:00+00:00',
+    };
+    vi.mocked(fetch).mockResolvedValueOnce(mockResponse(project));
+
+    const { result } = renderHook(() => useProject(project.id), { wrapper: wrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toEqual(project);
+    expect(vi.mocked(fetch).mock.calls[0]?.[0]).toBe(`/api/projects/${project.id}`);
+  });
+
+  it('should stay disabled when projectId is null', () => {
+    const { result } = renderHook(() => useProject(null), { wrapper: wrapper() });
 
     expect(result.current.isPending).toBe(true);
     expect(result.current.fetchStatus).toBe('idle');
