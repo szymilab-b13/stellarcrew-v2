@@ -13,6 +13,7 @@ import { KNOWLEDGE_MILESTONE } from './knowledge';
 import { PERMISSIONS_MILESTONE } from './permissions';
 import { PLUGINS_MILESTONE } from './plugins';
 import { PROJECT_DASHBOARDS_MILESTONE } from './projectDashboards';
+import { PROJECT_DOCS_MILESTONE } from './projectDocs';
 import { PROJECTS_MILESTONE } from './projects';
 import { SCHEDULER_MILESTONE } from './scheduler';
 import { SKILLS_MILESTONE } from './skills';
@@ -34,6 +35,7 @@ export const ROADMAP: RoadmapMilestone[] = [
   INTEGRATION_TESTS_MILESTONE,
   PERMISSIONS_MILESTONE,
   PROJECTS_MILESTONE,
+  PROJECT_DOCS_MILESTONE,
   VARIABLES_MILESTONE,
   AGENTS_MILESTONE,
   AI_ENGINE_MILESTONE,

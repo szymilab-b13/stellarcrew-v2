@@ -722,6 +722,9 @@
       "projectsLayer": {
         "title": "PROJECTS — warstwa Workspace → Project (settings, members, tasks)"
       },
+      "projectDocs": {
+        "title": "PROJECT DOCS — ADR + Briefy + Knowledge Base per projekt (markdown + wiki-links)"
+      },
       "variables": {
         "title": "VARIABLES — zmienne/sekrety globalne + per workspace/project"
       },
@@ -1076,6 +1079,57 @@
       "BL-PROJ-015": {
         "story": "Strona Project Settings (`/workspace/:wsId/project/:projId/settings`): formularz edycji (name / slug / description) + sekcja Danger Zone z buttonem Delete (confirm modal, redirect do `/workspace/:wsId/projects` + toast z linkiem do Undo via Audit)."
       },
+      "BL-PDOC-001": {
+        "story": "Agregat ProjectDoc + VO (ProjectDocId / Slug / DisplayId) + enum DocType (ADR / Brief / Knowledge Base) + interfejs repo + szkielet ProjectDocsBundle."
+      },
+      "BL-PDOC-002": {
+        "story": "Interfejs modułowy ProjectDocsApi + DTO DocView + eventy integracyjne (DocCreated / Updated / Moved / Deleted / Restored) dla konsumentów cross-module."
+      },
+      "BL-PDOC-003": {
+        "story": "Mapping Doctrine XML + migracja dla schematu `project_docs` (tabela `docs`, partial UNIQUE na (project_id, doc_type, slug) i (project_id, doc_type, display_id) WHERE deleted_at IS NULL, btree (project_id, doc_type) i (parent_doc_id))."
+      },
+      "BL-PDOC-004": {
+        "story": "Command/handler CreateDoc + POST `/api/projects/{projId}/docs` (auto sequence `display_id` per project per type + auto slug z title, doc_type wymagany w body)."
+      },
+      "BL-PDOC-005": {
+        "story": "Query/handler ListDocsByProject + GET `/api/projects/{projId}/docs` (filter po doc_type i opcjonalnym parent_doc_id, `?tree=1` zwraca zagnieżdżone drzewo dla Knowledge Base)."
+      },
+      "BL-PDOC-006": {
+        "story": "Query/handler GetDoc + GET `/api/docs/{id}` (resolve po UUID lub po display_id przez `/api/projects/{projId}/docs/{displayId}`)."
+      },
+      "BL-PDOC-007": {
+        "story": "Command/handler UpdateDoc + PUT `/api/docs/{id}` (title / slug / content_markdown; unikalność slug per project+type; zmiana parent w BL-DOC-009)."
+      },
+      "BL-PDOC-008": {
+        "story": "DeleteDoc (soft) + DELETE `/api/docs/{id}` + RestoreDoc + POST `/api/docs/{id}/restore` (soft-delete orphan-uje children: ustawia `parent_doc_id = NULL`)."
+      },
+      "BL-PDOC-009": {
+        "story": "Command/handler MoveDoc (zmiana parent_doc_id, w ramach tego samego projektu, wykrywanie cykli) + PATCH `/api/docs/{id}/parent`."
+      },
+      "BL-PDOC-010": {
+        "story": "Integracja z Audit: handlery logują wpisy + ProjectDocsUndoer (Create/Update/Delete/Restore/Move) + ProjectDocsUndoDescriber EN/PL."
+      },
+      "BL-PDOC-011": {
+        "story": "Cascade listener: `ProjectDeleted` → batch soft-delete wszystkich doców projektu + per-doc wpis audit z `metadata.cascade.reason`."
+      },
+      "BL-PDOC-012": {
+        "story": "Strona Docs overview `/workspace/:wsId/project/:projId/docs` (3 kafelki: ADR count / Briefy count / KB count + CTA) + hook React Query `useDocsByProject` + routing."
+      },
+      "BL-PDOC-013": {
+        "story": "Strony list per typ: `/docs/adr` (flat), `/docs/briefs` (flat), `/docs/knowledge-base` (tree sidebar + panel treści) + DocTile + Create button."
+      },
+      "BL-PDOC-014": {
+        "story": "Strona detail doca `/docs/{type}/{displayId}` z renderem markdown-it + plugin wiki-links `[[slug]]` resolve do `<Link>` + lista children (jeśli parent) + edit button."
+      },
+      "BL-PDOC-015": {
+        "story": "Strona edytora `/docs/{type}/{displayId}/edit` z form (title, override slug, picker parent_doc_id dla KB, textarea content) + live preview split pane."
+      },
+      "BL-PDOC-016": {
+        "story": "Flow usuwania doca (confirm dialog z checkboxem acknowledge + redirect do listy + inline success banner z linkiem Undo do `/admin/audit`)."
+      },
+      "BL-PDOC-017": {
+        "story": "Odblokowanie wpisu **Docs** w Project sidebar (disabled stub → aktywny NavLink do `/docs`) + Project Overview page dostaje widget „Latest docs\" (top 5 najnowszych doców)."
+      },
       "BL-VAR-ARCH": {
         "story": "System zmiennych/sekretów — klucze globalne + per workspace/project (IP_SERVERA, API_TOKEN). Agenci referencują przez `$VAR_NAME` bez eksponowania wartości w promptach. Needs brief."
       },
@@ -1115,10 +1169,10 @@
       "BL-DX-001": {
         "story": "CI korzysta z usług ci/services (postgres, redis, rabbit) zamiast zaślepek — gdy testy wyjdą poza warstwę API."
       },
-      "BL-DOC-001": {
+      "BL-PDOC-001": {
         "story": "Każdy wymergowany milestone ma w opisie PR krótki release note w stylu changelog — bez wnętrzności."
       },
-      "BL-DOC-002": {
+      "BL-PDOC-002": {
         "story": "Audyt stellarcrew.dev — porównanie copy, feature’ów i roadmapy z realem v2, lista braków i stale’ów przed zmianą strony."
       }
     }
