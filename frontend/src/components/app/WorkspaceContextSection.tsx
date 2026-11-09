@@ -11,6 +11,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { NavLink, useMatch } from 'react-router-dom';
 
+import { useCurrentWorkspace } from '@/features/workspaces/state/useCurrentWorkspace';
+
 import { useCollapsedSections } from './useSidebarState';
 
 const SECTION_ID = 'workspace-context';
@@ -31,9 +33,10 @@ export function WorkspaceContextSection({ collapsed }: WorkspaceContextSectionPr
   const { t } = useTranslation();
   const sections = useCollapsedSections();
   const match = useMatch('/workspace/:wsId/*');
-  const wsId = match?.params.wsId ?? null;
+  const storedWorkspaceId = useCurrentWorkspace((state) => state.currentWorkspaceId);
+  const wsId = match?.params.wsId ?? storedWorkspaceId;
 
-  if (wsId === null) {
+  if (wsId === null || wsId === undefined) {
     return null;
   }
 

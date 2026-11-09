@@ -1,10 +1,11 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import '@/i18n/i18n';
+import { useCurrentWorkspace } from '@/features/workspaces/state/useCurrentWorkspace';
 
 import { WorkspaceContextSection } from './WorkspaceContextSection';
 
@@ -28,16 +29,48 @@ function renderAt(initialPath: string, props: { collapsed?: boolean } = {}) {
 describe('WorkspaceContextSection', () => {
   beforeEach(() => {
     window.localStorage.clear();
+    useCurrentWorkspace.getState().resetCurrentWorkspace();
   });
 
   afterEach(() => {
     window.localStorage.clear();
+    useCurrentWorkspace.getState().resetCurrentWorkspace();
   });
 
-  it('should render nothing when route is not inside a workspace', () => {
+  it('should render nothing when no workspace is selected and route is outside workspace', () => {
     const { container } = renderAt('/dashboard');
 
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('should render links scoped to the selected workspace from the store when route is outside workspace', () => {
+    act(() => useCurrentWorkspace.getState().setCurrentWorkspaceId('ws-store'));
+
+    renderAt('/dashboard');
+
+    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute(
+      'href',
+      '/workspace/ws-store/overview',
+    );
+    expect(screen.getByRole('link', { name: 'Projects' })).toHaveAttribute(
+      'href',
+      '/workspace/ws-store/projects',
+    );
+    expect(screen.getByRole('link', { name: 'Members' })).toHaveAttribute(
+      'href',
+      '/workspace/ws-store/settings/members',
+    );
+  });
+
+  it('should prefer the URL wsId over the store when both are present', () => {
+    act(() => useCurrentWorkspace.getState().setCurrentWorkspaceId('ws-store'));
+
+    renderAt('/workspace/ws-url/overview');
+
+    expect(screen.getByRole('link', { name: 'Overview' })).toHaveAttribute(
+      'href',
+      '/workspace/ws-url/overview',
+    );
   });
 
   it('should render Overview, Projects and Members as active links scoped to the current wsId', () => {
