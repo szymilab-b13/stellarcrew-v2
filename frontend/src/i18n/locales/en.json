@@ -328,6 +328,7 @@
     },
     "tile": {
       "aria": "Project {{name}}",
+      "openAria": "Open {{name}}",
       "createdAt": "Created {{date}}"
     },
     "addTile": {

@@ -328,6 +328,7 @@
     },
     "tile": {
       "aria": "Projekt {{name}}",
+      "openAria": "Otwórz {{name}}",
       "createdAt": "Utworzono {{date}}"
     },
     "addTile": {
