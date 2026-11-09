@@ -19,5 +19,6 @@ export const WORKSPACE_UX_MILESTONE: RoadmapMilestone = {
     { id: 'BL-WSUX-012', status: 'done', commit: '607993f' },
     { id: 'BL-WSUX-TILE-LINK', status: 'done', commit: '400acf7' },
     { id: 'BL-WSUX-PROJ-SHELL', status: 'done', commit: 'aafe04b' },
+    { id: 'BL-WSUX-PROJ-OVERVIEW', status: 'done', commit: '4189157' },
   ],
 };

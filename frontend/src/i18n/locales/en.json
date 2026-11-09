@@ -902,6 +902,9 @@
       "BL-WSUX-PROJ-SHELL": {
         "story": "Route `/workspace/:id/projects` serves a placeholder page (header + \"Coming after PROJECTS milestone\" message). Sidebar Workspace section lifts Projects out of the disabled list and makes it an active link. Prepares a landing target for the Project Overviews widget CTA."
       },
+      "BL-WSUX-PROJ-OVERVIEW": {
+        "story": "Workspace Overview gets a third row with a Projects Overview widget: a 4-column grid of 7 faux project tiles (status pill, percent, progress bar, sparkline, 3-col footer) plus an 8th tile and a top-right ArrowUpRight CTA that both link to `/workspace/:id/projects`."
+      },
       "BL-PROJ-ARCH": {
         "story": "Project layer between Workspace and agents — a workspace holds multiple projects (e.g., TalentBridge API/APP/Yii), each with its own settings/agents/members/skills/flow/tasks. Foundation for most of the remaining vision. Needs brief."
       },

@@ -899,6 +899,9 @@
       "BL-WSUX-PROJ-SHELL": {
         "story": "Route `/workspace/:id/projects` serwuje stronę-placeholder (nagłówek + komunikat „Dostępne po milestone PROJECTS\"). Sekcja Workspace w sidebarze wyciąga Projects z disabled i zamienia na aktywny link. Przygotowuje cel linka pod CTA widgetu Project Overviews."
       },
+      "BL-WSUX-PROJ-OVERVIEW": {
+        "story": "Workspace Overview dostaje 3-ci rząd z widgetem Projects Overview: 4-kolumnowy grid 7 faux kafelków projektów (pill statusu, procent, progress bar, sparkline, 3-kol. stopka) + 8-my kafelek i ikona CTA ArrowUpRight w prawym górnym rogu, oba linkują do `/workspace/:id/projects`."
+      },
       "BL-PROJ-ARCH": {
         "story": "Warstwa Project między Workspace a agentami — workspace ma wiele projektów (np. TalentBridge API/APP/Yii), każdy z własnymi settings/agents/members/skills/flow/tasks. Fundament pod większość reszty wizji. Needs brief."
       },
