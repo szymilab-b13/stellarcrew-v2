@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronLeft, ChevronRight, LogOut, Pin, Star } from 'lucide-react';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink, useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,10 @@ import { resolveIcon } from './iconMap';
 import { ProfileDropdown } from './ProfileDropdown';
 import { PINNED_MENU_LIMIT, usePinnedMenu } from './usePinnedMenu';
 import { useCollapsedSections, useSidebarCollapsed } from './useSidebarState';
+import { WorkspaceContextSection } from './WorkspaceContextSection';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
+
+const WORKSPACE_CONTEXT_ORDER = 50;
 
 const PINNED_SECTION_ID = 'pinned';
 
@@ -173,31 +176,40 @@ export function Sidebar() {
           const isSectionCollapsed = sections.isCollapsed(section.id);
           const separatorClass =
             index === 0 && !showPinnedSection ? '' : 'mt-3 border-t border-sc-border pt-3';
+          const previousOrder = index > 0 ? menu.data[index - 1].order : 0;
+          const injectContextBefore =
+            previousOrder < WORKSPACE_CONTEXT_ORDER && section.order >= WORKSPACE_CONTEXT_ORDER;
           return (
-            <div key={section.id} className={`mb-3 ${separatorClass}`}>
-              {!collapsed ? (
-                <button
-                  type="button"
-                  onClick={() => sections.toggle(section.id)}
-                  aria-expanded={!isSectionCollapsed}
-                  className="flex w-full items-center justify-between px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-widest text-sc-text-muted transition-colors hover:text-sc-text"
-                >
-                  <span>{t(section.labelKey)}</span>
-                  <ChevronDown
-                    size={12}
-                    className={`transition-transform ${isSectionCollapsed ? '-rotate-90' : ''}`}
-                    aria-hidden
-                  />
-                </button>
-              ) : null}
-              {!isSectionCollapsed || collapsed ? (
-                <ul className="flex flex-col gap-0.5">
-                  {section.items.map((item) => renderItem(item, { showStar: true }))}
-                </ul>
-              ) : null}
-            </div>
+            <Fragment key={section.id}>
+              {injectContextBefore ? <WorkspaceContextSection collapsed={collapsed} /> : null}
+              <div className={`mb-3 ${separatorClass}`}>
+                {!collapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => sections.toggle(section.id)}
+                    aria-expanded={!isSectionCollapsed}
+                    className="flex w-full items-center justify-between px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-widest text-sc-text-muted transition-colors hover:text-sc-text"
+                  >
+                    <span>{t(section.labelKey)}</span>
+                    <ChevronDown
+                      size={12}
+                      className={`transition-transform ${isSectionCollapsed ? '-rotate-90' : ''}`}
+                      aria-hidden
+                    />
+                  </button>
+                ) : null}
+                {!isSectionCollapsed || collapsed ? (
+                  <ul className="flex flex-col gap-0.5">
+                    {section.items.map((item) => renderItem(item, { showStar: true }))}
+                  </ul>
+                ) : null}
+              </div>
+            </Fragment>
           );
         })}
+        {menu.data && menu.data.every((section) => section.order < WORKSPACE_CONTEXT_ORDER) ? (
+          <WorkspaceContextSection collapsed={collapsed} />
+        ) : null}
       </nav>
 
       <div className="flex flex-col gap-2 border-t border-sc-border px-3 py-3">

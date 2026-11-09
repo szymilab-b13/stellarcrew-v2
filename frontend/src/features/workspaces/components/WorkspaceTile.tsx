@@ -21,7 +21,11 @@ export function WorkspaceTile({ workspace, onEdit, onDelete }: WorkspaceTileProp
       className="group relative flex flex-col gap-4 rounded-xl border border-sc-border bg-sc-bg-card p-4 transition-colors hover:border-sc-text-muted"
       aria-label={t('workspaces.tile.aria', { name: workspace.name })}
     >
-      <div className="flex items-center gap-3">
+      <Link
+        to={`/workspace/${workspace.id}/overview`}
+        aria-label={t('workspaces.tile.openAria', { name: workspace.name })}
+        className="flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sc-text"
+      >
         <span
           className={`inline-flex h-12 w-12 flex-none items-center justify-center rounded-lg text-base font-semibold ${color.bgClass} ${color.textClass}`}
           aria-hidden
@@ -37,7 +41,7 @@ export function WorkspaceTile({ workspace, onEdit, onDelete }: WorkspaceTileProp
             </div>
           ) : null}
         </div>
-      </div>
+      </Link>
 
       <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
         <Link

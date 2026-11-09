@@ -43,14 +43,30 @@
     "sections": {
       "overview": "Overview",
       "workspaces": "Workspaces",
+      "workspace": "Workspace",
       "admin": "Administration",
       "pinned": "Pinned"
     },
     "items": {
       "dashboard": "Dashboard",
       "workspaces": "Workspaces",
+      "workspaceOverview": "Overview",
+      "workspaceProjects": "Projects",
+      "workspaceMembers": "Members",
+      "workspaceAgents": "Agents",
+      "workspaceScheduler": "Scheduler",
+      "workspaceSettings": "Settings",
       "users": "Users",
       "auditLog": "Audit log"
+    },
+    "workspaceContext": {
+      "comingSoon": "Coming after the {{milestone}} milestone",
+      "milestones": {
+        "projects": "PROJECTS",
+        "agents": "AGENTS",
+        "scheduler": "SCHEDULER",
+        "settings": "WORKSPACE_SETTINGS"
+      }
     },
     "pinAdd": "Pin to top",
     "pinRemove": "Unpin",
@@ -125,6 +141,190 @@
         }
       }
     }
+  },
+  "workspaceOverview": {
+    "breadcrumb": "Overview",
+    "title": "Overview",
+    "prototypeBadge": "PROTOTYP",
+    "comingIn": "Coming in {{bl}}",
+    "rows": {
+      "row1": "Overview widgets row 1",
+      "row2": "Overview widgets row 2",
+      "row3": "Overview widgets row 3"
+    },
+    "slots": {
+      "activeTasks": { "title": "Active Tasks" },
+      "activeAgents": { "title": "Active Agents" },
+      "tasksProgress": { "title": "Tasks Progress" },
+      "milestones": { "title": "Milestones" },
+      "projects": { "title": "Projects" },
+      "bossActions": { "title": "Boss Actions" },
+      "lastAgentsActivity": { "title": "Last Agents Activity" },
+      "workspaceInfo": { "title": "Workspace Info" },
+      "projectOverviews": { "title": "Projects Overview" }
+    },
+    "widgets": {
+      "activeTasks": {
+        "previewLabel": "Active tasks preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": "Draft onboarding brief",
+          "1": "Review workspace members",
+          "2": "Schedule agent sync"
+        }
+      },
+      "activeAgents": {
+        "previewLabel": "Active agents preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": "Hefajstos",
+          "1": "Maja",
+          "2": "Viktor",
+          "3": "Luna"
+        },
+        "modes": {
+          "builder": "BUILDER",
+          "listener": "LISTENER",
+          "discovery": "DISCOVERY",
+          "idle": "IDLE"
+        }
+      },
+      "tasksProgress": {
+        "previewLabel": "Tasks progress preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "percent": "{{value}}%",
+        "segments": {
+          "inProgress": "In progress",
+          "done": "Done",
+          "blocked": "Blocked"
+        }
+      },
+      "milestones": {
+        "previewLabel": "Milestones preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": "Launch MVP",
+          "1": "Team onboarding",
+          "2": "Q1 roadmap",
+          "3": "Compliance review"
+        },
+        "statuses": {
+          "done": "DONE",
+          "inProgress": "IN PROGRESS",
+          "planned": "PLANNED",
+          "blocked": "BLOCKED"
+        }
+      },
+      "projects": {
+        "previewLabel": "Projects preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": "Talent Bridge",
+          "1": "StellarCrew Core",
+          "2": "Mentar",
+          "3": "Musaned legacy"
+        },
+        "statuses": {
+          "active": "ACTIVE",
+          "planned": "PLANNED",
+          "paused": "PAUSED",
+          "archived": "ARCHIVED"
+        }
+      },
+      "bossActions": {
+        "previewLabel": "Boss Actions preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": "New project",
+          "1": "Invite member",
+          "2": "Start milestone",
+          "3": "Send broadcast"
+        },
+        "types": {
+          "create": "CREATE",
+          "invite": "INVITE",
+          "launch": "LAUNCH",
+          "broadcast": "BROADCAST"
+        }
+      },
+      "lastAgentsActivity": {
+        "previewLabel": "Last agents activity preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "samples": {
+          "0": { "bl": "BL-UM-014", "commit": "aa5b789" },
+          "1": { "bl": "BL-AUDIT-WS", "commit": "868ec80" },
+          "2": { "bl": "BL-AUTH-LOGIN", "commit": "bfe8364" },
+          "3": { "bl": "BL-PLUGIN-ARCH", "commit": "1edbdcb" }
+        },
+        "statuses": {
+          "merged": "MERGED",
+          "inProgress": "IN PROGRESS",
+          "pending": "PENDING"
+        }
+      },
+      "workspaceInfo": {
+        "previewLabel": "Workspace info preview",
+        "metadataLabel": "Workspace metadata preview",
+        "comingAfter": "Coming after AGENTS milestone",
+        "avatarInitials": "SW",
+        "sampleName": "Sample Workspace",
+        "copyId": "Copy ID",
+        "copyIdAria": "Copy workspace ID",
+        "fields": {
+          "id": { "label": "ID", "value": "ws-sample-123" },
+          "created": { "label": "Created", "value": "Nov 1, 2026" },
+          "members": { "label": "Members", "value": "4" },
+          "visibility": { "label": "Visibility", "value": "PRIVATE" }
+        }
+      },
+      "projectOverviews": {
+        "sectionAria": "Projects Overview widget",
+        "listAria": "Project tiles",
+        "openAllAria": "Open all projects",
+        "showMore": "Show more",
+        "showMoreAria": "Show more projects",
+        "percent": "{{value}}%",
+        "sparklineAria": "{{name}} progress trend",
+        "progressAria": "{{name}} completion",
+        "statuses": {
+          "active": "ACTIVE",
+          "frozen": "FROZEN",
+          "archived": "ARCHIVED"
+        },
+        "samples": {
+          "stellarcrew": { "name": "StellarCrew", "subtitle": "AI Team Platform" },
+          "jobSearch": { "name": "Job Search", "subtitle": "Automated job scanning" },
+          "gymPlan": { "name": "Gym Plan", "subtitle": "Strength training program" },
+          "questilo": { "name": "Questilo", "subtitle": "Gamified Habit Tracker" },
+          "englishLearning": {
+            "name": "English Learning",
+            "subtitle": "AI-powered language tutor"
+          },
+          "readingChallenge": { "name": "Reading Challenge", "subtitle": "24 books in 2026" },
+          "businessPlan": { "name": "Business Plan", "subtitle": "SaaS product strategy" }
+        },
+        "footer": {
+          "agents": "{{count}} agents",
+          "tasks": "{{done}}/{{total}} tasks",
+          "ago": {
+            "stellarcrew": "2 min ago",
+            "jobSearch": "1h ago",
+            "gymPlan": "5h ago",
+            "questilo": "3 days ago",
+            "englishLearning": "1 day ago",
+            "readingChallenge": "2 days ago",
+            "businessPlan": "2 weeks ago"
+          }
+        }
+      }
+    }
+  },
+  "workspaceProjects": {
+    "breadcrumb": "Projects",
+    "title": "Projects",
+    "placeholderAria": "Projects placeholder",
+    "placeholderTitle": "Coming after PROJECTS milestone",
+    "placeholderBody": "Project management for this workspace will land with the PROJECTS milestone. For now, use the Project Overviews widget on the Overview page to preview the layout."
   },
   "workspaceMembers": {
     "breadcrumb": "Members",
@@ -696,6 +896,18 @@
       "BL-WSUX-012": {
         "story": "Widget „Workspace Info\" shows workspace avatar, description, created-by, created-at, copy-workspace-ID button. PROTOTYPE."
       },
+      "BL-WSUX-TILE-LINK": {
+        "story": "Workspace tile avatar + name + slug + role pill are wrapped in a link that opens `/workspace/:id/overview`. Hover actions (members, edit, delete) stay separate and keep their own targets."
+      },
+      "BL-WSUX-PROJ-SHELL": {
+        "story": "Route `/workspace/:id/projects` serves a placeholder page (header + \"Coming after PROJECTS milestone\" message). Sidebar Workspace section lifts Projects out of the disabled list and makes it an active link. Prepares a landing target for the Project Overviews widget CTA."
+      },
+      "BL-WSUX-PROJ-OVERVIEW": {
+        "story": "Workspace Overview gets a third row with a Projects Overview widget: a 4-column grid of 7 faux project tiles (status pill, percent, progress bar, sparkline, 3-col footer) plus an 8th tile and a top-right ArrowUpRight CTA that both link to `/workspace/:id/projects`."
+      },
+      "BL-WSUX-WSCTX-PERSIST": {
+        "story": "Workspace sidebar section shows up whenever the WorkspaceSwitcher has a workspace selected, not only on `/workspace/:id/*` routes. The wsId is resolved from the URL first, then falls back to the `useCurrentWorkspace` store on other views (dashboard, workspaces, admin). The section disappears only when no workspace is selected at all."
+      },
       "BL-PROJ-ARCH": {
         "story": "Project layer between Workspace and agents — a workspace holds multiple projects (e.g., TalentBridge API/APP/Yii), each with its own settings/agents/members/skills/flow/tasks. Foundation for most of the remaining vision. Needs brief."
       },
@@ -758,6 +970,7 @@
     },
     "tile": {
       "aria": "Workspace {{name}}",
+      "openAria": "Open workspace {{name}}",
       "edit": "Rename",
       "editAria": "Rename workspace {{name}}",
       "delete": "Delete",
