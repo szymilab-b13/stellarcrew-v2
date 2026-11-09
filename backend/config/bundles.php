@@ -13,4 +13,5 @@ return [
     Modules\Workspaces\Infrastructure\Bundle\WorkspacesBundle::class => ['all' => true],
     Modules\UserManagement\Infrastructure\Bundle\UserManagementBundle::class => ['all' => true],
     Modules\Audit\Infrastructure\Bundle\AuditBundle::class => ['all' => true],
+    Modules\Projects\Infrastructure\Bundle\ProjectsBundle::class => ['all' => true],
 ];
