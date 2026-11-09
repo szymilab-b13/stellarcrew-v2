@@ -84,6 +84,10 @@ services:
     Modules\Workspaces\Application\ReadModel\WorkspaceMembersReadModel:
         alias: Modules\Workspaces\Infrastructure\ReadModel\DbalWorkspaceMembersReadModel
 
+    # Projects module bindings
+    Modules\Projects\Domain\ProjectRepository:
+        alias: Modules\Projects\Infrastructure\Doctrine\Repository\DoctrineProjectRepository
+
     # UserManagement module bindings
     Modules\UserManagement\Domain\UserProfileRepository:
         alias: Modules\UserManagement\Infrastructure\Doctrine\Repository\DoctrineUserProfileRepository
@@ -112,6 +116,7 @@ when@test:
         App\Tests\Fixtures\Auth\InMemoryUserRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceMembersReadModel: ~
+        App\Tests\Fixtures\Projects\InMemoryProjectRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel: ~
 
@@ -132,6 +137,9 @@ when@test:
 
         Modules\Workspaces\Application\ReadModel\WorkspaceMembersReadModel:
             alias: App\Tests\Fixtures\Workspaces\InMemoryWorkspaceMembersReadModel
+
+        Modules\Projects\Domain\ProjectRepository:
+            alias: App\Tests\Fixtures\Projects\InMemoryProjectRepository
 
         Modules\UserManagement\Domain\UserProfileRepository:
             alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository
