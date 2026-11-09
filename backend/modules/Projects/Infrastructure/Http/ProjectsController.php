@@ -11,10 +11,14 @@ use DateTimeInterface;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Projects\Application\CreateProjectCommand;
 use Modules\Projects\Application\CreateProjectCommandHandler;
+use Modules\Projects\Application\DeleteProjectCommand;
+use Modules\Projects\Application\DeleteProjectCommandHandler;
 use Modules\Projects\Application\Query\GetProjectQuery;
 use Modules\Projects\Application\Query\GetProjectQueryHandler;
 use Modules\Projects\Application\Query\ListProjectsByWorkspaceQuery;
 use Modules\Projects\Application\Query\ListProjectsByWorkspaceQueryHandler;
+use Modules\Projects\Application\RestoreProjectCommand;
+use Modules\Projects\Application\RestoreProjectCommandHandler;
 use Modules\Projects\Application\UpdateProjectCommand;
 use Modules\Projects\Application\UpdateProjectCommandHandler;
 use Modules\Projects\Domain\Project;
@@ -38,6 +42,8 @@ final readonly class ProjectsController
         private ListProjectsByWorkspaceQueryHandler $listByWorkspace,
         private GetProjectQueryHandler $get,
         private UpdateProjectCommandHandler $update,
+        private DeleteProjectCommandHandler $delete,
+        private RestoreProjectCommandHandler $restore,
     ) {
     }
 
@@ -170,6 +176,66 @@ final readonly class ProjectsController
             name: $input->name,
             slug: $input->slug,
             description: $input->description,
+        ));
+
+        return new JsonResponse($this->serialise($project), Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/projects/{id}',
+        name: 'projects_delete',
+        requirements: ['id' => self::PROJECT_ID_REQUIREMENT],
+        methods: ['DELETE'],
+    )]
+    #[OA\Delete(
+        path: '/api/projects/{id}',
+        summary: 'Soft-delete a project.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 204, description: 'Project deleted'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to delete the project'),
+            new OA\Response(response: 404, description: 'Project not found'),
+        ],
+    )]
+    public function delete(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        ($this->delete)(new DeleteProjectCommand(
+            actorId: $user->domainUser()->id(),
+            projectId: ProjectId::fromString($id),
+        ));
+
+        return new JsonResponse(status: Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route(
+        '/api/projects/{id}/restore',
+        name: 'projects_restore',
+        requirements: ['id' => self::PROJECT_ID_REQUIREMENT],
+        methods: ['POST'],
+    )]
+    #[OA\Post(
+        path: '/api/projects/{id}/restore',
+        summary: 'Restore a soft-deleted project. Idempotent when the project is already active.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 200, description: 'Project restored'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to restore the project'),
+            new OA\Response(response: 404, description: 'Project not found'),
+        ],
+    )]
+    public function restore(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $project = ($this->restore)(new RestoreProjectCommand(
+            actorId: $user->domainUser()->id(),
+            projectId: ProjectId::fromString($id),
         ));
 
         return new JsonResponse($this->serialise($project), Response::HTTP_OK);

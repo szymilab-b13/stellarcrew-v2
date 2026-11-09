@@ -532,6 +532,207 @@ final class ProjectsEndpointTest extends WebTestCase
         self::assertStringStartsWith('alpha-', $payload['slug']);
     }
 
+    public function testShouldReturn401OnDeleteWithoutToken(): void
+    {
+        $projectId = Uuid::v7()->toRfc4122();
+
+        $this->deleteJson("/api/projects/{$projectId}", null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnDeleteWhenProjectDoesNotExist(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $missing = Uuid::v7()->toRfc4122();
+
+        $this->deleteJson("/api/projects/{$missing}", $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnDeleteWhenProjectAlreadySoftDeleted(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+        $project = $this->projects()->findById(ProjectId::fromString((string) $created['id']));
+        self::assertNotNull($project);
+        $project->softDelete($this->now());
+        $this->projects()->save($project);
+
+        $this->deleteJson("/api/projects/{$created['id']}", $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnDeleteWhenCallerIsNotWorkspaceMember(): void
+    {
+        [, $token] = $this->seedAdminAndLoginWithId();
+        $otherOwnerEmail = 'other@example.com';
+        $otherOwner = $this->seedAdmin($otherOwnerEmail, self::DEFAULT_PASSWORD);
+        $otherToken = $this->login($otherOwnerEmail, self::DEFAULT_PASSWORD);
+        $ws = $this->seedWorkspaceWithOwner($otherOwner->id(), 'Other', 'other-ws');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $otherToken);
+        $created = $this->decode();
+
+        $this->deleteJson("/api/projects/{$created['id']}", $token);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnDeleteWhenMemberRoleIsGuest(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($ownerId, 'Shared', 'shared');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $ownerToken);
+        $created = $this->decode();
+
+        $guestEmail = 'guest@example.com';
+        $guest = $this->seedAdmin($guestEmail, self::DEFAULT_PASSWORD);
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($ws->id(), $guest->id(), WorkspaceRole::Guest, $this->now()),
+        );
+        $guestToken = $this->login($guestEmail, self::DEFAULT_PASSWORD);
+
+        $this->deleteJson("/api/projects/{$created['id']}", $guestToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldSoftDeleteProjectAsOwner(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+
+        $this->deleteJson("/api/projects/{$created['id']}", $token);
+
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+        $project = $this->projects()->findById(ProjectId::fromString((string) $created['id']));
+        self::assertNotNull($project);
+        self::assertTrue($project->isDeleted());
+    }
+
+    public function testShouldAllowMemberRoleToDeleteProject(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($ownerId, 'Shared', 'shared');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $ownerToken);
+        $created = $this->decode();
+
+        $memberEmail = 'member@example.com';
+        $member = $this->seedAdmin($memberEmail, self::DEFAULT_PASSWORD);
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($ws->id(), $member->id(), WorkspaceRole::Member, $this->now()),
+        );
+        $memberToken = $this->login($memberEmail, self::DEFAULT_PASSWORD);
+
+        $this->deleteJson("/api/projects/{$created['id']}", $memberToken);
+
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn401OnRestoreWithoutToken(): void
+    {
+        $projectId = Uuid::v7()->toRfc4122();
+
+        $this->postJson("/api/projects/{$projectId}/restore", [], null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnRestoreWhenProjectDoesNotExist(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $missing = Uuid::v7()->toRfc4122();
+
+        $this->postJson("/api/projects/{$missing}/restore", [], $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnRestoreWhenCallerIsNotWorkspaceMember(): void
+    {
+        [, $token] = $this->seedAdminAndLoginWithId();
+        $otherOwnerEmail = 'other@example.com';
+        $otherOwner = $this->seedAdmin($otherOwnerEmail, self::DEFAULT_PASSWORD);
+        $otherToken = $this->login($otherOwnerEmail, self::DEFAULT_PASSWORD);
+        $ws = $this->seedWorkspaceWithOwner($otherOwner->id(), 'Other', 'other-ws');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $otherToken);
+        $created = $this->decode();
+        $project = $this->projects()->findById(ProjectId::fromString((string) $created['id']));
+        self::assertNotNull($project);
+        $project->softDelete($this->now());
+        $this->projects()->save($project);
+
+        $this->postJson("/api/projects/{$created['id']}/restore", [], $token);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnRestoreWhenMemberRoleIsGuest(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($ownerId, 'Shared', 'shared');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $ownerToken);
+        $created = $this->decode();
+        $project = $this->projects()->findById(ProjectId::fromString((string) $created['id']));
+        self::assertNotNull($project);
+        $project->softDelete($this->now());
+        $this->projects()->save($project);
+
+        $guestEmail = 'guest@example.com';
+        $guest = $this->seedAdmin($guestEmail, self::DEFAULT_PASSWORD);
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($ws->id(), $guest->id(), WorkspaceRole::Guest, $this->now()),
+        );
+        $guestToken = $this->login($guestEmail, self::DEFAULT_PASSWORD);
+
+        $this->postJson("/api/projects/{$created['id']}/restore", [], $guestToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldRestoreSoftDeletedProjectAsOwner(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+        $project = $this->projects()->findById(ProjectId::fromString((string) $created['id']));
+        self::assertNotNull($project);
+        $project->softDelete($this->now());
+        $this->projects()->save($project);
+
+        $this->postJson("/api/projects/{$created['id']}/restore", [], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame($created['id'], $payload['id']);
+        self::assertSame('alpha', $payload['slug']);
+        $stored = $this->projects()->findById(ProjectId::fromString((string) $created['id']));
+        self::assertNotNull($stored);
+        self::assertFalse($stored->isDeleted());
+    }
+
+    public function testShouldReturnActiveProjectWhenRestoreCalledOnNonDeletedProject(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+
+        $this->postJson("/api/projects/{$created['id']}/restore", [], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame($created['id'], $payload['id']);
+        self::assertSame('alpha', $payload['slug']);
+    }
+
     private function seedAdminAndLogin(): string
     {
         $this->seedAdmin(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
@@ -639,6 +840,16 @@ final class ProjectsEndpointTest extends WebTestCase
         }
 
         $this->client->request('PUT', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
+    }
+
+    private function deleteJson(string $path, ?string $token): void
+    {
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        if ($token !== null) {
+            $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
+        }
+
+        $this->client->request('DELETE', $path, server: $server);
     }
 
     /**
