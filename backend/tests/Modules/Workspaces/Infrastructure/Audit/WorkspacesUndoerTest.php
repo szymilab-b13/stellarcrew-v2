@@ -54,6 +54,7 @@ final class WorkspacesUndoerTest extends TestCase
         $repo = new InMemoryWorkspaceRepository();
         $workspace = $this->seedActiveWorkspace($repo);
         $workspace->softDelete(new DateTimeImmutable('2026-11-07T12:00:00+00:00'));
+
         $repo->saveWorkspace($workspace);
         $sut = $this->makeSut($repo);
 
@@ -132,6 +133,7 @@ final class WorkspacesUndoerTest extends TestCase
         $repo = new InMemoryWorkspaceRepository();
         $workspace = $this->seedActiveWorkspace($repo);
         $workspace->softDelete(new DateTimeImmutable('2026-11-07T12:00:00+00:00'));
+
         $repo->saveWorkspace($workspace);
         $sut = $this->makeSut($repo);
 

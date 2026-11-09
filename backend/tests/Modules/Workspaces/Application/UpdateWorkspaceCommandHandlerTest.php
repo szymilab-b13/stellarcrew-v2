@@ -9,6 +9,7 @@ use App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository;
 use DateTimeImmutable;
 use Modules\Shared\Kernel\FrozenClock;
 use Modules\Shared\Kernel\UserId;
+use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Application\CreateWorkspaceCommand;
 use Modules\Workspaces\Application\CreateWorkspaceCommandHandler;
 use Modules\Workspaces\Application\UpdateWorkspaceCommand;
@@ -47,7 +48,7 @@ final class UpdateWorkspaceCommandHandlerTest extends TestCase
         );
 
         $this->expectException(WorkspaceNotFoundException::class);
-        $sut(new UpdateWorkspaceCommand(new \Modules\Shared\Kernel\WorkspaceId(Uuid::v7()), new UserId(Uuid::v7()), 'X'));
+        $sut(new UpdateWorkspaceCommand(new WorkspaceId(Uuid::v7()), new UserId(Uuid::v7()), 'X'));
     }
 
     public function testShouldThrowPermissionDeniedWhenActorIsNotOwner(): void
@@ -96,6 +97,7 @@ final class UpdateWorkspaceCommandHandlerTest extends TestCase
         $ownerId = new UserId(Uuid::v7());
         $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
         $workspace->softDelete($clock->now());
+
         $repo->saveWorkspace($workspace);
         $audit = new SpyAuditLogger();
         $sut = new UpdateWorkspaceCommandHandler($repo, $audit, $clock);
