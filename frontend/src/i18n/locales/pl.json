@@ -277,6 +277,13 @@
       }
     }
   },
+  "workspaceProjects": {
+    "breadcrumb": "Projekty",
+    "title": "Projekty",
+    "placeholderAria": "Placeholder projektów",
+    "placeholderTitle": "Dostępne po milestone PROJECTS",
+    "placeholderBody": "Zarządzanie projektami w tym workspace'ie pojawi się wraz z milestone'em PROJECTS. Na razie podglądaj widget Project Overviews na stronie Overview."
+  },
   "workspaceMembers": {
     "breadcrumb": "Członkowie",
     "title": "Członkowie workspace'a",

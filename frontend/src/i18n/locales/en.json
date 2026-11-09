@@ -277,6 +277,13 @@
       }
     }
   },
+  "workspaceProjects": {
+    "breadcrumb": "Projects",
+    "title": "Projects",
+    "placeholderAria": "Projects placeholder",
+    "placeholderTitle": "Coming after PROJECTS milestone",
+    "placeholderBody": "Project management for this workspace will land with the PROJECTS milestone. For now, use the Project Overviews widget on the Overview page to preview the layout."
+  },
   "workspaceMembers": {
     "breadcrumb": "Members",
     "title": "Workspace members",

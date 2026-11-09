@@ -50,7 +50,7 @@ export function WorkspaceContextSection({ collapsed }: WorkspaceContextSectionPr
       id: 'workspace.projects',
       labelKey: 'menu.items.workspaceProjects',
       icon: FolderKanban,
-      disabledMilestoneKey: 'menu.workspaceContext.milestones.projects',
+      path: `/workspace/${wsId}/projects`,
     },
     {
       id: 'workspace.members',

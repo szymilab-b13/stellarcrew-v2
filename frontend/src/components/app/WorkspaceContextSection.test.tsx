@@ -40,21 +40,23 @@ describe('WorkspaceContextSection', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('should render Overview and Members as active links scoped to the current wsId', () => {
+  it('should render Overview, Projects and Members as active links scoped to the current wsId', () => {
     renderAt('/workspace/ws-abc/overview');
 
     const overviewLink = screen.getByRole('link', { name: 'Overview' });
+    const projectsLink = screen.getByRole('link', { name: 'Projects' });
     const membersLink = screen.getByRole('link', { name: 'Members' });
 
     expect(overviewLink).toHaveAttribute('href', '/workspace/ws-abc/overview');
+    expect(projectsLink).toHaveAttribute('href', '/workspace/ws-abc/projects');
     expect(membersLink).toHaveAttribute('href', '/workspace/ws-abc/settings/members');
   });
 
-  it('should render Projects, Agents, Scheduler and Settings as disabled placeholders with a milestone tooltip', () => {
+  it('should render Agents, Scheduler and Settings as disabled placeholders with a milestone tooltip', () => {
     renderAt('/workspace/ws-abc/overview');
 
     const list = screen.getByRole('list');
-    const placeholderTexts = ['Projects', 'Agents', 'Scheduler', 'Settings'];
+    const placeholderTexts = ['Agents', 'Scheduler', 'Settings'];
 
     for (const label of placeholderTexts) {
       expect(within(list).queryByRole('link', { name: label })).toBeNull();
