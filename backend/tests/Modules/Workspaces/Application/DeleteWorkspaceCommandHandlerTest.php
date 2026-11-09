@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Modules\Workspaces\Application;
 
 use App\Tests\Fixtures\Core\SpyAuditLogger;
+use App\Tests\Fixtures\Core\SpyEventDispatcher;
 use App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository;
 use DateTimeImmutable;
 use Modules\Shared\Kernel\FrozenClock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
+use Modules\Workspaces\Api\Event\WorkspaceDeleted;
 use Modules\Workspaces\Application\CreateWorkspaceCommand;
 use Modules\Workspaces\Application\CreateWorkspaceCommandHandler;
 use Modules\Workspaces\Application\DeleteWorkspaceCommand;
@@ -28,7 +30,7 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
         $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
-        $sut = new DeleteWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock);
+        $sut = new DeleteWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock, new SpyEventDispatcher());
 
         $sut(new DeleteWorkspaceCommand($workspace->id(), $ownerId));
 
@@ -44,6 +46,7 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
             $repo,
             new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $this->expectException(WorkspaceNotFoundException::class);
@@ -56,7 +59,7 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
         $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
-        $sut = new DeleteWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock);
+        $sut = new DeleteWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock, new SpyEventDispatcher());
 
         $this->expectException(WorkspacePermissionDeniedException::class);
         $sut(new DeleteWorkspaceCommand($workspace->id(), new UserId(Uuid::v7())));
@@ -71,7 +74,7 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
             new CreateWorkspaceCommand($ownerId, 'Acme Corp', '#FF0000', 'AC'),
         );
         $audit = new SpyAuditLogger();
-        $sut = new DeleteWorkspaceCommandHandler($repo, $audit, $clock);
+        $sut = new DeleteWorkspaceCommandHandler($repo, $audit, $clock, new SpyEventDispatcher());
 
         $sut(new DeleteWorkspaceCommand($workspace->id(), $ownerId));
 
@@ -87,5 +90,43 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
         self::assertSame('AC', $entry->metadata['before_state']['icon_initials']);
         self::assertSame((string) $ownerId, $entry->metadata['before_state']['owner_id']);
         self::assertArrayNotHasKey('after_state', $entry->metadata);
+    }
+
+    public function testShouldDispatchWorkspaceDeletedEventWhenWorkspaceSoftDeleted(): void
+    {
+        $repo = new InMemoryWorkspaceRepository();
+        $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
+        $ownerId = new UserId(Uuid::v7());
+        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
+        $events = new SpyEventDispatcher();
+        $sut = new DeleteWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock, $events);
+
+        $sut(new DeleteWorkspaceCommand($workspace->id(), $ownerId));
+
+        self::assertCount(1, $events->dispatched);
+        $event = $events->dispatched[0];
+        self::assertInstanceOf(WorkspaceDeleted::class, $event);
+        self::assertTrue($event->workspaceId->equals($workspace->id()));
+        self::assertTrue($event->actorId->equals($ownerId));
+        self::assertSame('2026-11-06T10:00:00+00:00', $event->occurredAt->format(DateTimeImmutable::ATOM));
+    }
+
+    public function testShouldNotDispatchWorkspaceDeletedWhenWorkspaceMissing(): void
+    {
+        $repo = new InMemoryWorkspaceRepository();
+        $events = new SpyEventDispatcher();
+        $sut = new DeleteWorkspaceCommandHandler(
+            $repo,
+            new SpyAuditLogger(),
+            new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00')),
+            $events,
+        );
+
+        try {
+            $sut(new DeleteWorkspaceCommand(new WorkspaceId(Uuid::v7()), new UserId(Uuid::v7())));
+            self::fail('expected WorkspaceNotFoundException');
+        } catch (WorkspaceNotFoundException) {
+            self::assertSame([], $events->dispatched);
+        }
     }
 }

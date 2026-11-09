@@ -28,7 +28,7 @@ final readonly class WorkspacesUndoDescriber implements UndoDescriberInterface
             CreateWorkspaceCommandHandler::AUDIT_ACTION
                 => 'Usuń utworzony workspace (soft delete).',
             UpdateWorkspaceCommandHandler::AUDIT_ACTION
-                => 'Przywróć poprzednią nazwę, kolor i inicjały workspace\'a.',
+                => "Przywróć poprzednią nazwę, kolor i inicjały workspace'a.",
             DeleteWorkspaceCommandHandler::AUDIT_ACTION
                 => 'Przywróć usunięty workspace.',
             default => 'Cofnij akcję ' . $entry->action,

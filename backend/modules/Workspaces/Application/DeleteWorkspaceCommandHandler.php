@@ -7,11 +7,13 @@ namespace Modules\Workspaces\Application;
 use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Shared\Kernel\Clock;
+use Modules\Workspaces\Api\Event\WorkspaceDeleted;
 use Modules\Workspaces\Domain\Workspace;
 use Modules\Workspaces\Domain\WorkspaceMember;
 use Modules\Workspaces\Domain\WorkspaceNotFoundException;
 use Modules\Workspaces\Domain\WorkspacePermissionDeniedException;
 use Modules\Workspaces\Domain\WorkspaceRepository;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class DeleteWorkspaceCommandHandler
 {
@@ -23,6 +25,7 @@ final readonly class DeleteWorkspaceCommandHandler
         private WorkspaceRepository $workspaces,
         private AuditLoggerInterface $audit,
         private Clock $clock,
+        private EventDispatcherInterface $events,
     ) {
     }
 
@@ -53,6 +56,12 @@ final readonly class DeleteWorkspaceCommandHandler
             metadata: [
                 'before_state' => $before,
             ],
+        ));
+
+        $this->events->dispatch(new WorkspaceDeleted(
+            workspaceId: $command->workspaceId,
+            actorId: $command->actorId,
+            occurredAt: $now,
         ));
     }
 }

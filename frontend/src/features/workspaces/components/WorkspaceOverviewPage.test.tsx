@@ -16,6 +16,19 @@ function mockResponse(body: unknown, status = 200): Response {
   });
 }
 
+function makeFetch(workspaces: unknown[], projectsBody: unknown = { items: [] }) {
+  return vi.fn(async (input: RequestInfo | URL) => {
+    const url = typeof input === 'string' ? input : input.toString();
+    if (url === '/api/workspaces') {
+      return mockResponse(workspaces);
+    }
+    if (url.startsWith('/api/workspaces/') && url.endsWith('/projects')) {
+      return mockResponse(projectsBody);
+    }
+    return mockResponse({}, 404);
+  });
+}
+
 function renderPage(initialPath = '/workspace/ws-1/overview') {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
@@ -47,10 +60,7 @@ describe('WorkspaceOverviewPage', () => {
   });
 
   it('should render the overview heading when the workspace is loaded', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
-    );
+    vi.stubGlobal('fetch', makeFetch([{ id: 'ws-1', name: 'Shared Workspace' }]));
 
     renderPage();
 
@@ -59,10 +69,7 @@ describe('WorkspaceOverviewPage', () => {
   });
 
   it('should render a 3-row widget grid with 5 / 3 / 1 slots per row', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
-    );
+    vi.stubGlobal('fetch', makeFetch([{ id: 'ws-1', name: 'Shared Workspace' }]));
 
     renderPage();
 
@@ -77,10 +84,7 @@ describe('WorkspaceOverviewPage', () => {
   });
 
   it('should render a PROTOTYP badge and BL reference for each stub widget slot', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
-    );
+    vi.stubGlobal('fetch', makeFetch([{ id: 'ws-1', name: 'Shared Workspace' }]));
 
     renderPage();
 
@@ -99,10 +103,7 @@ describe('WorkspaceOverviewPage', () => {
   });
 
   it('should render localized widget titles for each of the 8 slots', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
-    );
+    vi.stubGlobal('fetch', makeFetch([{ id: 'ws-1', name: 'Shared Workspace' }]));
 
     renderPage();
 
@@ -124,10 +125,7 @@ describe('WorkspaceOverviewPage', () => {
   });
 
   it('should redirect to /workspaces when wsId is missing from the loaded list', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(() => Promise.resolve(mockResponse([]))),
-    );
+    vi.stubGlobal('fetch', makeFetch([]));
 
     renderPage('/workspace/unknown/overview');
 

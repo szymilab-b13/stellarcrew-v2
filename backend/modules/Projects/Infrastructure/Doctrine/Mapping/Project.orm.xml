@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Projects\Domain\Project" table="projects" schema="projects">
+
+        <id name="id" type="project_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="workspaceId" type="workspace_id_vo" column="workspace_id" nullable="false"/>
+        <field name="name" type="string" column="name" length="120" nullable="false"/>
+        <field name="slug" type="string" column="slug" length="120" nullable="false"/>
+        <field name="description" type="string" column="description" length="500" nullable="true"/>
+        <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+        <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
+        <field name="deletedAt" type="datetimetz_immutable" column="deleted_at" nullable="true"/>
+
+        <indexes>
+            <index name="idx_projects_projects_workspace_id" columns="workspace_id"/>
+        </indexes>
+
+    </entity>
+
+</doctrine-mapping>

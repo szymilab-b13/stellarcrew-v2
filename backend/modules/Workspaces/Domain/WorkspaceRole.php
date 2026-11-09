@@ -45,6 +45,27 @@ enum WorkspaceRole: string
         };
     }
 
+    public function canEditProjects(): bool
+    {
+        return match ($this) {
+            self::Owner, self::Admin, self::Member => true,
+            self::Guest => false,
+        };
+    }
+
+    public function canDeleteProjects(): bool
+    {
+        return match ($this) {
+            self::Owner, self::Admin, self::Member => true,
+            self::Guest => false,
+        };
+    }
+
+    public function canViewProjects(): bool
+    {
+        return true;
+    }
+
     public function canReadMessages(): bool
     {
         return true;

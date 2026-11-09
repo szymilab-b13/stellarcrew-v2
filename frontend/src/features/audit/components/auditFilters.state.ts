@@ -25,6 +25,15 @@ export const AUDIT_ACTIONS: ReadonlyArray<{ group: string; actions: string[] }> 
       'workspace_member.removed',
     ],
   },
+  {
+    group: 'projects',
+    actions: [
+      'projects.project.created',
+      'projects.project.updated',
+      'projects.project.deleted',
+      'projects.project.restored',
+    ],
+  },
 ];
 
 export interface AuditFiltersValue {
@@ -60,6 +69,10 @@ const REVERSIBLE_ACTIONS = new Set<string>([
   'workspaces.workspace.created',
   'workspaces.workspace.updated',
   'workspaces.workspace.deleted',
+  'projects.project.created',
+  'projects.project.updated',
+  'projects.project.deleted',
+  'projects.project.restored',
 ]);
 
 export function isReversibleAction(action: string): boolean {

@@ -78,7 +78,7 @@ final class ListVisibleUsersEndpointTest extends WebTestCase
 
         self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         $payload = $this->decode();
-        $emails = array_map(static fn(array $item) => $item['email'], $payload['items']);
+        $emails = array_map(static fn (array $item) => $item['email'], $payload['items']);
         self::assertContains('alice@example.com', $emails);
         self::assertContains('bob@example.com', $emails);
         self::assertNotContains('admin@example.com', $emails);

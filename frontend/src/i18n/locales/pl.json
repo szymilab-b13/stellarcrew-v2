@@ -44,6 +44,7 @@
       "overview": "Przegląd",
       "workspaces": "Workspace’y",
       "workspace": "Workspace",
+      "project": "Projekt",
       "admin": "Administracja",
       "pinned": "Przypięte"
     },
@@ -56,6 +57,14 @@
       "workspaceAgents": "Agenci",
       "workspaceScheduler": "Scheduler",
       "workspaceSettings": "Ustawienia",
+      "projectOverview": "Przegląd",
+      "projectAgents": "Agenci",
+      "projectMembers": "Członkowie",
+      "projectScheduler": "Scheduler",
+      "projectSkills": "Skille",
+      "projectFlow": "Flow",
+      "projectTasks": "Zadania",
+      "projectSettings": "Ustawienia",
       "users": "Użytkownicy",
       "auditLog": "Dziennik audytu"
     },
@@ -66,6 +75,18 @@
         "agents": "AGENTS",
         "scheduler": "SCHEDULER",
         "settings": "WORKSPACE_SETTINGS"
+      }
+    },
+    "projectContext": {
+      "comingSoon": "Dostępne po milestone {{milestone}}",
+      "milestones": {
+        "agents": "AGENTS",
+        "members": "PROJECT_MEMBERS",
+        "scheduler": "SCHEDULER",
+        "skills": "SKILLS",
+        "flow": "FLOWS",
+        "tasks": "TASKS",
+        "settings": "PROJECT_SETTINGS"
       }
     },
     "pinAdd": "Przypnij na górze",
@@ -283,45 +304,145 @@
         "openAllAria": "Otwórz wszystkie projekty",
         "showMore": "Pokaż więcej",
         "showMoreAria": "Pokaż więcej projektów",
-        "percent": "{{value}}%",
-        "sparklineAria": "Trend postępu — {{name}}",
-        "progressAria": "Postęp — {{name}}",
-        "statuses": {
-          "active": "ACTIVE",
-          "frozen": "FROZEN",
-          "archived": "ARCHIVED"
-        },
-        "samples": {
-          "stellarcrew": { "name": "StellarCrew", "subtitle": "Platforma zespołu AI" },
-          "jobSearch": { "name": "Job Search", "subtitle": "Automatyczne skanowanie ofert" },
-          "gymPlan": { "name": "Gym Plan", "subtitle": "Plan treningu siłowego" },
-          "questilo": { "name": "Questilo", "subtitle": "Grywalizacja nawyków" },
-          "englishLearning": { "name": "English Learning", "subtitle": "Tutor języka AI" },
-          "readingChallenge": { "name": "Reading Challenge", "subtitle": "24 książki w 2026" },
-          "businessPlan": { "name": "Business Plan", "subtitle": "Strategia produktu SaaS" }
-        },
-        "footer": {
-          "agents": "{{count}} agentów",
-          "tasks": "{{done}}/{{total}} zadań",
-          "ago": {
-            "stellarcrew": "2 min temu",
-            "jobSearch": "1 godz. temu",
-            "gymPlan": "5 godz. temu",
-            "questilo": "3 dni temu",
-            "englishLearning": "1 dzień temu",
-            "readingChallenge": "2 dni temu",
-            "businessPlan": "2 tyg. temu"
-          }
-        }
+        "loading": "Ładuję projekty…",
+        "loadError": "Nie udało się załadować projektów.",
+        "empty": "Brak projektów w tym workspace'ie."
       }
     }
   },
   "workspaceProjects": {
     "breadcrumb": "Projekty",
-    "title": "Projekty",
-    "placeholderAria": "Placeholder projektów",
-    "placeholderTitle": "Dostępne po milestone PROJECTS",
-    "placeholderBody": "Zarządzanie projektami w tym workspace'ie pojawi się wraz z milestone'em PROJECTS. Na razie podglądaj widget Project Overviews na stronie Overview."
+    "title": "Projekty"
+  },
+  "projects": {
+    "loading": "Ładuję projekty…",
+    "loadError": "Nie udało się załadować projektów.",
+    "listAria": "Lista projektów",
+    "emptyAria": "Brak projektów",
+    "emptyTitle": "Brak projektów",
+    "emptyBody": "Dodaj pierwszy projekt w tym workspace'ie, żeby zorganizować agentów, zadania i skille.",
+    "deletedBanner": {
+      "body": "Projekt „{{name}}\" został usunięty.",
+      "undoLink": "Cofnij w Audit log",
+      "dismiss": "Zamknij"
+    },
+    "tile": {
+      "aria": "Projekt {{name}}",
+      "openAria": "Otwórz {{name}}",
+      "createdAt": "Utworzono {{date}}"
+    },
+    "addTile": {
+      "label": "Dodaj projekt",
+      "aria": "Dodaj projekt"
+    },
+    "dialog": {
+      "createTitle": "Nowy projekt",
+      "nameLabel": "Nazwa",
+      "slugLabel": "Slug",
+      "slugHint": "Identyfikator w URL-u. Auto-synchronizowany z nazwy do momentu ręcznej edycji.",
+      "descriptionLabel": "Opis",
+      "submitCreate": "Utwórz",
+      "errors": {
+        "name.required": "Nazwa jest wymagana.",
+        "name.tooLong": "Nazwa jest za długa (max 120).",
+        "slug.required": "Slug jest wymagany.",
+        "slug.tooLong": "Slug jest za długi (max 120).",
+        "slug.invalid": "Dozwolone są tylko małe litery, cyfry i pojedyncze myślniki.",
+        "description.tooLong": "Opis jest za długi (max 500).",
+        "server": {
+          "validation": "Serwer odrzucił wysłane dane.",
+          "slugConflict": "Projekt z takim slug-iem już istnieje w tym workspace'ie.",
+          "forbidden": "Nie masz uprawnień do tworzenia projektów w tym workspace'ie.",
+          "generic": "Coś poszło nie tak. Spróbuj ponownie."
+        }
+      }
+    }
+  },
+  "projectOverview": {
+    "breadcrumb": "Overview",
+    "title": "Overview projektu",
+    "loading": "Ładuję projekt…",
+    "loadError": "Nie udało się załadować projektu.",
+    "shellAria": "Widgety overview projektu",
+    "prototype": "Prototyp",
+    "comingSoon": "Wkrótce, w kolejnym milestone.",
+    "slots": {
+      "agents": {
+        "title": "Agenci",
+        "body": "Agenci projektu pojawią się tutaj po dostarczeniu modułu Agents."
+      },
+      "tasks": {
+        "title": "Zadania",
+        "body": "Backlog, aktywne i zakończone zadania projektu."
+      },
+      "milestones": {
+        "title": "Milestones",
+        "body": "Oś milestones z badge'ami statusu."
+      },
+      "knowledge": {
+        "title": "Knowledge",
+        "body": "Baza wiedzy powiązana z tym projektem."
+      },
+      "activity": {
+        "title": "Aktywność",
+        "body": "Ostatnie commity, przebiegi agentów i akcje Szefa w tym projekcie."
+      },
+      "settings": {
+        "title": "Ustawienia",
+        "body": "Skrót do ustawień projektu (nazwa, slug, opis, usunięcie)."
+      }
+    }
+  },
+  "projectSettings": {
+    "breadcrumb": "Ustawienia",
+    "title": "Ustawienia projektu",
+    "subtitle": "Edytuj „{{name}}\" lub usuń projekt.",
+    "loading": "Ładuję projekt…",
+    "loadError": "Nie udało się załadować projektu.",
+    "form": {
+      "sectionAria": "Szczegóły projektu",
+      "nameLabel": "Nazwa",
+      "slugLabel": "Slug",
+      "slugHint": "Identyfikator w URL-u. Zmiana spowoduje zepsucie starych linków.",
+      "descriptionLabel": "Opis",
+      "submit": "Zapisz zmiany",
+      "saving": "Zapisuję…",
+      "saved": "Zmiany zapisane.",
+      "errors": {
+        "name.required": "Nazwa jest wymagana.",
+        "name.tooLong": "Nazwa jest za długa (max 120).",
+        "slug.required": "Slug jest wymagany.",
+        "slug.tooLong": "Slug jest za długi (max 120).",
+        "slug.invalid": "Dozwolone są tylko małe litery, cyfry i pojedyncze myślniki.",
+        "description.tooLong": "Opis jest za długi (max 500).",
+        "server": {
+          "validation": "Serwer odrzucił wysłane dane.",
+          "slugConflict": "Projekt z takim slug-iem już istnieje w tym workspace'ie.",
+          "forbidden": "Nie masz uprawnień do edycji tego projektu.",
+          "notFound": "Ten projekt już nie istnieje.",
+          "generic": "Coś poszło nie tak. Spróbuj ponownie."
+        }
+      }
+    },
+    "dangerZone": {
+      "sectionAria": "Strefa niebezpieczna",
+      "title": "Strefa niebezpieczna",
+      "body": "Usunięcie „{{name}}\" skasuje projekt z workspace'u. Możesz to cofnąć w Audit log.",
+      "deleteButton": "Usuń projekt"
+    },
+    "delete": {
+      "title": "Usuń projekt",
+      "body": "Zamierzasz usunąć „{{name}}\". To soft-delete, można go cofnąć w Audit log.",
+      "confirmPrompt": "Zaznacz, aby potwierdzić usunięcie:",
+      "acknowledge": "Rozumiem i chcę usunąć „{{name}}\".",
+      "confirm": "Usuń projekt",
+      "deleting": "Usuwam…",
+      "errors": {
+        "forbidden": "Nie masz uprawnień do usunięcia tego projektu.",
+        "notFound": "Ten projekt już nie istnieje.",
+        "generic": "Coś poszło nie tak. Spróbuj ponownie."
+      }
+    }
   },
   "workspaceMembers": {
     "breadcrumb": "Członkowie",
@@ -459,7 +580,8 @@
       "actionAll": "Wszystkie akcje",
       "actionGroups": {
         "user_management": "Zarządzanie użytkownikami",
-        "workspaces": "Workspace’y"
+        "workspaces": "Workspace’y",
+        "projects": "Projekty"
       },
       "resourceType": "Typ zasobu",
       "resourceTypePlaceholder": "np. User",
@@ -516,7 +638,11 @@
       "workspaces.workspace.deleted": "Usunięto workspace",
       "workspace_member.assigned": "Dodano członka workspace’a",
       "workspace_member.role_changed": "Zmieniono rolę członka",
-      "workspace_member.removed": "Usunięto członka workspace’a"
+      "workspace_member.removed": "Usunięto członka workspace’a",
+      "projects.project.created": "Utworzono projekt",
+      "projects.project.updated": "Zaktualizowano projekt",
+      "projects.project.deleted": "Usunięto projekt",
+      "projects.project.restored": "Przywrócono projekt"
     },
     "undoDialog": {
       "title": "Cofnąć akcję?",
@@ -905,8 +1031,50 @@
       "BL-WSUX-WSCTX-PERSIST": {
         "story": "Sekcja Workspace w sidebarze pojawia się zawsze gdy w WorkspaceSwitcherze jest wybrany workspace, nie tylko na ścieżkach `/workspace/:id/*`. Źródłem wsId jest najpierw URL, a w pozostałych widokach (dashboard, workspaces, admin) store `useCurrentWorkspace`. Sekcja znika dopiero gdy nie ma żadnego wybranego workspace."
       },
-      "BL-PROJ-ARCH": {
-        "story": "Warstwa Project między Workspace a agentami — workspace ma wiele projektów (np. TalentBridge API/APP/Yii), każdy z własnymi settings/agents/members/skills/flow/tasks. Fundament pod większość reszty wizji. Needs brief."
+      "BL-PROJ-001": {
+        "story": "Agregat Project w Domain z VO ProjectId (UUID v7) i interfejsem repozytorium. Lifecycle: create / rename / changeSlug / changeDescription / softDelete / restore. Guardy: name 1-120, slug kebab-case 1-120, description 0-500 (nullable). Fundament pod resztę modułu Projects."
+      },
+      "BL-PROJ-002": {
+        "story": "Publiczny Module API Projects — `ProjectsApi` (findById / findByWorkspace / findBySlug / exists), DTO `ProjectView` oraz eventy integracyjne (ProjectCreated / Renamed / Updated / Deleted / Restored) konsumowane przez Audit i przyszłe moduły (Agents / Scheduler / Skills)."
+      },
+      "BL-PROJ-003": {
+        "story": "Doctrine XML mapping agregatu Project + migracja Postgres: nowy schema `projects`, tabela `projects.projects`, unique index `(workspace_id, slug) WHERE deleted_at IS NULL`, FK na `workspaces.workspaces.id`. Custom typ `ProjectIdType`."
+      },
+      "BL-PROJ-004": {
+        "story": "Command / Handler `CreateProject` + endpoint POST `/api/workspaces/{wsId}/projects`. Walidacja workspace membership, unique slug w ramach workspace, 201 Created z `ProjectView`."
+      },
+      "BL-PROJ-005": {
+        "story": "Query / Handler `ListProjectsByWorkspace` + endpoint GET `/api/workspaces/{wsId}/projects`. Każdy workspace member widzi wszystkie projekty workspace (zgodnie z decyzją #1 briefu). Super admin widzi wszystkie workspace'y."
+      },
+      "BL-PROJ-006": {
+        "story": "Query / Handler `GetProject` + endpoint GET `/api/projects/{id}`. 404 dla soft-deleted, 403 jeśli user nie jest member parent workspace."
+      },
+      "BL-PROJ-007": {
+        "story": "Command / Handler `UpdateProject` (name / slug / description) + endpoint PUT `/api/projects/{id}`. Walidacja unique slug w workspace, 422 na kolizję, event `ProjectUpdated` z before/after."
+      },
+      "BL-PROJ-008": {
+        "story": "Command / Handler `DeleteProject` (soft) + endpoint DELETE `/api/projects/{id}`. Dodatkowo `RestoreProject` + endpoint POST `/api/projects/{id}/restore` dla Undoera. Event `ProjectDeleted` / `ProjectRestored`."
+      },
+      "BL-PROJ-009": {
+        "story": "`ProjectsAuditListener` loguje `project.create / rename / update / delete / restore` z before/after snapshot. `ProjectsUndoer` + `ProjectsUndoDescriber` dla reversible actions w Audit UI."
+      },
+      "BL-PROJ-010": {
+        "story": "`WorkspaceDeletedListener` cascade soft-delete wszystkich projektów usuniętego workspace (zgodnie z decyzją #8 briefu). Undoer workspace'u przywraca również projekty."
+      },
+      "BL-PROJ-011": {
+        "story": "Strona Projects (`/workspace/:wsId/projects`): hook `useProjects(wsId)` z React Query, komponent `ProjectTile` (name / slug / description preview / created_at relative), zastąpienie faux listy w `ProjectOverviewsWidget` prawdziwymi danymi. Empty state + loading skeleton."
+      },
+      "BL-PROJ-012": {
+        "story": "Modal „Nowy projekt\" (name required 1-120, slug auto z name live-sync z możliwością ręcznego override, description optional 0-500 plaintext). Walidacja po stronie klienta + obsługa 422 z backendu. Po create redirect do `/workspace/:wsId/project/:projId/overview`."
+      },
+      "BL-PROJ-013": {
+        "story": "Strona Project Overview (`/workspace/:wsId/project/:projId/overview`) z routingiem `/workspace/:wsId/project/:projId` → redirect na overview. Breadcrumbs: Workspaces > {ws.name} > {project.name} > Overview. Shell z header (name + description) + placeholder dla przyszłych widgetów (BL-PROJ-OVERVIEW-* w kolejnych milestone'ach)."
+      },
+      "BL-PROJ-014": {
+        "story": "Sekcja Project w sidebarze context-aware (pojawia się tylko na `/workspace/:wsId/project/:projId/*`): Overview aktywny + 7 disabled stubów (Agents / Members / Scheduler / Skills / Flow / Tasks / Settings) z tooltipem „Coming in X milestone\" (zgodnie z decyzją #5 i #6 briefu)."
+      },
+      "BL-PROJ-015": {
+        "story": "Strona Project Settings (`/workspace/:wsId/project/:projId/settings`): formularz edycji (name / slug / description) + sekcja Danger Zone z buttonem Delete (confirm modal, redirect do `/workspace/:wsId/projects` + toast z linkiem do Undo via Audit)."
       },
       "BL-VAR-ARCH": {
         "story": "System zmiennych/sekretów — klucze globalne + per workspace/project (IP_SERVERA, API_TOKEN). Agenci referencują przez `$VAR_NAME` bez eksponowania wartości w promptach. Needs brief."

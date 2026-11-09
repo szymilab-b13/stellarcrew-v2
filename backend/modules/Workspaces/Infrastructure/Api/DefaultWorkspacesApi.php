@@ -94,6 +94,9 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
             'members.manage' => $member->role()->canManageMembers(),
             'members.change_role' => $member->role()->canChangeRoles(),
             'projects.create' => $member->role()->canCreateProjects(),
+            'projects.edit' => $member->role()->canEditProjects(),
+            'projects.delete' => $member->role()->canDeleteProjects(),
+            'projects.view' => $member->role()->canViewProjects(),
             'messages.read' => $member->role()->canReadMessages(),
             default => false,
         };

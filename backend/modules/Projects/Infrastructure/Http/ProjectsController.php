@@ -1,0 +1,259 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Projects\Infrastructure\Http;
+
+use function array_map;
+use function array_values;
+
+use DateTimeInterface;
+use Modules\Auth\Infrastructure\Security\SecurityUser;
+use Modules\Projects\Application\CreateProjectCommand;
+use Modules\Projects\Application\CreateProjectCommandHandler;
+use Modules\Projects\Application\DeleteProjectCommand;
+use Modules\Projects\Application\DeleteProjectCommandHandler;
+use Modules\Projects\Application\Query\GetProjectQuery;
+use Modules\Projects\Application\Query\GetProjectQueryHandler;
+use Modules\Projects\Application\Query\ListProjectsByWorkspaceQuery;
+use Modules\Projects\Application\Query\ListProjectsByWorkspaceQueryHandler;
+use Modules\Projects\Application\RestoreProjectCommand;
+use Modules\Projects\Application\RestoreProjectCommandHandler;
+use Modules\Projects\Application\UpdateProjectCommand;
+use Modules\Projects\Application\UpdateProjectCommandHandler;
+use Modules\Projects\Domain\Project;
+use Modules\Shared\Kernel\ProjectId;
+use Modules\Shared\Kernel\WorkspaceId;
+use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
+
+final readonly class ProjectsController
+{
+    private const string WORKSPACE_ID_REQUIREMENT = '[0-9a-fA-F-]{36}';
+
+    private const string PROJECT_ID_REQUIREMENT = '[0-9a-fA-F-]{36}';
+
+    public function __construct(
+        private CreateProjectCommandHandler $create,
+        private ListProjectsByWorkspaceQueryHandler $listByWorkspace,
+        private GetProjectQueryHandler $get,
+        private UpdateProjectCommandHandler $update,
+        private DeleteProjectCommandHandler $delete,
+        private RestoreProjectCommandHandler $restore,
+    ) {
+    }
+
+    #[Route(
+        '/api/workspaces/{workspaceId}/projects',
+        name: 'projects_create',
+        requirements: ['workspaceId' => self::WORKSPACE_ID_REQUIREMENT],
+        methods: ['POST'],
+    )]
+    #[OA\Post(
+        path: '/api/workspaces/{workspaceId}/projects',
+        summary: 'Create a project inside the given workspace.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 201, description: 'Project created'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not a workspace member allowed to create projects'),
+            new OA\Response(response: 404, description: 'Workspace not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function create(
+        string $workspaceId,
+        #[CurrentUser]
+        SecurityUser $user,
+        #[MapRequestPayload]
+        CreateProjectRequest $input,
+    ): JsonResponse {
+        $project = ($this->create)(new CreateProjectCommand(
+            actorId: $user->domainUser()->id(),
+            workspaceId: WorkspaceId::fromString($workspaceId),
+            name: $input->name,
+            slug: $input->slug,
+            description: $input->description,
+        ));
+
+        return new JsonResponse($this->serialise($project), Response::HTTP_CREATED);
+    }
+
+    #[Route(
+        '/api/workspaces/{workspaceId}/projects',
+        name: 'projects_list_by_workspace',
+        requirements: ['workspaceId' => self::WORKSPACE_ID_REQUIREMENT],
+        methods: ['GET'],
+    )]
+    #[OA\Get(
+        path: '/api/workspaces/{workspaceId}/projects',
+        summary: 'List projects of the given workspace (ordered by creation time ascending).',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 200, description: 'Projects list'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to view projects'),
+            new OA\Response(response: 404, description: 'Workspace not found'),
+        ],
+    )]
+    public function list(
+        string $workspaceId,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $projects = ($this->listByWorkspace)(new ListProjectsByWorkspaceQuery(
+            actorId: $user->domainUser()->id(),
+            workspaceId: WorkspaceId::fromString($workspaceId),
+        ));
+
+        $items = array_values(array_map($this->serialise(...), $projects));
+
+        return new JsonResponse(['items' => $items], Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/projects/{id}',
+        name: 'projects_get',
+        requirements: ['id' => self::PROJECT_ID_REQUIREMENT],
+        methods: ['GET'],
+    )]
+    #[OA\Get(
+        path: '/api/projects/{id}',
+        summary: 'Get a single project by id.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 200, description: 'Project'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to view the project'),
+            new OA\Response(response: 404, description: 'Project not found'),
+        ],
+    )]
+    public function get(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $project = ($this->get)(new GetProjectQuery(
+            actorId: $user->domainUser()->id(),
+            projectId: ProjectId::fromString($id),
+        ));
+
+        return new JsonResponse($this->serialise($project), Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/projects/{id}',
+        name: 'projects_update',
+        requirements: ['id' => self::PROJECT_ID_REQUIREMENT],
+        methods: ['PUT'],
+    )]
+    #[OA\Put(
+        path: '/api/projects/{id}',
+        summary: 'Update a project name, slug or description.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 200, description: 'Project updated'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to edit the project'),
+            new OA\Response(response: 404, description: 'Project not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function update(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+        #[MapRequestPayload]
+        UpdateProjectRequest $input,
+    ): JsonResponse {
+        $project = ($this->update)(new UpdateProjectCommand(
+            actorId: $user->domainUser()->id(),
+            projectId: ProjectId::fromString($id),
+            name: $input->name,
+            slug: $input->slug,
+            description: $input->description,
+        ));
+
+        return new JsonResponse($this->serialise($project), Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/projects/{id}',
+        name: 'projects_delete',
+        requirements: ['id' => self::PROJECT_ID_REQUIREMENT],
+        methods: ['DELETE'],
+    )]
+    #[OA\Delete(
+        path: '/api/projects/{id}',
+        summary: 'Soft-delete a project.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 204, description: 'Project deleted'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to delete the project'),
+            new OA\Response(response: 404, description: 'Project not found'),
+        ],
+    )]
+    public function delete(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        ($this->delete)(new DeleteProjectCommand(
+            actorId: $user->domainUser()->id(),
+            projectId: ProjectId::fromString($id),
+        ));
+
+        return new JsonResponse(status: Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route(
+        '/api/projects/{id}/restore',
+        name: 'projects_restore',
+        requirements: ['id' => self::PROJECT_ID_REQUIREMENT],
+        methods: ['POST'],
+    )]
+    #[OA\Post(
+        path: '/api/projects/{id}/restore',
+        summary: 'Restore a soft-deleted project. Idempotent when the project is already active.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 200, description: 'Project restored'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to restore the project'),
+            new OA\Response(response: 404, description: 'Project not found'),
+        ],
+    )]
+    public function restore(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $project = ($this->restore)(new RestoreProjectCommand(
+            actorId: $user->domainUser()->id(),
+            projectId: ProjectId::fromString($id),
+        ));
+
+        return new JsonResponse($this->serialise($project), Response::HTTP_OK);
+    }
+
+    /**
+     * @return array{id: string, workspaceId: string, name: string, slug: string, description: ?string, createdAt: string, updatedAt: string}
+     */
+    private function serialise(Project $project): array
+    {
+        return [
+            'id' => (string) $project->id(),
+            'workspaceId' => (string) $project->workspaceId(),
+            'name' => $project->name(),
+            'slug' => $project->slug(),
+            'description' => $project->description(),
+            'createdAt' => $project->createdAt()->format(DateTimeInterface::ATOM),
+            'updatedAt' => $project->updatedAt()->format(DateTimeInterface::ATOM),
+        ];
+    }
+}
