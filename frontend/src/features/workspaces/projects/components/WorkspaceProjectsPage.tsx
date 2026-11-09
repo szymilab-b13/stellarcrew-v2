@@ -1,7 +1,7 @@
-import { Loader2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Loader2, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
 import { Button } from '@/components/ui/Button';
@@ -12,9 +12,14 @@ import { AddProjectTile } from './AddProjectTile';
 import { ProjectDialog, type ProjectFormValues } from './ProjectDialog';
 import { ProjectTile } from './ProjectTile';
 
+interface LocationState {
+  deletedProjectName?: string;
+}
+
 export function WorkspaceProjectsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useParams<{ wsId: string }>();
   const workspaceId = params.wsId ?? null;
 
@@ -22,6 +27,20 @@ export function WorkspaceProjectsPage() {
   const workspace = workspacesQuery.data?.find((w) => w.id === workspaceId) ?? null;
   const projectsQuery = useProjectsList(workspaceId);
   const createMutation = useCreateProject();
+
+  const navState = (location.state ?? null) as LocationState | null;
+  const [deletedBanner, setDeletedBanner] = useState<string | null>(
+    navState?.deletedProjectName ?? null,
+  );
+  useEffect(() => {
+    if (navState?.deletedProjectName) {
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [navState, navigate, location.pathname]);
+
+  function dismissBanner() {
+    setDeletedBanner(null);
+  }
 
   const breadcrumbs = useMemo(
     () => [
@@ -85,6 +104,28 @@ export function WorkspaceProjectsPage() {
           {t('projects.addTile.label')}
         </Button>
       </header>
+
+      {deletedBanner ? (
+        <div
+          role="status"
+          className="flex items-start justify-between gap-3 rounded-md border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300"
+        >
+          <p>
+            {t('projects.deletedBanner.body', { name: deletedBanner })}{' '}
+            <Link to="/admin/audit" className="font-semibold underline">
+              {t('projects.deletedBanner.undoLink')}
+            </Link>
+          </p>
+          <button
+            type="button"
+            onClick={dismissBanner}
+            aria-label={t('projects.deletedBanner.dismiss')}
+            className="inline-flex h-6 w-6 flex-none items-center justify-center rounded-md text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300"
+          >
+            <X size={14} aria-hidden />
+          </button>
+        </div>
+      ) : null}
 
       {projectsQuery.isPending ? (
         <p className="flex items-center gap-2 text-sm text-sc-text-muted">

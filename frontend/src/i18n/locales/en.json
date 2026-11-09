@@ -321,6 +321,11 @@
     "emptyAria": "No projects yet",
     "emptyTitle": "No projects yet",
     "emptyBody": "Create the first project in this workspace to organize agents, tasks and skills.",
+    "deletedBanner": {
+      "body": "Project \"{{name}}\" was deleted.",
+      "undoLink": "Undo in Audit log",
+      "dismiss": "Dismiss"
+    },
     "tile": {
       "aria": "Project {{name}}",
       "createdAt": "Created {{date}}"
@@ -384,6 +389,57 @@
       "settings": {
         "title": "Settings",
         "body": "Shortcut to project settings (rename, slug, description, delete)."
+      }
+    }
+  },
+  "projectSettings": {
+    "breadcrumb": "Settings",
+    "title": "Project settings",
+    "subtitle": "Edit \"{{name}}\" or delete the project.",
+    "loading": "Loading project…",
+    "loadError": "Could not load the project.",
+    "form": {
+      "sectionAria": "Project details",
+      "nameLabel": "Name",
+      "slugLabel": "Slug",
+      "slugHint": "URL-friendly identifier. Changing it will break old links.",
+      "descriptionLabel": "Description",
+      "submit": "Save changes",
+      "saving": "Saving…",
+      "saved": "Changes saved.",
+      "errors": {
+        "name.required": "Name is required.",
+        "name.tooLong": "Name is too long (max 120).",
+        "slug.required": "Slug is required.",
+        "slug.tooLong": "Slug is too long (max 120).",
+        "slug.invalid": "Use lowercase letters, digits and single hyphens.",
+        "description.tooLong": "Description is too long (max 500).",
+        "server": {
+          "validation": "The server rejected the submitted values.",
+          "slugConflict": "A project with this slug already exists in the workspace.",
+          "forbidden": "You do not have permission to edit this project.",
+          "notFound": "This project no longer exists.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
+    },
+    "dangerZone": {
+      "sectionAria": "Danger zone",
+      "title": "Danger zone",
+      "body": "Deleting \"{{name}}\" removes it from the workspace. You can undo via the Audit log.",
+      "deleteButton": "Delete project"
+    },
+    "delete": {
+      "title": "Delete project",
+      "body": "You are about to delete \"{{name}}\". This action soft-deletes the project and can be undone from the Audit log.",
+      "confirmPrompt": "Type to confirm deletion:",
+      "acknowledge": "I understand and want to delete \"{{name}}\".",
+      "confirm": "Delete project",
+      "deleting": "Deleting…",
+      "errors": {
+        "forbidden": "You do not have permission to delete this project.",
+        "notFound": "This project no longer exists.",
+        "generic": "Something went wrong. Please try again."
       }
     }
   },

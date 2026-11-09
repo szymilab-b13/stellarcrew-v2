@@ -2,9 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   createProject,
+  deleteProject,
   fetchProjectById,
   fetchProjectsByWorkspace,
+  updateProject,
   type CreateProjectInput,
+  type UpdateProjectInput,
 } from './projectsApi';
 import type { Project } from '../types';
 
@@ -40,6 +43,39 @@ export function useCreateProject() {
     mutationFn: ({ workspaceId, input }) => createProject(workspaceId, input),
     onSuccess: (_project, variables) => {
       queryClient.invalidateQueries({ queryKey: projectsQueryKey(variables.workspaceId) });
+    },
+  });
+}
+
+export interface UpdateProjectVariables {
+  projectId: string;
+  workspaceId: string;
+  input: UpdateProjectInput;
+}
+
+export function useUpdateProject() {
+  const queryClient = useQueryClient();
+  return useMutation<Project, Error, UpdateProjectVariables>({
+    mutationFn: ({ projectId, input }) => updateProject(projectId, input),
+    onSuccess: (_project, variables) => {
+      queryClient.invalidateQueries({ queryKey: projectsQueryKey(variables.workspaceId) });
+      queryClient.invalidateQueries({ queryKey: projectQueryKey(variables.projectId) });
+    },
+  });
+}
+
+export interface DeleteProjectVariables {
+  projectId: string;
+  workspaceId: string;
+}
+
+export function useDeleteProject() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, DeleteProjectVariables>({
+    mutationFn: ({ projectId }) => deleteProject(projectId),
+    onSuccess: (_void, variables) => {
+      queryClient.invalidateQueries({ queryKey: projectsQueryKey(variables.workspaceId) });
+      queryClient.invalidateQueries({ queryKey: projectQueryKey(variables.projectId) });
     },
   });
 }

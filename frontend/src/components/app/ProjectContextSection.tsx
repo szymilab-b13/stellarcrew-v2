@@ -94,7 +94,7 @@ export function ProjectContextSection({ collapsed }: ProjectContextSectionProps)
       id: 'project.settings',
       labelKey: 'menu.items.projectSettings',
       icon: Settings,
-      disabledMilestoneKey: 'menu.projectContext.milestones.settings',
+      path: `/workspace/${wsId}/project/${projId}/settings`,
     },
   ];
 

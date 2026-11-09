@@ -7,7 +7,11 @@ import { AdminAuditPage } from './features/audit';
 import { AdminUserDetailPage, AdminUsersPage } from './features/user-management';
 import { CurrentWorkspaceGuard } from './features/workspaces/components/CurrentWorkspaceGuard';
 import { WorkspaceOverviewPage } from './features/workspaces/components/WorkspaceOverviewPage';
-import { ProjectOverviewPage, WorkspaceProjectsPage } from './features/workspaces/projects';
+import {
+  ProjectOverviewPage,
+  ProjectSettingsPage,
+  WorkspaceProjectsPage,
+} from './features/workspaces/projects';
 import { MembersSettingsPage } from './features/workspaces/settings';
 import { HomePage } from './routes/HomePage';
 import { InstallPage } from './routes/InstallPage';
@@ -35,6 +39,10 @@ export function App() {
             <Route
               path="/workspace/:wsId/project/:projId/overview"
               element={<ProjectOverviewPage />}
+            />
+            <Route
+              path="/workspace/:wsId/project/:projId/settings"
+              element={<ProjectSettingsPage />}
             />
             <Route path="/workspace/:wsId/settings/members" element={<MembersSettingsPage />} />
             <Route element={<CurrentWorkspaceGuard />}>

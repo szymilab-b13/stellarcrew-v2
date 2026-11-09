@@ -32,7 +32,9 @@ function makeFetch(projectsBody: unknown, projectsStatus = 200) {
   });
 }
 
-function renderPage(initialPath = '/workspace/ws-1/projects') {
+function renderPage(
+  initialPath: string | { pathname: string; state: unknown } = '/workspace/ws-1/projects',
+) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
@@ -46,6 +48,7 @@ function renderPage(initialPath = '/workspace/ws-1/projects') {
               path="/workspace/:wsId/project/:projId/overview"
               element={<div>project overview</div>}
             />
+            <Route path="/admin/audit" element={<div>audit page</div>} />
             <Route path="/workspaces" element={<div>workspaces fallback</div>} />
           </Routes>
         </MemoryRouter>
@@ -138,6 +141,22 @@ describe('WorkspaceProjectsPage', () => {
     renderPage('/workspace/unknown/projects');
 
     expect(await screen.findByText('workspaces fallback')).toBeInTheDocument();
+  });
+
+  it('should render a success banner with Undo audit link when deletedProjectName is in location state', async () => {
+    vi.stubGlobal('fetch', makeFetch({ items: [] }));
+
+    renderPage({
+      pathname: '/workspace/ws-1/projects',
+      state: { deletedProjectName: 'Talent Bridge' },
+    });
+
+    const banner = await screen.findByRole('status');
+    expect(banner).toHaveTextContent('Project "Talent Bridge" was deleted.');
+    expect(screen.getByRole('link', { name: 'Undo in Audit log' })).toHaveAttribute(
+      'href',
+      '/admin/audit',
+    );
   });
 
   it('should POST the new project and navigate to the overview after create', async () => {
