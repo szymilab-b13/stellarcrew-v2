@@ -54,11 +54,11 @@ describe('WorkspaceOverviewPage', () => {
 
     renderPage();
 
-    expect(await screen.findByRole('heading', { name: /overview/i })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: /overview/i })).toBeInTheDocument();
     expect(await screen.findByText('Shared Workspace')).toBeInTheDocument();
   });
 
-  it('should render a 2-row widget grid with 5 slots in row 1 and 3 slots in row 2', async () => {
+  it('should render a 3-row widget grid with 5 / 3 / 1 slots per row', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() => Promise.resolve(mockResponse([{ id: 'ws-1', name: 'Shared Workspace' }]))),
@@ -66,12 +66,14 @@ describe('WorkspaceOverviewPage', () => {
 
     renderPage();
 
-    await screen.findByRole('heading', { name: /overview/i });
+    await screen.findByRole('heading', { level: 1, name: /overview/i });
 
     const row1 = screen.getByRole('region', { name: /row 1/i });
     const row2 = screen.getByRole('region', { name: /row 2/i });
+    const row3 = screen.getByRole('region', { name: /row 3/i });
     expect(within(row1).getAllByRole('article')).toHaveLength(5);
     expect(within(row2).getAllByRole('article')).toHaveLength(3);
+    expect(within(row3).getAllByRole('article')).toHaveLength(1);
   });
 
   it('should render a PROTOTYP badge and BL reference for each stub widget slot', async () => {
@@ -82,7 +84,7 @@ describe('WorkspaceOverviewPage', () => {
 
     renderPage();
 
-    await screen.findByRole('heading', { name: /overview/i });
+    await screen.findByRole('heading', { level: 1, name: /overview/i });
 
     expect(screen.getAllByText('PROTOTYP')).toHaveLength(8);
     expect(screen.queryByText(/BL-WSUX-005/)).not.toBeInTheDocument();
@@ -104,7 +106,7 @@ describe('WorkspaceOverviewPage', () => {
 
     renderPage();
 
-    await screen.findByRole('heading', { name: /overview/i });
+    await screen.findByRole('heading', { level: 1, name: /overview/i });
 
     for (const title of [
       'Active Tasks',
@@ -115,6 +117,7 @@ describe('WorkspaceOverviewPage', () => {
       'Boss Actions',
       'Last Agents Activity',
       'Workspace Info',
+      'Projects Overview',
     ]) {
       expect(screen.getByRole('heading', { level: 2, name: title })).toBeInTheDocument();
     }

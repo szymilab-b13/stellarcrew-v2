@@ -10,6 +10,7 @@ import { ActiveTasksWidget } from './ActiveTasksWidget';
 import { BossActionsWidget } from './BossActionsWidget';
 import { LastAgentsActivityWidget } from './LastAgentsActivityWidget';
 import { MilestonesWidget } from './MilestonesWidget';
+import { ProjectOverviewsWidget } from './ProjectOverviewsWidget';
 import { ProjectsWidget } from './ProjectsWidget';
 import { TasksProgressWidget } from './TasksProgressWidget';
 import { WorkspaceInfoWidget } from './WorkspaceInfoWidget';
@@ -69,6 +70,14 @@ export function WorkspaceOverviewPage() {
         <BossActionsWidget />
         <LastAgentsActivityWidget />
         <WorkspaceInfoWidget />
+      </section>
+
+      <section
+        role="region"
+        aria-label={t('workspaceOverview.rows.row3')}
+        className="grid grid-cols-1 gap-4"
+      >
+        <ProjectOverviewsWidget workspaceId={workspaceId} />
       </section>
     </div>
   );

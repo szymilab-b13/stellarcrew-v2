@@ -149,7 +149,8 @@
     "comingIn": "Dostępne w {{bl}}",
     "rows": {
       "row1": "Widgety overview rząd 1",
-      "row2": "Widgety overview rząd 2"
+      "row2": "Widgety overview rząd 2",
+      "row3": "Widgety overview rząd 3"
     },
     "slots": {
       "activeTasks": { "title": "Active Tasks" },
@@ -159,7 +160,8 @@
       "projects": { "title": "Projects" },
       "bossActions": { "title": "Boss Actions" },
       "lastAgentsActivity": { "title": "Last Agents Activity" },
-      "workspaceInfo": { "title": "Workspace Info" }
+      "workspaceInfo": { "title": "Workspace Info" },
+      "projectOverviews": { "title": "Projects Overview" }
     },
     "widgets": {
       "activeTasks": {
@@ -273,6 +275,43 @@
           "created": { "label": "Utworzony", "value": "1 lis 2026" },
           "members": { "label": "Członkowie", "value": "4" },
           "visibility": { "label": "Widoczność", "value": "PRIVATE" }
+        }
+      },
+      "projectOverviews": {
+        "sectionAria": "Widget Projects Overview",
+        "listAria": "Kafelki projektów",
+        "openAllAria": "Otwórz wszystkie projekty",
+        "showMore": "Pokaż więcej",
+        "showMoreAria": "Pokaż więcej projektów",
+        "percent": "{{value}}%",
+        "sparklineAria": "Trend postępu — {{name}}",
+        "progressAria": "Postęp — {{name}}",
+        "statuses": {
+          "active": "ACTIVE",
+          "frozen": "FROZEN",
+          "archived": "ARCHIVED"
+        },
+        "samples": {
+          "stellarcrew": { "name": "StellarCrew", "subtitle": "Platforma zespołu AI" },
+          "jobSearch": { "name": "Job Search", "subtitle": "Automatyczne skanowanie ofert" },
+          "gymPlan": { "name": "Gym Plan", "subtitle": "Plan treningu siłowego" },
+          "questilo": { "name": "Questilo", "subtitle": "Grywalizacja nawyków" },
+          "englishLearning": { "name": "English Learning", "subtitle": "Tutor języka AI" },
+          "readingChallenge": { "name": "Reading Challenge", "subtitle": "24 książki w 2026" },
+          "businessPlan": { "name": "Business Plan", "subtitle": "Strategia produktu SaaS" }
+        },
+        "footer": {
+          "agents": "{{count}} agentów",
+          "tasks": "{{done}}/{{total}} zadań",
+          "ago": {
+            "stellarcrew": "2 min temu",
+            "jobSearch": "1 godz. temu",
+            "gymPlan": "5 godz. temu",
+            "questilo": "3 dni temu",
+            "englishLearning": "1 dzień temu",
+            "readingChallenge": "2 dni temu",
+            "businessPlan": "2 tyg. temu"
+          }
         }
       }
     }

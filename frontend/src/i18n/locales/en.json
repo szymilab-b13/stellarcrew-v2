@@ -149,7 +149,8 @@
     "comingIn": "Coming in {{bl}}",
     "rows": {
       "row1": "Overview widgets row 1",
-      "row2": "Overview widgets row 2"
+      "row2": "Overview widgets row 2",
+      "row3": "Overview widgets row 3"
     },
     "slots": {
       "activeTasks": { "title": "Active Tasks" },
@@ -159,7 +160,8 @@
       "projects": { "title": "Projects" },
       "bossActions": { "title": "Boss Actions" },
       "lastAgentsActivity": { "title": "Last Agents Activity" },
-      "workspaceInfo": { "title": "Workspace Info" }
+      "workspaceInfo": { "title": "Workspace Info" },
+      "projectOverviews": { "title": "Projects Overview" }
     },
     "widgets": {
       "activeTasks": {
@@ -273,6 +275,46 @@
           "created": { "label": "Created", "value": "Nov 1, 2026" },
           "members": { "label": "Members", "value": "4" },
           "visibility": { "label": "Visibility", "value": "PRIVATE" }
+        }
+      },
+      "projectOverviews": {
+        "sectionAria": "Projects Overview widget",
+        "listAria": "Project tiles",
+        "openAllAria": "Open all projects",
+        "showMore": "Show more",
+        "showMoreAria": "Show more projects",
+        "percent": "{{value}}%",
+        "sparklineAria": "{{name}} progress trend",
+        "progressAria": "{{name}} completion",
+        "statuses": {
+          "active": "ACTIVE",
+          "frozen": "FROZEN",
+          "archived": "ARCHIVED"
+        },
+        "samples": {
+          "stellarcrew": { "name": "StellarCrew", "subtitle": "AI Team Platform" },
+          "jobSearch": { "name": "Job Search", "subtitle": "Automated job scanning" },
+          "gymPlan": { "name": "Gym Plan", "subtitle": "Strength training program" },
+          "questilo": { "name": "Questilo", "subtitle": "Gamified Habit Tracker" },
+          "englishLearning": {
+            "name": "English Learning",
+            "subtitle": "AI-powered language tutor"
+          },
+          "readingChallenge": { "name": "Reading Challenge", "subtitle": "24 books in 2026" },
+          "businessPlan": { "name": "Business Plan", "subtitle": "SaaS product strategy" }
+        },
+        "footer": {
+          "agents": "{{count}} agents",
+          "tasks": "{{done}}/{{total}} tasks",
+          "ago": {
+            "stellarcrew": "2 min ago",
+            "jobSearch": "1h ago",
+            "gymPlan": "5h ago",
+            "questilo": "3 days ago",
+            "englishLearning": "1 day ago",
+            "readingChallenge": "2 days ago",
+            "businessPlan": "2 weeks ago"
+          }
         }
       }
     }
