@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Projects\Application;
 
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Projects\FakeWorkspacesApi;
 use App\Tests\Fixtures\Projects\InMemoryProjectRepository;
 use DateTimeImmutable;
@@ -155,6 +156,7 @@ final class UpdateProjectCommandHandlerTest extends TestCase
         $sut = new UpdateProjectCommandHandler(
             new InMemoryProjectRepository(),
             new FakeWorkspacesApi(),
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::UPDATED_AT)),
         );
 
@@ -192,6 +194,7 @@ final class UpdateProjectCommandHandlerTest extends TestCase
         $sut = new UpdateProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::UPDATED_AT)),
         );
 
@@ -216,6 +219,7 @@ final class UpdateProjectCommandHandlerTest extends TestCase
         $sut = new UpdateProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::UPDATED_AT)),
         );
 
@@ -240,6 +244,55 @@ final class UpdateProjectCommandHandlerTest extends TestCase
         self::assertEquals(new DateTimeImmutable(self::CREATED_AT), $result->createdAt());
     }
 
+    public function testShouldRecordAuditEntryWithBeforeAndAfterStateSnapshots(): void
+    {
+        $workspaceId = WorkspaceId::generate();
+        $actorId = new UserId(Uuid::v7());
+        $project = Project::create(
+            ProjectId::generate(),
+            $workspaceId,
+            'Alpha',
+            'alpha',
+            'Original scope',
+            new DateTimeImmutable(self::CREATED_AT),
+        );
+        $repo = new InMemoryProjectRepository();
+        $repo->save($project);
+
+        $audit = new SpyAuditLogger();
+        $workspaces = (new FakeWorkspacesApi())
+            ->withWorkspace($workspaceId)
+            ->withPermission($workspaceId, $actorId, UpdateProjectCommandHandler::PERMISSION);
+        $sut = new UpdateProjectCommandHandler(
+            $repo,
+            $workspaces,
+            $audit,
+            new FrozenClock(new DateTimeImmutable(self::UPDATED_AT)),
+        );
+
+        $sut(new UpdateProjectCommand(
+            actorId: $actorId,
+            projectId: $project->id(),
+            name: 'Renamed',
+            slug: 'renamed-slug',
+            description: 'New scope',
+        ));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(UpdateProjectCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(UpdateProjectCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $project->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($actorId));
+        self::assertSame('Alpha', $entry->metadata['before_state']['name']);
+        self::assertSame('alpha', $entry->metadata['before_state']['slug']);
+        self::assertSame('Original scope', $entry->metadata['before_state']['description']);
+        self::assertSame('Renamed', $entry->metadata['after_state']['name']);
+        self::assertSame('renamed-slug', $entry->metadata['after_state']['slug']);
+        self::assertSame('New scope', $entry->metadata['after_state']['description']);
+    }
+
     private function handler(
         InMemoryProjectRepository $repo,
         WorkspaceId $workspaceId,
@@ -252,6 +305,7 @@ final class UpdateProjectCommandHandlerTest extends TestCase
         return new UpdateProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::UPDATED_AT)),
         );
     }

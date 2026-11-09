@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Projects\Application;
 
+use Modules\Core\Api\AuditLoggerInterface;
+use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Projects\Domain\Project;
 use Modules\Projects\Domain\ProjectRepository;
 use Modules\Projects\Domain\ProjectSlugGenerator;
@@ -20,9 +22,14 @@ final readonly class UpdateProjectCommandHandler
 {
     public const string PERMISSION = 'projects.edit';
 
+    public const string AUDIT_ACTION = 'projects.project.updated';
+
+    public const string AUDIT_RESOURCE_TYPE = 'project';
+
     public function __construct(
         private ProjectRepository $projects,
         private WorkspacesApi $workspaces,
+        private AuditLoggerInterface $audit,
         private Clock $clock,
     ) {
     }
@@ -42,6 +49,7 @@ final readonly class UpdateProjectCommandHandler
             );
         }
 
+        $before = CreateProjectCommandHandler::snapshot($project);
         $now = $this->clock->now();
 
         if ($command->name !== null) {
@@ -60,6 +68,18 @@ final readonly class UpdateProjectCommandHandler
         }
 
         $this->projects->save($project);
+
+        $this->audit->log(new AuditEntry(
+            userId: $command->actorId,
+            action: self::AUDIT_ACTION,
+            occurredAt: $now,
+            resourceType: self::AUDIT_RESOURCE_TYPE,
+            resourceId: (string) $project->id(),
+            metadata: [
+                'before_state' => $before,
+                'after_state' => CreateProjectCommandHandler::snapshot($project),
+            ],
+        ));
 
         return $project;
     }

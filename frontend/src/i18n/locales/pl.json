@@ -459,7 +459,8 @@
       "actionAll": "Wszystkie akcje",
       "actionGroups": {
         "user_management": "Zarządzanie użytkownikami",
-        "workspaces": "Workspace’y"
+        "workspaces": "Workspace’y",
+        "projects": "Projekty"
       },
       "resourceType": "Typ zasobu",
       "resourceTypePlaceholder": "np. User",
@@ -516,7 +517,11 @@
       "workspaces.workspace.deleted": "Usunięto workspace",
       "workspace_member.assigned": "Dodano członka workspace’a",
       "workspace_member.role_changed": "Zmieniono rolę członka",
-      "workspace_member.removed": "Usunięto członka workspace’a"
+      "workspace_member.removed": "Usunięto członka workspace’a",
+      "projects.project.created": "Utworzono projekt",
+      "projects.project.updated": "Zaktualizowano projekt",
+      "projects.project.deleted": "Usunięto projekt",
+      "projects.project.restored": "Przywrócono projekt"
     },
     "undoDialog": {
       "title": "Cofnąć akcję?",

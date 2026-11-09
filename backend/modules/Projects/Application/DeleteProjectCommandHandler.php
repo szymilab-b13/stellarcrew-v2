@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Projects\Application;
 
+use Modules\Core\Api\AuditLoggerInterface;
+use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Projects\Domain\Project;
 use Modules\Projects\Domain\ProjectRepository;
 use Modules\Shared\Kernel\Clock;
@@ -18,9 +20,14 @@ final readonly class DeleteProjectCommandHandler
 {
     public const string PERMISSION = 'projects.delete';
 
+    public const string AUDIT_ACTION = 'projects.project.deleted';
+
+    public const string AUDIT_RESOURCE_TYPE = 'project';
+
     public function __construct(
         private ProjectRepository $projects,
         private WorkspacesApi $workspaces,
+        private AuditLoggerInterface $audit,
         private Clock $clock,
     ) {
     }
@@ -40,7 +47,20 @@ final readonly class DeleteProjectCommandHandler
             );
         }
 
-        $project->softDelete($this->clock->now());
+        $before = CreateProjectCommandHandler::snapshot($project);
+        $now = $this->clock->now();
+        $project->softDelete($now);
         $this->projects->save($project);
+
+        $this->audit->log(new AuditEntry(
+            userId: $command->actorId,
+            action: self::AUDIT_ACTION,
+            occurredAt: $now,
+            resourceType: self::AUDIT_RESOURCE_TYPE,
+            resourceId: (string) $project->id(),
+            metadata: [
+                'before_state' => $before,
+            ],
+        ));
     }
 }

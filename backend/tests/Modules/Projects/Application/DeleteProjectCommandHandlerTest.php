@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Projects\Application;
 
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Projects\FakeWorkspacesApi;
 use App\Tests\Fixtures\Projects\InMemoryProjectRepository;
 use DateTimeImmutable;
@@ -49,6 +50,7 @@ final class DeleteProjectCommandHandlerTest extends TestCase
         $sut = new DeleteProjectCommandHandler(
             new InMemoryProjectRepository(),
             new FakeWorkspacesApi(),
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::DELETED_AT)),
         );
 
@@ -86,6 +88,7 @@ final class DeleteProjectCommandHandlerTest extends TestCase
         $sut = new DeleteProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::DELETED_AT)),
         );
 
@@ -110,6 +113,7 @@ final class DeleteProjectCommandHandlerTest extends TestCase
         $sut = new DeleteProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::DELETED_AT)),
         );
 
@@ -136,6 +140,48 @@ final class DeleteProjectCommandHandlerTest extends TestCase
         self::assertEquals(new DateTimeImmutable(self::CREATED_AT), $stored->createdAt());
     }
 
+    public function testShouldRecordAuditEntryWithBeforeStateSnapshot(): void
+    {
+        $workspaceId = WorkspaceId::generate();
+        $actorId = new UserId(Uuid::v7());
+        $project = Project::create(
+            ProjectId::generate(),
+            $workspaceId,
+            'Alpha',
+            'alpha',
+            'Scope',
+            new DateTimeImmutable(self::CREATED_AT),
+        );
+        $repo = new InMemoryProjectRepository();
+        $repo->save($project);
+
+        $audit = new SpyAuditLogger();
+        $workspaces = (new FakeWorkspacesApi())
+            ->withWorkspace($workspaceId)
+            ->withPermission($workspaceId, $actorId, DeleteProjectCommandHandler::PERMISSION);
+        $sut = new DeleteProjectCommandHandler(
+            $repo,
+            $workspaces,
+            $audit,
+            new FrozenClock(new DateTimeImmutable(self::DELETED_AT)),
+        );
+
+        $sut(new DeleteProjectCommand($actorId, $project->id()));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(DeleteProjectCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(DeleteProjectCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $project->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($actorId));
+        self::assertSame('Alpha', $entry->metadata['before_state']['name']);
+        self::assertSame('alpha', $entry->metadata['before_state']['slug']);
+        self::assertSame('Scope', $entry->metadata['before_state']['description']);
+        self::assertSame((string) $workspaceId, $entry->metadata['before_state']['workspace_id']);
+        self::assertArrayNotHasKey('after_state', $entry->metadata);
+    }
+
     private function handler(
         InMemoryProjectRepository $repo,
         WorkspaceId $workspaceId,
@@ -148,6 +194,7 @@ final class DeleteProjectCommandHandlerTest extends TestCase
         return new DeleteProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::DELETED_AT)),
         );
     }

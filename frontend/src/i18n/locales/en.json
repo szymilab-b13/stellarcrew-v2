@@ -462,7 +462,8 @@
       "actionAll": "All actions",
       "actionGroups": {
         "user_management": "User management",
-        "workspaces": "Workspaces"
+        "workspaces": "Workspaces",
+        "projects": "Projects"
       },
       "resourceType": "Resource type",
       "resourceTypePlaceholder": "e.g. User",
@@ -519,7 +520,11 @@
       "workspaces.workspace.deleted": "Deleted workspace",
       "workspace_member.assigned": "Added workspace member",
       "workspace_member.role_changed": "Changed member role",
-      "workspace_member.removed": "Removed workspace member"
+      "workspace_member.removed": "Removed workspace member",
+      "projects.project.created": "Created project",
+      "projects.project.updated": "Updated project",
+      "projects.project.deleted": "Deleted project",
+      "projects.project.restored": "Restored project"
     },
     "undoDialog": {
       "title": "Undo this action?",

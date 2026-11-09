@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Projects\Application;
 
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Projects\FakeWorkspacesApi;
 use App\Tests\Fixtures\Projects\InMemoryProjectRepository;
 use DateTimeImmutable;
@@ -67,6 +68,7 @@ final class RestoreProjectCommandHandlerTest extends TestCase
         $sut = new RestoreProjectCommandHandler(
             new InMemoryProjectRepository(),
             new FakeWorkspacesApi(),
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::RESTORED_AT)),
         );
 
@@ -89,6 +91,7 @@ final class RestoreProjectCommandHandlerTest extends TestCase
         $sut = new RestoreProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::RESTORED_AT)),
         );
 
@@ -115,6 +118,7 @@ final class RestoreProjectCommandHandlerTest extends TestCase
         $sut = new RestoreProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::RESTORED_AT)),
         );
 
@@ -141,6 +145,72 @@ final class RestoreProjectCommandHandlerTest extends TestCase
         self::assertEquals(new DateTimeImmutable(self::CREATED_AT), $result->createdAt());
     }
 
+    public function testShouldRecordAuditEntryWhenRestoringSoftDeletedProject(): void
+    {
+        $workspaceId = WorkspaceId::generate();
+        $actorId = new UserId(Uuid::v7());
+        $project = Project::create(
+            ProjectId::generate(),
+            $workspaceId,
+            'Alpha',
+            'alpha',
+            'Scope',
+            new DateTimeImmutable(self::CREATED_AT),
+        );
+        $project->softDelete(new DateTimeImmutable(self::DELETED_AT));
+
+        $repo = new InMemoryProjectRepository();
+        $repo->save($project);
+
+        $audit = new SpyAuditLogger();
+        $workspaces = (new FakeWorkspacesApi())
+            ->withWorkspace($workspaceId)
+            ->withPermission($workspaceId, $actorId, RestoreProjectCommandHandler::PERMISSION);
+        $sut = new RestoreProjectCommandHandler(
+            $repo,
+            $workspaces,
+            $audit,
+            new FrozenClock(new DateTimeImmutable(self::RESTORED_AT)),
+        );
+
+        $sut(new RestoreProjectCommand($actorId, $project->id()));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(RestoreProjectCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(RestoreProjectCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $project->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($actorId));
+        self::assertSame('Alpha', $entry->metadata['after_state']['name']);
+        self::assertSame('alpha', $entry->metadata['after_state']['slug']);
+        self::assertSame('Scope', $entry->metadata['after_state']['description']);
+    }
+
+    public function testShouldNotRecordAuditEntryWhenProjectAlreadyActive(): void
+    {
+        $workspaceId = WorkspaceId::generate();
+        $actorId = new UserId(Uuid::v7());
+        $project = $this->seedProject($workspaceId);
+        $repo = new InMemoryProjectRepository();
+        $repo->save($project);
+
+        $audit = new SpyAuditLogger();
+        $workspaces = (new FakeWorkspacesApi())
+            ->withWorkspace($workspaceId)
+            ->withPermission($workspaceId, $actorId, RestoreProjectCommandHandler::PERMISSION);
+        $sut = new RestoreProjectCommandHandler(
+            $repo,
+            $workspaces,
+            $audit,
+            new FrozenClock(new DateTimeImmutable(self::RESTORED_AT)),
+        );
+
+        $sut(new RestoreProjectCommand($actorId, $project->id()));
+
+        self::assertCount(0, $audit->entries);
+    }
+
     private function handler(
         InMemoryProjectRepository $repo,
         WorkspaceId $workspaceId,
@@ -153,6 +223,7 @@ final class RestoreProjectCommandHandlerTest extends TestCase
         return new RestoreProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::RESTORED_AT)),
         );
     }

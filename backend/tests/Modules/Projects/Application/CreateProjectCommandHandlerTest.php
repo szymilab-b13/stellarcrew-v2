@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Projects\Application;
 
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Projects\FakeWorkspacesApi;
 use App\Tests\Fixtures\Projects\InMemoryProjectRepository;
 use DateTimeImmutable;
@@ -30,6 +31,7 @@ final class CreateProjectCommandHandlerTest extends TestCase
         $sut = new CreateProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-09T10:00:00+00:00')),
         );
 
@@ -53,6 +55,7 @@ final class CreateProjectCommandHandlerTest extends TestCase
         $sut = new CreateProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-09T10:00:00+00:00')),
         );
 
@@ -79,6 +82,7 @@ final class CreateProjectCommandHandlerTest extends TestCase
         $sut = new CreateProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-09T10:00:00+00:00')),
         );
         $sut(new CreateProjectCommand($actorId, $workspaceId, 'Alpha'));
@@ -103,6 +107,7 @@ final class CreateProjectCommandHandlerTest extends TestCase
         $sut = new CreateProjectCommandHandler(
             $repo,
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-09T10:00:00+00:00')),
         );
         $sut(new CreateProjectCommand($actorId, $workspaceA, 'Shared'));
@@ -119,6 +124,7 @@ final class CreateProjectCommandHandlerTest extends TestCase
         $sut = new CreateProjectCommandHandler(
             new InMemoryProjectRepository(),
             new FakeWorkspacesApi(),
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-09T10:00:00+00:00')),
         );
 
@@ -135,6 +141,7 @@ final class CreateProjectCommandHandlerTest extends TestCase
         $sut = new CreateProjectCommandHandler(
             new InMemoryProjectRepository(),
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-09T10:00:00+00:00')),
         );
 
@@ -154,6 +161,7 @@ final class CreateProjectCommandHandlerTest extends TestCase
         $sut = new CreateProjectCommandHandler(
             new InMemoryProjectRepository(),
             $workspaces,
+            new SpyAuditLogger(),
             new FrozenClock($now),
         );
 
@@ -161,5 +169,43 @@ final class CreateProjectCommandHandlerTest extends TestCase
 
         self::assertEquals($now, $project->createdAt());
         self::assertEquals($now, $project->updatedAt());
+    }
+
+    public function testShouldRecordAuditEntryWithActorAndAfterStateSnapshot(): void
+    {
+        $workspaceId = WorkspaceId::generate();
+        $actorId = new UserId(Uuid::v7());
+        $audit = new SpyAuditLogger();
+        $workspaces = (new FakeWorkspacesApi())
+            ->withWorkspace($workspaceId)
+            ->withPermission($workspaceId, $actorId, CreateProjectCommandHandler::PERMISSION);
+        $sut = new CreateProjectCommandHandler(
+            new InMemoryProjectRepository(),
+            $workspaces,
+            $audit,
+            new FrozenClock(new DateTimeImmutable('2026-11-09T10:00:00+00:00')),
+        );
+
+        $project = $sut(new CreateProjectCommand(
+            actorId: $actorId,
+            workspaceId: $workspaceId,
+            name: 'Talent Bridge',
+            slug: 'tb-mvp',
+            description: 'POC scope',
+        ));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(CreateProjectCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(CreateProjectCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $project->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($actorId));
+        self::assertArrayHasKey('after_state', $entry->metadata);
+        self::assertSame((string) $project->id(), $entry->metadata['after_state']['id']);
+        self::assertSame((string) $workspaceId, $entry->metadata['after_state']['workspace_id']);
+        self::assertSame('Talent Bridge', $entry->metadata['after_state']['name']);
+        self::assertSame('tb-mvp', $entry->metadata['after_state']['slug']);
+        self::assertSame('POC scope', $entry->metadata['after_state']['description']);
     }
 }
