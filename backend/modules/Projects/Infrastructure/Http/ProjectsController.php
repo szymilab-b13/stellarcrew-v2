@@ -15,6 +15,8 @@ use Modules\Projects\Application\Query\GetProjectQuery;
 use Modules\Projects\Application\Query\GetProjectQueryHandler;
 use Modules\Projects\Application\Query\ListProjectsByWorkspaceQuery;
 use Modules\Projects\Application\Query\ListProjectsByWorkspaceQueryHandler;
+use Modules\Projects\Application\UpdateProjectCommand;
+use Modules\Projects\Application\UpdateProjectCommandHandler;
 use Modules\Projects\Domain\Project;
 use Modules\Shared\Kernel\ProjectId;
 use Modules\Shared\Kernel\WorkspaceId;
@@ -35,6 +37,7 @@ final readonly class ProjectsController
         private CreateProjectCommandHandler $create,
         private ListProjectsByWorkspaceQueryHandler $listByWorkspace,
         private GetProjectQueryHandler $get,
+        private UpdateProjectCommandHandler $update,
     ) {
     }
 
@@ -131,6 +134,42 @@ final readonly class ProjectsController
         $project = ($this->get)(new GetProjectQuery(
             actorId: $user->domainUser()->id(),
             projectId: ProjectId::fromString($id),
+        ));
+
+        return new JsonResponse($this->serialise($project), Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/projects/{id}',
+        name: 'projects_update',
+        requirements: ['id' => self::PROJECT_ID_REQUIREMENT],
+        methods: ['PUT'],
+    )]
+    #[OA\Put(
+        path: '/api/projects/{id}',
+        summary: 'Update a project name, slug or description.',
+        tags: ['projects'],
+        responses: [
+            new OA\Response(response: 200, description: 'Project updated'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not allowed to edit the project'),
+            new OA\Response(response: 404, description: 'Project not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function update(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+        #[MapRequestPayload]
+        UpdateProjectRequest $input,
+    ): JsonResponse {
+        $project = ($this->update)(new UpdateProjectCommand(
+            actorId: $user->domainUser()->id(),
+            projectId: ProjectId::fromString($id),
+            name: $input->name,
+            slug: $input->slug,
+            description: $input->description,
         ));
 
         return new JsonResponse($this->serialise($project), Response::HTTP_OK);

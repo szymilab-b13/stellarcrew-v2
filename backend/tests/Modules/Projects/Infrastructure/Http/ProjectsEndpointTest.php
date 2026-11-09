@@ -341,6 +341,197 @@ final class ProjectsEndpointTest extends WebTestCase
         self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
     }
 
+    public function testShouldReturn401OnUpdateWithoutToken(): void
+    {
+        $projectId = Uuid::v7()->toRfc4122();
+
+        $this->putJson("/api/projects/{$projectId}", ['name' => 'X'], null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnUpdateWhenProjectDoesNotExist(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $missing = Uuid::v7()->toRfc4122();
+
+        $this->putJson("/api/projects/{$missing}", ['name' => 'X'], $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnUpdateWhenProjectIsSoftDeleted(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+        $project = $this->projects()->findById(ProjectId::fromString((string) $created['id']));
+        self::assertNotNull($project);
+        $project->softDelete($this->now());
+        $this->projects()->save($project);
+
+        $this->putJson("/api/projects/{$created['id']}", ['name' => 'Renamed'], $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnUpdateWhenCallerIsNotWorkspaceMember(): void
+    {
+        [, $token] = $this->seedAdminAndLoginWithId();
+        $otherOwnerEmail = 'other@example.com';
+        $otherOwner = $this->seedAdmin($otherOwnerEmail, self::DEFAULT_PASSWORD);
+        $otherToken = $this->login($otherOwnerEmail, self::DEFAULT_PASSWORD);
+        $ws = $this->seedWorkspaceWithOwner($otherOwner->id(), 'Other', 'other-ws');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $otherToken);
+        $created = $this->decode();
+
+        $this->putJson("/api/projects/{$created['id']}", ['name' => 'Renamed'], $token);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnUpdateWhenMemberRoleIsGuest(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($ownerId, 'Shared', 'shared');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $ownerToken);
+        $created = $this->decode();
+
+        $guestEmail = 'guest@example.com';
+        $guest = $this->seedAdmin($guestEmail, self::DEFAULT_PASSWORD);
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($ws->id(), $guest->id(), WorkspaceRole::Guest, $this->now()),
+        );
+        $guestToken = $this->login($guestEmail, self::DEFAULT_PASSWORD);
+
+        $this->putJson("/api/projects/{$created['id']}", ['name' => 'Renamed'], $guestToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn422OnUpdateWhenSlugIsNotKebabCase(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+
+        $this->putJson("/api/projects/{$created['id']}", ['slug' => 'Not Kebab'], $token);
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn422OnUpdateWhenNameIsBlank(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+
+        $this->putJson("/api/projects/{$created['id']}", ['name' => ''], $token);
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldUpdateNameAsOwner(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+
+        $this->putJson("/api/projects/{$created['id']}", ['name' => 'Renamed'], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('Renamed', $payload['name']);
+        self::assertSame('alpha', $payload['slug']);
+    }
+
+    public function testShouldUpdateSlugAsOwner(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+
+        $this->putJson("/api/projects/{$created['id']}", ['slug' => 'brand-new'], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('brand-new', $payload['slug']);
+    }
+
+    public function testShouldUpdateDescriptionAsOwner(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+
+        $this->putJson("/api/projects/{$created['id']}", ['description' => 'New scope'], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('New scope', $payload['description']);
+    }
+
+    public function testShouldUpdateAllThreeFieldsAtOnce(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $created = $this->decode();
+
+        $this->putJson("/api/projects/{$created['id']}", [
+            'name' => 'Renamed',
+            'slug' => 'renamed-slug',
+            'description' => 'Full update',
+        ], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('Renamed', $payload['name']);
+        self::assertSame('renamed-slug', $payload['slug']);
+        self::assertSame('Full update', $payload['description']);
+    }
+
+    public function testShouldAllowMemberRoleToUpdateProject(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($ownerId, 'Shared', 'shared');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $ownerToken);
+        $created = $this->decode();
+
+        $memberEmail = 'member@example.com';
+        $member = $this->seedAdmin($memberEmail, self::DEFAULT_PASSWORD);
+        $this->workspaces()->saveMembership(
+            WorkspaceMember::join($ws->id(), $member->id(), WorkspaceRole::Member, $this->now()),
+        );
+        $memberToken = $this->login($memberEmail, self::DEFAULT_PASSWORD);
+
+        $this->putJson("/api/projects/{$created['id']}", ['name' => 'Renamed'], $memberToken);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldAppendRandomSuffixOnUpdateWhenNewSlugTakenByAnotherProject(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $ws = $this->seedWorkspaceWithOwner($userId, 'Mine', 'mine');
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Alpha'], $token);
+        $this->postJson("/api/workspaces/{$ws->id()}/projects", ['name' => 'Beta'], $token);
+        $beta = $this->decode();
+
+        $this->putJson("/api/projects/{$beta['id']}", ['slug' => 'alpha'], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertNotSame('alpha', $payload['slug']);
+        self::assertStringStartsWith('alpha-', $payload['slug']);
+    }
+
     private function seedAdminAndLogin(): string
     {
         $this->seedAdmin(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
@@ -435,6 +626,19 @@ final class ProjectsEndpointTest extends WebTestCase
         }
 
         $this->client->request('GET', $path, server: $server);
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     */
+    private function putJson(string $path, array $body, ?string $token): void
+    {
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        if ($token !== null) {
+            $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
+        }
+
+        $this->client->request('PUT', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
     }
 
     /**
