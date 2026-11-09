@@ -12,6 +12,7 @@ import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 import { resolveIcon } from './iconMap';
 import { ProfileDropdown } from './ProfileDropdown';
+import { ProjectContextSection } from './ProjectContextSection';
 import { PINNED_MENU_LIMIT, usePinnedMenu } from './usePinnedMenu';
 import { useCollapsedSections, useSidebarCollapsed } from './useSidebarState';
 import { WorkspaceContextSection } from './WorkspaceContextSection';
@@ -181,7 +182,12 @@ export function Sidebar() {
             previousOrder < WORKSPACE_CONTEXT_ORDER && section.order >= WORKSPACE_CONTEXT_ORDER;
           return (
             <Fragment key={section.id}>
-              {injectContextBefore ? <WorkspaceContextSection collapsed={collapsed} /> : null}
+              {injectContextBefore ? (
+                <>
+                  <WorkspaceContextSection collapsed={collapsed} />
+                  <ProjectContextSection collapsed={collapsed} />
+                </>
+              ) : null}
               <div className={`mb-3 ${separatorClass}`}>
                 {!collapsed ? (
                   <button
@@ -208,7 +214,10 @@ export function Sidebar() {
           );
         })}
         {menu.data && menu.data.every((section) => section.order < WORKSPACE_CONTEXT_ORDER) ? (
-          <WorkspaceContextSection collapsed={collapsed} />
+          <>
+            <WorkspaceContextSection collapsed={collapsed} />
+            <ProjectContextSection collapsed={collapsed} />
+          </>
         ) : null}
       </nav>
 

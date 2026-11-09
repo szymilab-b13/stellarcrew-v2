@@ -44,6 +44,7 @@
       "overview": "Overview",
       "workspaces": "Workspaces",
       "workspace": "Workspace",
+      "project": "Project",
       "admin": "Administration",
       "pinned": "Pinned"
     },
@@ -56,6 +57,14 @@
       "workspaceAgents": "Agents",
       "workspaceScheduler": "Scheduler",
       "workspaceSettings": "Settings",
+      "projectOverview": "Overview",
+      "projectAgents": "Agents",
+      "projectMembers": "Members",
+      "projectScheduler": "Scheduler",
+      "projectSkills": "Skills",
+      "projectFlow": "Flow",
+      "projectTasks": "Tasks",
+      "projectSettings": "Settings",
       "users": "Users",
       "auditLog": "Audit log"
     },
@@ -66,6 +75,18 @@
         "agents": "AGENTS",
         "scheduler": "SCHEDULER",
         "settings": "WORKSPACE_SETTINGS"
+      }
+    },
+    "projectContext": {
+      "comingSoon": "Coming after the {{milestone}} milestone",
+      "milestones": {
+        "agents": "AGENTS",
+        "members": "PROJECT_MEMBERS",
+        "scheduler": "SCHEDULER",
+        "skills": "SKILLS",
+        "flow": "FLOWS",
+        "tasks": "TASKS",
+        "settings": "PROJECT_SETTINGS"
       }
     },
     "pinAdd": "Pin to top",
