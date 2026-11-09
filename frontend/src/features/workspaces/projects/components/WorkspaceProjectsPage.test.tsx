@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -41,6 +42,10 @@ function renderPage(initialPath = '/workspace/ws-1/projects') {
         <MemoryRouter initialEntries={[initialPath]}>
           <Routes>
             <Route path="/workspace/:wsId/projects" element={children} />
+            <Route
+              path="/workspace/:wsId/project/:projId/overview"
+              element={<div>project overview</div>}
+            />
             <Route path="/workspaces" element={<div>workspaces fallback</div>} />
           </Routes>
         </MemoryRouter>
@@ -133,5 +138,55 @@ describe('WorkspaceProjectsPage', () => {
     renderPage('/workspace/unknown/projects');
 
     expect(await screen.findByText('workspaces fallback')).toBeInTheDocument();
+  });
+
+  it('should POST the new project and navigate to the overview after create', async () => {
+    const createdProject = {
+      id: '33333333-3333-4333-8333-333333333333',
+      workspaceId: 'ws-1',
+      name: 'Beta',
+      slug: 'beta',
+      description: null,
+      createdAt: '2026-11-09T12:30:00+00:00',
+      updatedAt: '2026-11-09T12:30:00+00:00',
+    };
+
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url === '/api/workspaces') {
+        return mockResponse([workspace]);
+      }
+      if (url === '/api/workspaces/ws-1/projects') {
+        if (init?.method === 'POST') {
+          return mockResponse(createdProject, 201);
+        }
+        return mockResponse({ items: [] });
+      }
+      return mockResponse({}, 404);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+    const user = userEvent.setup();
+
+    const [openButton] = await screen.findAllByRole('button', { name: /add project/i });
+    await user.click(openButton);
+
+    await user.type(await screen.findByLabelText(/^name$/i), 'Beta');
+    await user.click(screen.getByRole('button', { name: /^create$/i }));
+
+    expect(await screen.findByText('project overview')).toBeInTheDocument();
+
+    const postCall = fetchMock.mock.calls.find(
+      ([, init]) => (init as RequestInit)?.method === 'POST',
+    );
+    expect(postCall).toBeDefined();
+    const postInit = postCall![1] as RequestInit;
+    expect(String(postCall![0])).toBe('/api/workspaces/ws-1/projects');
+    expect(JSON.parse(String(postInit.body))).toEqual({
+      name: 'Beta',
+      slug: 'beta',
+      description: null,
+    });
   });
 });

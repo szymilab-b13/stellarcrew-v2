@@ -303,6 +303,32 @@
     "tile": {
       "aria": "Projekt {{name}}",
       "createdAt": "Utworzono {{date}}"
+    },
+    "addTile": {
+      "label": "Dodaj projekt",
+      "aria": "Dodaj projekt"
+    },
+    "dialog": {
+      "createTitle": "Nowy projekt",
+      "nameLabel": "Nazwa",
+      "slugLabel": "Slug",
+      "slugHint": "Identyfikator w URL-u. Auto-synchronizowany z nazwy do momentu ręcznej edycji.",
+      "descriptionLabel": "Opis",
+      "submitCreate": "Utwórz",
+      "errors": {
+        "name.required": "Nazwa jest wymagana.",
+        "name.tooLong": "Nazwa jest za długa (max 120).",
+        "slug.required": "Slug jest wymagany.",
+        "slug.tooLong": "Slug jest za długi (max 120).",
+        "slug.invalid": "Dozwolone są tylko małe litery, cyfry i pojedyncze myślniki.",
+        "description.tooLong": "Opis jest za długi (max 500).",
+        "server": {
+          "validation": "Serwer odrzucił wysłane dane.",
+          "slugConflict": "Projekt z takim slug-iem już istnieje w tym workspace'ie.",
+          "forbidden": "Nie masz uprawnień do tworzenia projektów w tym workspace'ie.",
+          "generic": "Coś poszło nie tak. Spróbuj ponownie."
+        }
+      }
     }
   },
   "workspaceMembers": {
