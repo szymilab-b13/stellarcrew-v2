@@ -12,6 +12,7 @@ use Modules\Audit\Api\Exception\UndoConflictException;
 use Modules\Audit\Api\Exception\UndoNotSupportedException;
 use Modules\Core\Application\Install\InvalidInstallInputException;
 use Modules\Core\Application\Install\SystemAlreadyInstalledException;
+use Modules\Organizations\Domain\OwnerAlreadyHasOrganizationException;
 use Modules\UserManagement\Api\Exception\EmailTakenException as UserManagementEmailTakenException;
 use Modules\Workspaces\Api\Exception\AdminMustBeDowngradedFirstException;
 use Modules\Workspaces\Api\Exception\CannotRemoveOwnerException;
@@ -98,6 +99,10 @@ final readonly class ExceptionListener
 
         if ($throwable instanceof MemberAlreadyExistsException) {
             return [Response::HTTP_CONFLICT, 'ALREADY_MEMBER', null];
+        }
+
+        if ($throwable instanceof OwnerAlreadyHasOrganizationException) {
+            return [Response::HTTP_CONFLICT, 'ORGANIZATION_ALREADY_EXISTS', null];
         }
 
         if ($throwable instanceof AdminMustBeDowngradedFirstException) {

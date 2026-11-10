@@ -9,9 +9,11 @@ use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Shared\Kernel\Clock;
 use Modules\UserManagement\Api\Dto\UserProfileDto;
+use Modules\UserManagement\Api\Event\UserRegistered;
 use Modules\UserManagement\Domain\AvatarColorPicker;
 use Modules\UserManagement\Domain\UserProfile;
 use Modules\UserManagement\Domain\UserProfileRepository;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class CreateUserCommandHandler
 {
@@ -24,6 +26,7 @@ final readonly class CreateUserCommandHandler
         private UserProfileRepository $profiles,
         private AuditLoggerInterface $audit,
         private Clock $clock,
+        private EventDispatcherInterface $events,
     ) {
     }
 
@@ -56,6 +59,13 @@ final readonly class CreateUserCommandHandler
                 'email' => $command->email,
                 'is_super_admin' => $command->isSuperAdmin,
             ],
+        ));
+
+        $this->events->dispatch(new UserRegistered(
+            userId: $authUser->id,
+            email: $command->email,
+            displayName: $command->displayName,
+            occurredAt: $now,
         ));
 
         return new UserProfileDto(

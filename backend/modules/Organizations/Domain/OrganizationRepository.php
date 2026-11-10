@@ -15,5 +15,7 @@ interface OrganizationRepository
 
     public function findByOwner(UserId $ownerUserId): ?Organization;
 
+    public function findBySlug(string $slug): ?Organization;
+
     public function existsSlug(string $slug): bool;
 }
