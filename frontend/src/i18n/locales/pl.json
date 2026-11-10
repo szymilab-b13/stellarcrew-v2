@@ -581,7 +581,8 @@
       "actionGroups": {
         "user_management": "Zarządzanie użytkownikami",
         "workspaces": "Workspace’y",
-        "projects": "Projekty"
+        "projects": "Projekty",
+        "organizations": "Organizacje"
       },
       "resourceType": "Typ zasobu",
       "resourceTypePlaceholder": "np. User",
@@ -642,7 +643,9 @@
       "projects.project.created": "Utworzono projekt",
       "projects.project.updated": "Zaktualizowano projekt",
       "projects.project.deleted": "Usunięto projekt",
-      "projects.project.restored": "Przywrócono projekt"
+      "projects.project.restored": "Przywrócono projekt",
+      "organizations.organization.created": "Utworzono organizację",
+      "organizations.organization.updated": "Zaktualizowano organizację"
     },
     "undoDialog": {
       "title": "Cofnąć akcję?",

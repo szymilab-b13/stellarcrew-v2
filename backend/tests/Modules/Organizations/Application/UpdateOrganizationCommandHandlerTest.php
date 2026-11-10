@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Organizations\Application;
 
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository;
 use DateTimeImmutable;
 use Modules\Organizations\Application\UpdateOrganizationCommand;
@@ -179,10 +180,47 @@ final class UpdateOrganizationCommandHandlerTest extends TestCase
         self::assertEquals(new DateTimeImmutable(self::CREATED_AT), $result->createdAt());
     }
 
+    public function testShouldRecordAuditEntryWithBeforeAndAfterStateSnapshots(): void
+    {
+        $ownerId = new UserId(Uuid::v7());
+        $organization = $this->seedOrganization($ownerId, 'Acme', 'acme');
+        $repo = new InMemoryOrganizationRepository();
+        $repo->save($organization);
+
+        $audit = new SpyAuditLogger();
+        $sut = new UpdateOrganizationCommandHandler(
+            $repo,
+            $audit,
+            new FrozenClock(new DateTimeImmutable(self::UPDATED_AT)),
+        );
+
+        $result = $sut(new UpdateOrganizationCommand(
+            actorId: $ownerId,
+            organizationId: $organization->id(),
+            name: 'Renamed',
+            slug: 'renamed-slug',
+        ));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(UpdateOrganizationCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(UpdateOrganizationCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $result->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($ownerId));
+        self::assertArrayHasKey('before_state', $entry->metadata);
+        self::assertArrayHasKey('after_state', $entry->metadata);
+        self::assertSame('Acme', $entry->metadata['before_state']['name']);
+        self::assertSame('acme', $entry->metadata['before_state']['slug']);
+        self::assertSame('Renamed', $entry->metadata['after_state']['name']);
+        self::assertSame('renamed-slug', $entry->metadata['after_state']['slug']);
+    }
+
     private function handler(InMemoryOrganizationRepository $repo): UpdateOrganizationCommandHandler
     {
         return new UpdateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::UPDATED_AT)),
         );
     }

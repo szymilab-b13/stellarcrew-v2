@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Organizations\Infrastructure\EventListener;
 
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository;
 use DateTimeImmutable;
 use Modules\Organizations\Application\CreateOrganizationCommandHandler;
@@ -21,6 +22,7 @@ final class CreateOrganizationOnUserRegisteredListenerTest extends TestCase
         $repo = new InMemoryOrganizationRepository();
         $handler = new CreateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
         );
         $sut = new CreateOrganizationOnUserRegisteredListener($repo, $handler);
@@ -44,6 +46,7 @@ final class CreateOrganizationOnUserRegisteredListenerTest extends TestCase
         $repo = new InMemoryOrganizationRepository();
         $handler = new CreateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
         );
         $sut = new CreateOrganizationOnUserRegisteredListener($repo, $handler);
@@ -66,6 +69,7 @@ final class CreateOrganizationOnUserRegisteredListenerTest extends TestCase
         $repo = new InMemoryOrganizationRepository();
         $handler = new CreateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
         );
         $sut = new CreateOrganizationOnUserRegisteredListener($repo, $handler);
@@ -88,6 +92,7 @@ final class CreateOrganizationOnUserRegisteredListenerTest extends TestCase
         $repo = new InMemoryOrganizationRepository();
         $handler = new CreateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
         );
         $sut = new CreateOrganizationOnUserRegisteredListener($repo, $handler);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Organizations\Application;
 
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository;
 use DateTimeImmutable;
 use Modules\Organizations\Application\CreateOrganizationCommand;
@@ -22,6 +23,7 @@ final class CreateOrganizationCommandHandlerTest extends TestCase
         $repo = new InMemoryOrganizationRepository();
         $sut = new CreateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
         );
 
@@ -39,6 +41,7 @@ final class CreateOrganizationCommandHandlerTest extends TestCase
         $repo = new InMemoryOrganizationRepository();
         $sut = new CreateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
         );
 
@@ -58,6 +61,7 @@ final class CreateOrganizationCommandHandlerTest extends TestCase
         $repo = new InMemoryOrganizationRepository();
         $sut = new CreateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
         );
         $sut(new CreateOrganizationCommand($ownerA, 'Acme'));
@@ -74,6 +78,7 @@ final class CreateOrganizationCommandHandlerTest extends TestCase
         $repo = new InMemoryOrganizationRepository();
         $sut = new CreateOrganizationCommandHandler(
             $repo,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
         );
         $sut(new CreateOrganizationCommand($ownerId, 'First'));
@@ -89,6 +94,7 @@ final class CreateOrganizationCommandHandlerTest extends TestCase
         $now = new DateTimeImmutable('2026-11-10T14:00:00+00:00');
         $sut = new CreateOrganizationCommandHandler(
             new InMemoryOrganizationRepository(),
+            new SpyAuditLogger(),
             new FrozenClock($now),
         );
 
@@ -96,5 +102,35 @@ final class CreateOrganizationCommandHandlerTest extends TestCase
 
         self::assertEquals($now, $organization->createdAt());
         self::assertEquals($now, $organization->updatedAt());
+    }
+
+    public function testShouldRecordAuditEntryWithOwnerAndAfterStateSnapshot(): void
+    {
+        $ownerId = new UserId(Uuid::v7());
+        $audit = new SpyAuditLogger();
+        $sut = new CreateOrganizationCommandHandler(
+            new InMemoryOrganizationRepository(),
+            $audit,
+            new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
+        );
+
+        $organization = $sut(new CreateOrganizationCommand(
+            ownerUserId: $ownerId,
+            name: 'Acme',
+            slug: 'acme-inc',
+        ));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(CreateOrganizationCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(CreateOrganizationCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $organization->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($ownerId));
+        self::assertArrayHasKey('after_state', $entry->metadata);
+        self::assertSame((string) $organization->id(), $entry->metadata['after_state']['id']);
+        self::assertSame('Acme', $entry->metadata['after_state']['name']);
+        self::assertSame('acme-inc', $entry->metadata['after_state']['slug']);
+        self::assertSame((string) $ownerId, $entry->metadata['after_state']['owner_user_id']);
     }
 }

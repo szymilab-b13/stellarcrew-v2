@@ -581,7 +581,8 @@
       "actionGroups": {
         "user_management": "User management",
         "workspaces": "Workspaces",
-        "projects": "Projects"
+        "projects": "Projects",
+        "organizations": "Organizations"
       },
       "resourceType": "Resource type",
       "resourceTypePlaceholder": "e.g. User",
@@ -642,7 +643,9 @@
       "projects.project.created": "Created project",
       "projects.project.updated": "Updated project",
       "projects.project.deleted": "Deleted project",
-      "projects.project.restored": "Restored project"
+      "projects.project.restored": "Restored project",
+      "organizations.organization.created": "Created organization",
+      "organizations.organization.updated": "Updated organization"
     },
     "undoDialog": {
       "title": "Undo this action?",

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Organizations\Application;
 
+use Modules\Core\Api\AuditLoggerInterface;
+use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Organizations\Domain\Organization;
 use Modules\Organizations\Domain\OrganizationRepository;
 use Modules\Organizations\Domain\OrganizationSlugGenerator;
@@ -16,8 +18,13 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 final readonly class UpdateOrganizationCommandHandler
 {
+    public const string AUDIT_ACTION = 'organizations.organization.updated';
+
+    public const string AUDIT_RESOURCE_TYPE = 'organization';
+
     public function __construct(
         private OrganizationRepository $organizations,
+        private AuditLoggerInterface $audit,
         private Clock $clock,
     ) {
     }
@@ -37,6 +44,7 @@ final readonly class UpdateOrganizationCommandHandler
             );
         }
 
+        $before = CreateOrganizationCommandHandler::snapshot($organization);
         $now = $this->clock->now();
 
         if ($command->name !== null) {
@@ -48,6 +56,18 @@ final readonly class UpdateOrganizationCommandHandler
         }
 
         $this->organizations->save($organization);
+
+        $this->audit->log(new AuditEntry(
+            userId: $command->actorId,
+            action: self::AUDIT_ACTION,
+            occurredAt: $now,
+            resourceType: self::AUDIT_RESOURCE_TYPE,
+            resourceId: (string) $organization->id(),
+            metadata: [
+                'before_state' => $before,
+                'after_state' => CreateOrganizationCommandHandler::snapshot($organization),
+            ],
+        ));
 
         return $organization;
     }

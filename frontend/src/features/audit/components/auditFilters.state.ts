@@ -34,6 +34,10 @@ export const AUDIT_ACTIONS: ReadonlyArray<{ group: string; actions: string[] }> 
       'projects.project.restored',
     ],
   },
+  {
+    group: 'organizations',
+    actions: ['organizations.organization.created', 'organizations.organization.updated'],
+  },
 ];
 
 export interface AuditFiltersValue {
@@ -73,6 +77,8 @@ const REVERSIBLE_ACTIONS = new Set<string>([
   'projects.project.updated',
   'projects.project.deleted',
   'projects.project.restored',
+  'organizations.organization.created',
+  'organizations.organization.updated',
 ]);
 
 export function isReversibleAction(action: string): boolean {
