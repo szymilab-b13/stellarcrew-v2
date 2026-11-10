@@ -8,6 +8,8 @@ use DateTimeInterface;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Organizations\Application\CreateOrganizationCommand;
 use Modules\Organizations\Application\CreateOrganizationCommandHandler;
+use Modules\Organizations\Application\Query\GetMyOrganizationQuery;
+use Modules\Organizations\Application\Query\GetMyOrganizationQueryHandler;
 use Modules\Organizations\Application\UpdateOrganizationCommand;
 use Modules\Organizations\Application\UpdateOrganizationCommandHandler;
 use Modules\Organizations\Domain\Organization;
@@ -26,6 +28,7 @@ final readonly class OrganizationsController
     public function __construct(
         private CreateOrganizationCommandHandler $create,
         private UpdateOrganizationCommandHandler $update,
+        private GetMyOrganizationQueryHandler $getMy,
     ) {
     }
 
@@ -90,6 +93,32 @@ final readonly class OrganizationsController
             organizationId: OrganizationId::fromString($id),
             name: $input->name,
             slug: $input->slug,
+        ));
+
+        return new JsonResponse($this->serialise($organization), Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/my/organization',
+        name: 'organizations_get_my',
+        methods: ['GET'],
+    )]
+    #[OA\Get(
+        path: '/api/my/organization',
+        summary: 'Fetch the organization owned by the current user.',
+        tags: ['organizations'],
+        responses: [
+            new OA\Response(response: 200, description: 'Organization returned'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 404, description: 'Current user does not own an organization'),
+        ],
+    )]
+    public function getMy(
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $organization = ($this->getMy)(new GetMyOrganizationQuery(
+            actorId: $user->domainUser()->id(),
         ));
 
         return new JsonResponse($this->serialise($organization), Response::HTTP_OK);

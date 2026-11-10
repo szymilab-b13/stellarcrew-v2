@@ -188,6 +188,53 @@ final class OrganizationsEndpointTest extends WebTestCase
         self::assertStringStartsWith('beta-', $payload['slug']);
     }
 
+    public function testShouldReturn401OnGetMyOrganizationWithoutToken(): void
+    {
+        $this->getJson('/api/my/organization', null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnGetMyOrganizationWhenUserOwnsNoOrganization(): void
+    {
+        $token = $this->seedAdminAndLogin();
+
+        $this->getJson('/api/my/organization', $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturnCurrentUserOrganizationOnGetMyOrganization(): void
+    {
+        [$userId, $token] = $this->seedAdminAndLoginWithId();
+        $this->postJson('/api/organizations', ['name' => 'Acme', 'slug' => 'acme'], $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $created = $this->decode();
+
+        $this->getJson('/api/my/organization', $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame($created['id'], $payload['id']);
+        self::assertSame('Acme', $payload['name']);
+        self::assertSame('acme', $payload['slug']);
+        self::assertSame((string) $userId, $payload['ownerUserId']);
+    }
+
+    public function testShouldReturn404OnGetMyOrganizationForInvitedUserWithOtherOwnerOrganization(): void
+    {
+        $ownerToken = $this->seedAdminAndLogin();
+        $this->postJson('/api/organizations', ['name' => 'Acme'], $ownerToken);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+
+        $this->seedAdmin('invited@example.com', self::DEFAULT_PASSWORD);
+        $invitedToken = $this->login('invited@example.com', self::DEFAULT_PASSWORD);
+
+        $this->getJson('/api/my/organization', $invitedToken);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
     private function seedAdminAndLogin(): string
     {
         $this->seedAdmin(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
@@ -266,6 +313,16 @@ final class OrganizationsEndpointTest extends WebTestCase
         }
 
         $this->client->request('PUT', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
+    }
+
+    private function getJson(string $path, ?string $token): void
+    {
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        if ($token !== null) {
+            $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
+        }
+
+        $this->client->request('GET', $path, server: $server);
     }
 
     /**
