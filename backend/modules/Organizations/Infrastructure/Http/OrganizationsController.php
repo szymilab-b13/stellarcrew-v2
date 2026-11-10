@@ -8,7 +8,10 @@ use DateTimeInterface;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Organizations\Application\CreateOrganizationCommand;
 use Modules\Organizations\Application\CreateOrganizationCommandHandler;
+use Modules\Organizations\Application\UpdateOrganizationCommand;
+use Modules\Organizations\Application\UpdateOrganizationCommandHandler;
 use Modules\Organizations\Domain\Organization;
+use Modules\Shared\Kernel\OrganizationId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,8 +21,11 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 final readonly class OrganizationsController
 {
+    private const string ORGANIZATION_ID_REQUIREMENT = '[0-9a-fA-F-]{36}';
+
     public function __construct(
         private CreateOrganizationCommandHandler $create,
+        private UpdateOrganizationCommandHandler $update,
     ) {
     }
 
@@ -52,6 +58,41 @@ final readonly class OrganizationsController
         ));
 
         return new JsonResponse($this->serialise($organization), Response::HTTP_CREATED);
+    }
+
+    #[Route(
+        '/api/organizations/{id}',
+        name: 'organizations_update',
+        requirements: ['id' => self::ORGANIZATION_ID_REQUIREMENT],
+        methods: ['PUT'],
+    )]
+    #[OA\Put(
+        path: '/api/organizations/{id}',
+        summary: 'Update an organization name or slug. Owner-only.',
+        tags: ['organizations'],
+        responses: [
+            new OA\Response(response: 200, description: 'Organization updated'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not the owner of the organization'),
+            new OA\Response(response: 404, description: 'Organization not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function update(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+        #[MapRequestPayload]
+        UpdateOrganizationRequest $input,
+    ): JsonResponse {
+        $organization = ($this->update)(new UpdateOrganizationCommand(
+            actorId: $user->domainUser()->id(),
+            organizationId: OrganizationId::fromString($id),
+            name: $input->name,
+            slug: $input->slug,
+        ));
+
+        return new JsonResponse($this->serialise($organization), Response::HTTP_OK);
     }
 
     /**

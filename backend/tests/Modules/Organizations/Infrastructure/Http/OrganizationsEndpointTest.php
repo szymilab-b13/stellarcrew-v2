@@ -97,6 +97,97 @@ final class OrganizationsEndpointTest extends WebTestCase
         self::assertSame('ORGANIZATION_ALREADY_EXISTS', $payload['error']['code']);
     }
 
+    public function testShouldReturn401OnUpdateWithoutToken(): void
+    {
+        $this->putJson('/api/organizations/'.Uuid::v7(), ['name' => 'Renamed'], null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnUpdateWhenOrganizationMissing(): void
+    {
+        $token = $this->seedAdminAndLogin();
+
+        $this->putJson('/api/organizations/'.Uuid::v7(), ['name' => 'Renamed'], $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnUpdateWhenActorIsNotOwner(): void
+    {
+        $ownerToken = $this->seedAdminAndLogin();
+        $this->postJson('/api/organizations', ['name' => 'Owned'], $ownerToken);
+        $organizationId = (string) $this->decode()['id'];
+
+        $this->seedAdmin('intruder@example.com', self::DEFAULT_PASSWORD);
+        $intruderToken = $this->login('intruder@example.com', self::DEFAULT_PASSWORD);
+
+        $this->putJson('/api/organizations/'.$organizationId, ['name' => 'Hijacked'], $intruderToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn422OnUpdateWhenSlugIsNotKebabCase(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $this->postJson('/api/organizations', ['name' => 'Acme'], $token);
+        $organizationId = (string) $this->decode()['id'];
+
+        $this->putJson('/api/organizations/'.$organizationId, ['slug' => 'Not Kebab'], $token);
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn422OnUpdateWhenNameIsBlank(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $this->postJson('/api/organizations', ['name' => 'Acme'], $token);
+        $organizationId = (string) $this->decode()['id'];
+
+        $this->putJson('/api/organizations/'.$organizationId, ['name' => ''], $token);
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldUpdateOrganizationNameAndSlugAsOwner(): void
+    {
+        $token = $this->seedAdminAndLogin();
+        $this->postJson('/api/organizations', ['name' => 'Acme'], $token);
+        $created = $this->decode();
+        $organizationId = (string) $created['id'];
+
+        $this->putJson('/api/organizations/'.$organizationId, ['name' => 'Renamed', 'slug' => 'renamed-slug'], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('Renamed', $payload['name']);
+        self::assertSame('renamed-slug', $payload['slug']);
+        self::assertSame($organizationId, $payload['id']);
+
+        $stored = $this->organizations()->findById(OrganizationId::fromString($organizationId));
+        self::assertNotNull($stored);
+        self::assertSame('Renamed', $stored->name());
+        self::assertSame('renamed-slug', $stored->slug());
+    }
+
+    public function testShouldAppendRandomSuffixOnUpdateWhenSlugClashesWithAnotherOrganization(): void
+    {
+        $ownerToken = $this->seedAdminAndLogin();
+        $this->postJson('/api/organizations', ['name' => 'Acme', 'slug' => 'acme'], $ownerToken);
+        $ownerOrgId = (string) $this->decode()['id'];
+
+        $this->seedAdmin('other@example.com', self::DEFAULT_PASSWORD);
+        $otherToken = $this->login('other@example.com', self::DEFAULT_PASSWORD);
+        $this->postJson('/api/organizations', ['name' => 'Beta', 'slug' => 'beta'], $otherToken);
+
+        $this->putJson('/api/organizations/'.$ownerOrgId, ['slug' => 'beta'], $ownerToken);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertNotSame('beta', $payload['slug']);
+        self::assertStringStartsWith('beta-', $payload['slug']);
+    }
+
     private function seedAdminAndLogin(): string
     {
         $this->seedAdmin(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
@@ -162,6 +253,19 @@ final class OrganizationsEndpointTest extends WebTestCase
         }
 
         $this->client->request('POST', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     */
+    private function putJson(string $path, array $body, ?string $token): void
+    {
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        if ($token !== null) {
+            $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
+        }
+
+        $this->client->request('PUT', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
     }
 
     /**
