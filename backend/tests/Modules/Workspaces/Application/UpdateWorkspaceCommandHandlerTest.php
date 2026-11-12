@@ -8,6 +8,7 @@ use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository;
 use DateTimeImmutable;
 use Modules\Shared\Kernel\FrozenClock;
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Application\CreateWorkspaceCommand;
@@ -27,7 +28,7 @@ final class UpdateWorkspaceCommandHandlerTest extends TestCase
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
         $create = new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock);
-        $workspace = $create(new CreateWorkspaceCommand($ownerId, 'Acme'));
+        $workspace = $create(new CreateWorkspaceCommand($ownerId, new OrganizationId(Uuid::v7()), 'Acme'));
         $audit = new SpyAuditLogger();
         $sut = new UpdateWorkspaceCommandHandler($repo, $audit, $clock);
 
@@ -56,7 +57,7 @@ final class UpdateWorkspaceCommandHandlerTest extends TestCase
         $repo = new InMemoryWorkspaceRepository();
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
-        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
+        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, new OrganizationId(Uuid::v7()), 'Acme'));
         $sut = new UpdateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock);
 
         $this->expectException(WorkspacePermissionDeniedException::class);
@@ -69,7 +70,7 @@ final class UpdateWorkspaceCommandHandlerTest extends TestCase
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
         $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(
-            new CreateWorkspaceCommand($ownerId, 'Acme', '#111111', 'AA'),
+            new CreateWorkspaceCommand($ownerId, new OrganizationId(Uuid::v7()), 'Acme', '#111111', 'AA'),
         );
         $audit = new SpyAuditLogger();
         $sut = new UpdateWorkspaceCommandHandler($repo, $audit, $clock);
@@ -95,7 +96,7 @@ final class UpdateWorkspaceCommandHandlerTest extends TestCase
         $repo = new InMemoryWorkspaceRepository();
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
-        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
+        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, new OrganizationId(Uuid::v7()), 'Acme'));
         $workspace->softDelete($clock->now());
 
         $repo->saveWorkspace($workspace);

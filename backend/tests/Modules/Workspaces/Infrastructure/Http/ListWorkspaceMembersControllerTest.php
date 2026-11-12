@@ -14,6 +14,7 @@ use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
 use Modules\Auth\Domain\UserRole;
 use Modules\Auth\Infrastructure\Security\HashablePlaintextUser;
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Domain\Workspace;
@@ -187,6 +188,7 @@ final class ListWorkspaceMembersControllerTest extends WebTestCase
             'shared-'.Uuid::v7(),
             '#8B5CF6',
             $ownerId,
+            new OrganizationId(Uuid::v7()),
             $joinedAt,
         );
         $repo = $this->workspaces();

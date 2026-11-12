@@ -9,6 +9,7 @@ use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
 use Modules\Auth\Infrastructure\Security\HashablePlaintextUser;
 use Modules\Projects\Domain\ProjectRepository;
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\ProjectId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
@@ -774,7 +775,7 @@ final class ProjectsEndpointTest extends WebTestCase
     private function seedWorkspaceWithOwner(UserId $ownerId, string $name, string $slug): Workspace
     {
         $now = $this->now();
-        $workspace = Workspace::create(WorkspaceId::generate(), $name, $slug, '#8B5CF6', $ownerId, $now);
+        $workspace = Workspace::create(WorkspaceId::generate(), $name, $slug, '#8B5CF6', $ownerId, new OrganizationId(Uuid::v7()), $now);
         $repo = $this->workspaces();
         $repo->saveWorkspace($workspace);
         $repo->saveMembership(WorkspaceMember::join($workspace->id(), $ownerId, WorkspaceRole::Owner, $now));

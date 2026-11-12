@@ -6,6 +6,7 @@ namespace App\Tests\Modules\Workspaces\Domain;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Domain\Workspace;
@@ -25,6 +26,7 @@ final class WorkspaceTest extends TestCase
             'acme-corp',
             '#3B82F6',
             $owner,
+            new OrganizationId(Uuid::v7()),
             $now,
         );
 
@@ -48,6 +50,7 @@ final class WorkspaceTest extends TestCase
             'slug-x',
             '#3B82F6',
             new UserId(Uuid::v7()),
+            new OrganizationId(Uuid::v7()),
             new DateTimeImmutable('2026-11-06T10:00:00+00:00'),
         );
     }
@@ -62,6 +65,7 @@ final class WorkspaceTest extends TestCase
             'acme',
             'neon',
             new UserId(Uuid::v7()),
+            new OrganizationId(Uuid::v7()),
             new DateTimeImmutable('2026-11-06T10:00:00+00:00'),
         );
     }
@@ -76,6 +80,7 @@ final class WorkspaceTest extends TestCase
             'acme',
             '#FFF',
             new UserId(Uuid::v7()),
+            new OrganizationId(Uuid::v7()),
             new DateTimeImmutable('2026-11-06T10:00:00+00:00'),
         );
     }
@@ -90,6 +95,7 @@ final class WorkspaceTest extends TestCase
             'Acme HQ',
             '#3B82F6',
             new UserId(Uuid::v7()),
+            new OrganizationId(Uuid::v7()),
             new DateTimeImmutable('2026-11-06T10:00:00+00:00'),
         );
     }
@@ -134,6 +140,7 @@ final class WorkspaceTest extends TestCase
             'acme-corp',
             '#3B82F6',
             new UserId(Uuid::v7()),
+            new OrganizationId(Uuid::v7()),
             new DateTimeImmutable($isoDate),
         );
     }

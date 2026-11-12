@@ -9,6 +9,7 @@ use App\Tests\Fixtures\Core\SpyEventDispatcher;
 use App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository;
 use DateTimeImmutable;
 use Modules\Shared\Kernel\FrozenClock;
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Api\Event\WorkspaceDeleted;
@@ -29,7 +30,7 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
         $repo = new InMemoryWorkspaceRepository();
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
-        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
+        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, new OrganizationId(Uuid::v7()), 'Acme'));
         $sut = new DeleteWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock, new SpyEventDispatcher());
 
         $sut(new DeleteWorkspaceCommand($workspace->id(), $ownerId));
@@ -58,7 +59,7 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
         $repo = new InMemoryWorkspaceRepository();
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
-        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
+        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, new OrganizationId(Uuid::v7()), 'Acme'));
         $sut = new DeleteWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock, new SpyEventDispatcher());
 
         $this->expectException(WorkspacePermissionDeniedException::class);
@@ -71,7 +72,7 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
         $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(
-            new CreateWorkspaceCommand($ownerId, 'Acme Corp', '#FF0000', 'AC'),
+            new CreateWorkspaceCommand($ownerId, new OrganizationId(Uuid::v7()), 'Acme Corp', '#FF0000', 'AC'),
         );
         $audit = new SpyAuditLogger();
         $sut = new DeleteWorkspaceCommandHandler($repo, $audit, $clock, new SpyEventDispatcher());
@@ -97,7 +98,7 @@ final class DeleteWorkspaceCommandHandlerTest extends TestCase
         $repo = new InMemoryWorkspaceRepository();
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $ownerId = new UserId(Uuid::v7());
-        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, 'Acme'));
+        $workspace = (new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock))(new CreateWorkspaceCommand($ownerId, new OrganizationId(Uuid::v7()), 'Acme'));
         $events = new SpyEventDispatcher();
         $sut = new DeleteWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock, $events);
 

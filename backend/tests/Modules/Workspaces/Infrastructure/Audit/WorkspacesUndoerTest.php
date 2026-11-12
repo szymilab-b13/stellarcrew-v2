@@ -11,6 +11,7 @@ use Modules\Audit\Api\Exception\UndoConflictException;
 use Modules\Shared\Kernel\AuditEntryId;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\FrozenClock;
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Application\CreateWorkspaceCommandHandler;
@@ -206,6 +207,7 @@ final class WorkspacesUndoerTest extends TestCase
             strtolower(str_replace(' ', '-', $name)),
             $iconColor,
             new UserId(Uuid::v7()),
+            new OrganizationId(Uuid::v7()),
             new DateTimeImmutable('2026-11-07T10:00:00+00:00'),
             $iconInitials,
         );

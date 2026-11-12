@@ -11,6 +11,7 @@ use function mb_strlen;
 use function mb_strtoupper;
 use function mb_substr;
 
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 
@@ -35,6 +36,7 @@ class Workspace
         private string $iconColor,
         private string $iconInitials,
         private readonly UserId $ownerId,
+        private readonly OrganizationId $organizationId,
         private readonly DateTimeImmutable $createdAt,
         private DateTimeImmutable $updatedAt,
         private ?DateTimeImmutable $deletedAt = null,
@@ -51,6 +53,7 @@ class Workspace
         string $slug,
         string $iconColor,
         UserId $ownerId,
+        OrganizationId $organizationId,
         DateTimeImmutable $now,
         ?string $iconInitials = null,
     ): self {
@@ -61,6 +64,7 @@ class Workspace
             $iconColor,
             $iconInitials ?? self::deriveInitials($name),
             $ownerId,
+            $organizationId,
             $now,
             $now,
         );
@@ -104,6 +108,11 @@ class Workspace
     public function ownerId(): UserId
     {
         return $this->ownerId;
+    }
+
+    public function organizationId(): OrganizationId
+    {
+        return $this->organizationId;
     }
 
     public function createdAt(): DateTimeImmutable

@@ -8,8 +8,11 @@ use function array_map;
 use function array_values;
 
 use Modules\Auth\Infrastructure\Security\SecurityUser;
+use Modules\Organizations\Api\Dto\OrganizationView;
+use Modules\Organizations\Api\OrganizationsApi;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Api\Dto\WorkspaceView;
+use Modules\Workspaces\Api\Exception\OwnerHasNoOrganizationException;
 use Modules\Workspaces\Api\WorkspacesApi;
 use Modules\Workspaces\Application\CreateWorkspaceCommand;
 use Modules\Workspaces\Application\CreateWorkspaceCommandHandler;
@@ -30,6 +33,7 @@ final readonly class WorkspacesController
 
     public function __construct(
         private WorkspacesApi $workspaces,
+        private OrganizationsApi $organizations,
         private CreateWorkspaceCommandHandler $create,
         private UpdateWorkspaceCommandHandler $update,
         private DeleteWorkspaceCommandHandler $delete,
@@ -70,8 +74,15 @@ final readonly class WorkspacesController
         #[MapRequestPayload]
         CreateWorkspaceRequest $input,
     ): JsonResponse {
+        $ownerId = $user->domainUser()->id();
+        $organization = $this->organizations->findByOwner($ownerId);
+        if (!$organization instanceof OrganizationView) {
+            throw OwnerHasNoOrganizationException::forOwner($ownerId);
+        }
+
         $workspace = ($this->create)(new CreateWorkspaceCommand(
-            ownerId: $user->domainUser()->id(),
+            ownerId: $ownerId,
+            organizationId: $organization->id,
             name: $input->name,
             iconColor: $input->iconColor,
             iconInitials: $input->iconInitials,

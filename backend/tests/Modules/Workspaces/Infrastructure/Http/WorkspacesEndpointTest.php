@@ -8,6 +8,9 @@ use DateTimeImmutable;
 use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
 use Modules\Auth\Infrastructure\Security\HashablePlaintextUser;
+use Modules\Organizations\Domain\Organization;
+use Modules\Organizations\Domain\OrganizationRepository;
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
 use Modules\Workspaces\Domain\Workspace;
@@ -323,13 +326,31 @@ final class WorkspacesEndpointTest extends WebTestCase
         $users = self::getContainer()->get(UserRepository::class);
         $users->save($user);
 
+        $this->seedOrganizationForOwner($user->id());
+
         return $user;
+    }
+
+    private function seedOrganizationForOwner(UserId $ownerId): Organization
+    {
+        $organization = Organization::create(
+            OrganizationId::generate(),
+            "Admin's Organization",
+            'org-'.substr($ownerId->value->toRfc4122(), 0, 8),
+            $ownerId,
+            $this->now(),
+        );
+        /** @var OrganizationRepository $organizations */
+        $organizations = self::getContainer()->get(OrganizationRepository::class);
+        $organizations->save($organization);
+
+        return $organization;
     }
 
     private function seedWorkspaceWithOwner(UserId $ownerId, string $name, string $slug): Workspace
     {
         $now = $this->now();
-        $workspace = Workspace::create(WorkspaceId::generate(), $name, $slug, '#8B5CF6', $ownerId, $now);
+        $workspace = Workspace::create(WorkspaceId::generate(), $name, $slug, '#8B5CF6', $ownerId, new OrganizationId(Uuid::v7()), $now);
         $repo = $this->workspaces();
         $repo->saveWorkspace($workspace);
         $repo->saveMembership(WorkspaceMember::join($workspace->id(), $ownerId, WorkspaceRole::Owner, $now));

@@ -41,6 +41,7 @@ final readonly class CreateWorkspaceCommandHandler
             $slug,
             $command->iconColor ?? self::DEFAULT_ICON_COLOR,
             $command->ownerId,
+            $command->organizationId,
             $now,
             $command->iconInitials,
         );
@@ -76,6 +77,7 @@ final readonly class CreateWorkspaceCommandHandler
             'icon_color' => $workspace->iconColor(),
             'icon_initials' => $workspace->iconInitials(),
             'owner_id' => (string) $workspace->ownerId(),
+            'organization_id' => (string) $workspace->organizationId(),
         ];
     }
 

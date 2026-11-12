@@ -15,6 +15,7 @@
         <field name="iconColor" type="string" column="icon_color" length="20" nullable="false"/>
         <field name="iconInitials" type="string" column="icon_initials" length="3" nullable="false"/>
         <field name="ownerId" type="user_id_vo" column="owner_id" nullable="false"/>
+        <field name="organizationId" type="organization_id_vo" column="organization_id" nullable="false"/>
         <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
         <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
         <field name="deletedAt" type="datetimetz_immutable" column="deleted_at" nullable="true"/>

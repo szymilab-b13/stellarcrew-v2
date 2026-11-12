@@ -92,6 +92,9 @@ services:
     Modules\Organizations\Domain\OrganizationRepository:
         alias: Modules\Organizations\Infrastructure\Doctrine\Repository\DoctrineOrganizationRepository
 
+    Modules\Organizations\Api\OrganizationsApi:
+        alias: Modules\Organizations\Infrastructure\Api\DefaultOrganizationsApi
+
     # UserManagement module bindings
     Modules\UserManagement\Domain\UserProfileRepository:
         alias: Modules\UserManagement\Infrastructure\Doctrine\Repository\DoctrineUserProfileRepository

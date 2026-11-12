@@ -8,6 +8,7 @@ use App\Tests\Fixtures\Core\SpyAuditLogger;
 use App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository;
 use DateTimeImmutable;
 use Modules\Shared\Kernel\FrozenClock;
+use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Workspaces\Application\CreateWorkspaceCommand;
 use Modules\Workspaces\Application\CreateWorkspaceCommandHandler;
@@ -27,12 +28,14 @@ final class CreateWorkspaceCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00')),
         );
 
-        $workspace = $sut(new CreateWorkspaceCommand($ownerId, 'Acme Corp'));
+        $organizationId = new OrganizationId(Uuid::v7());
+        $workspace = $sut(new CreateWorkspaceCommand($ownerId, $organizationId, 'Acme Corp'));
 
         self::assertSame(1, $repo->count());
         self::assertSame('Acme Corp', $workspace->name());
         self::assertSame('acme-corp', $workspace->slug());
         self::assertTrue($workspace->ownerId()->equals($ownerId));
+        self::assertTrue($workspace->organizationId()->equals($organizationId));
         $membership = $repo->findMembership($workspace->id(), $ownerId);
         self::assertNotNull($membership);
         self::assertSame(WorkspaceRole::Owner, $membership->role());
@@ -43,9 +46,9 @@ final class CreateWorkspaceCommandHandlerTest extends TestCase
         $repo = new InMemoryWorkspaceRepository();
         $clock = new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00'));
         $sut = new CreateWorkspaceCommandHandler($repo, new SpyAuditLogger(), $clock);
-        $sut(new CreateWorkspaceCommand(new UserId(Uuid::v7()), 'Acme'));
+        $sut(new CreateWorkspaceCommand(new UserId(Uuid::v7()), new OrganizationId(Uuid::v7()), 'Acme'));
 
-        $workspace = $sut(new CreateWorkspaceCommand(new UserId(Uuid::v7()), 'Acme'));
+        $workspace = $sut(new CreateWorkspaceCommand(new UserId(Uuid::v7()), new OrganizationId(Uuid::v7()), 'Acme'));
 
         self::assertNotSame('acme', $workspace->slug());
         self::assertStringStartsWith('acme-', $workspace->slug());
@@ -62,7 +65,8 @@ final class CreateWorkspaceCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable('2026-11-06T10:00:00+00:00')),
         );
 
-        $workspace = $sut(new CreateWorkspaceCommand($ownerId, 'Acme Corp', '#FF0000', 'AC'));
+        $organizationId = new OrganizationId(Uuid::v7());
+        $workspace = $sut(new CreateWorkspaceCommand($ownerId, $organizationId, 'Acme Corp', '#FF0000', 'AC'));
 
         self::assertCount(1, $audit->entries);
         $entry = $audit->entries[0];
@@ -77,5 +81,6 @@ final class CreateWorkspaceCommandHandlerTest extends TestCase
         self::assertSame('#FF0000', $entry->metadata['after_state']['icon_color']);
         self::assertSame('AC', $entry->metadata['after_state']['icon_initials']);
         self::assertSame((string) $ownerId, $entry->metadata['after_state']['owner_id']);
+        self::assertSame((string) $organizationId, $entry->metadata['after_state']['organization_id']);
     }
 }

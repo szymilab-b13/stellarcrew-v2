@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Workspaces\Infrastructure\Api;
 
+use Modules\Organizations\Api\Dto\OrganizationView;
+use Modules\Organizations\Api\OrganizationsApi;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkspaceId;
@@ -13,6 +15,7 @@ use Modules\Workspaces\Api\Exception\CannotRemoveOwnerException;
 use Modules\Workspaces\Api\Exception\InvalidMemberRoleException;
 use Modules\Workspaces\Api\Exception\MemberAlreadyExistsException;
 use Modules\Workspaces\Api\Exception\MemberNotFoundException;
+use Modules\Workspaces\Api\Exception\OwnerHasNoOrganizationException;
 use Modules\Workspaces\Api\WorkspacesApi;
 use Modules\Workspaces\Application\AssignMemberCommand;
 use Modules\Workspaces\Application\AssignMemberCommandHandler;
@@ -35,13 +38,23 @@ final readonly class DefaultWorkspacesApi implements WorkspacesApi
         private ChangeMemberRoleCommandHandler $changeMemberRole,
         private RemoveMemberCommandHandler $removeMember,
         private WorkspaceRepository $workspaces,
+        private OrganizationsApi $organizations,
         private Clock $clock,
     ) {
     }
 
     public function createForOwner(UserId $ownerId, string $name): WorkspaceView
     {
-        $workspace = ($this->create)(new CreateWorkspaceCommand($ownerId, $name));
+        $organization = $this->organizations->findByOwner($ownerId);
+        if (!$organization instanceof OrganizationView) {
+            throw OwnerHasNoOrganizationException::forOwner($ownerId);
+        }
+
+        $workspace = ($this->create)(new CreateWorkspaceCommand(
+            ownerId: $ownerId,
+            organizationId: $organization->id,
+            name: $name,
+        ));
 
         return $this->toView($workspace);
     }

@@ -19,6 +19,7 @@ use Modules\Workspaces\Api\Exception\CannotRemoveOwnerException;
 use Modules\Workspaces\Api\Exception\InvalidMemberRoleException;
 use Modules\Workspaces\Api\Exception\MemberAlreadyExistsException;
 use Modules\Workspaces\Api\Exception\MemberNotFoundException;
+use Modules\Workspaces\Api\Exception\OwnerHasNoOrganizationException;
 use Modules\Workspaces\Domain\WorkspaceNotFoundException;
 use Modules\Workspaces\Domain\WorkspacePermissionDeniedException;
 
@@ -103,6 +104,10 @@ final readonly class ExceptionListener
 
         if ($throwable instanceof OwnerAlreadyHasOrganizationException) {
             return [Response::HTTP_CONFLICT, 'ORGANIZATION_ALREADY_EXISTS', null];
+        }
+
+        if ($throwable instanceof OwnerHasNoOrganizationException) {
+            return [Response::HTTP_CONFLICT, 'OWNER_HAS_NO_ORGANIZATION', null];
         }
 
         if ($throwable instanceof AdminMustBeDowngradedFirstException) {
