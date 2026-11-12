@@ -730,6 +730,9 @@
       "workspaceUx": {
         "title": "WORKSPACE UX — overview dashboard + context-aware menu + 4-col grid"
       },
+      "organization": {
+        "title": "ORGANIZATION — top-level tenant (owner 1:1, auto-utworzenie przy signupie)"
+      },
       "projectsLayer": {
         "title": "PROJECTS — warstwa Workspace → Project (settings, members, tasks)"
       },
@@ -1089,6 +1092,39 @@
       },
       "BL-PROJ-015": {
         "story": "Strona Project Settings (`/workspace/:wsId/project/:projId/settings`): formularz edycji (name / slug / description) + sekcja Danger Zone z buttonem Delete (confirm modal, redirect do `/workspace/:wsId/projects` + toast z linkiem do Undo via Audit)."
+      },
+      "BL-ORG-001": {
+        "story": "Agregat Organization + OrganizationId VO (UUID v7) + wyjątki domenowe. Lifecycle: create / rename / changeSlug / softDelete / restore. Guardy: name 1-100, slug kebab-case 1-120. Relacja 1:1 do ownera (UserId) egzekwowana na poziomie repo."
+      },
+      "BL-ORG-002": {
+        "story": "Publiczne API modułu Organizations — `OrganizationsApi` (findById / findByOwner / findBySlug / exists), DTO `OrganizationView` i eventy integracyjne (OrganizationCreated / Renamed / Deleted / Restored) dla innych modułów."
+      },
+      "BL-ORG-003": {
+        "story": "Mapowanie Doctrine XML dla agregatu Organization + migracja Postgres: nowy schemat `organizations`, tabela `organizations.organizations`, partial unique indeksy na `(owner_user_id)` i `(slug)` WHERE deleted_at IS NULL, własny `OrganizationIdType`."
+      },
+      "BL-ORG-004": {
+        "story": "Command / handler `CreateOrganization` + POST `/api/organizations`. Auto-utworzenie przy signupie przez listener eventu `UserRegistered` (nazwa defaultowa „{displayName}'s Organization\"). Migracja workspaces dodaje kolumnę `organization_id` + backfill + indeks."
+      },
+      "BL-ORG-004b": {
+        "story": "Follow-up FK workspace: `workspaces.organization_id` NOT NULL + constraint FK + wpięcie `CreateWorkspaceCommand` tak, by ustawiał orgę aktualnego usera. Deferred — flagged w `questions-for-boss.md` (split vs monolith z BL-ORG-004)."
+      },
+      "BL-ORG-005": {
+        "story": "Command / handler `UpdateOrganization` (partial name / slug) + PUT `/api/organizations/{id}`. Owner-only (403 dla innych), 404 dla soft-deleted, unikalność slug retry z random suffix przy kolizji."
+      },
+      "BL-ORG-006": {
+        "story": "`GetMyOrganizationQuery` + GET `/api/my/organization` zwraca orgę ownera (null dla invited userów bez orgi). Zasila sidebar OrgIdHeader i przyszłe owner-only gating."
+      },
+      "BL-ORG-007": {
+        "story": "Integracja audytu Organizations: `AuditLogger` wpięty w handlery create / update, `OrganizationsUndoer` + `OrganizationsUndoDescriber` dostarczają Undo w Audit UI (Created → soft delete, Updated → restore poprzedniej nazwy + slug)."
+      },
+      "BL-ORG-008": {
+        "story": "Refactor sidebara: top-level `OrgIdHeader` (skrócony UUID + click-to-copy przez `useMyOrganization()`), menu zunifikowane w jedną sekcję „Ogólne\", Chat i Agenci dodani jako stuby, WorkspaceSwitcher zwężony (label + role pill usunięte)."
+      },
+      "BL-ORG-009": {
+        "story": "Strona Organization Settings (`/organization/settings`): formularz edycji (name / slug z live-sync) + Danger Zone placeholder (delete deferred). Deferred do Fazy 1 — nie potrzebne dla MVP."
+      },
+      "BL-ORG-010": {
+        "story": "Breadcrumbs owner / invited gating przez `useMyOrganization()`: owner widzi `{OrgName} > {WorkspaceName} > ...`, invited widzi `{WorkspaceName} > ...`. Deferred do Fazy 1."
       },
       "BL-PDOC-001": {
         "story": "Agregat ProjectDoc + VO (ProjectDocId / Slug / DisplayId) + enum DocType (ADR / Brief / Knowledge Base) + interfejs repo + szkielet ProjectDocsBundle."

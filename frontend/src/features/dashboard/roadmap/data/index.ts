@@ -10,6 +10,7 @@ import { CORE_MILESTONE } from './core';
 import { FLOWS_MILESTONE } from './flows';
 import { INTEGRATION_TESTS_MILESTONE } from './integrationTests';
 import { KNOWLEDGE_MILESTONE } from './knowledge';
+import { ORGANIZATION_MILESTONE } from './organization';
 import { PERMISSIONS_MILESTONE } from './permissions';
 import { PLUGINS_MILESTONE } from './plugins';
 import { PROJECT_DASHBOARDS_MILESTONE } from './projectDashboards';
@@ -34,6 +35,7 @@ export const ROADMAP: RoadmapMilestone[] = [
   WORKSPACE_UX_MILESTONE,
   INTEGRATION_TESTS_MILESTONE,
   PERMISSIONS_MILESTONE,
+  ORGANIZATION_MILESTONE,
   PROJECTS_MILESTONE,
   PROJECT_DOCS_MILESTONE,
   VARIABLES_MILESTONE,
