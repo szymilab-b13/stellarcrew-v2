@@ -9,7 +9,7 @@ export const ORGANIZATION_MILESTONE: RoadmapMilestone = {
     { id: 'BL-ORG-002', status: 'done', commit: '65b0205' },
     { id: 'BL-ORG-003', status: 'done', commit: '81cd616' },
     { id: 'BL-ORG-004', status: 'done', commit: '7f71483' },
-    { id: 'BL-ORG-004b', status: 'planned' },
+    { id: 'BL-ORG-004b', status: 'done', commit: 'b07a94d' },
     { id: 'BL-ORG-005', status: 'done', commit: '17bb242' },
     { id: 'BL-ORG-006', status: 'done', commit: 'bd946c7' },
     { id: 'BL-ORG-007', status: 'done', commit: 'd7e1732' },
