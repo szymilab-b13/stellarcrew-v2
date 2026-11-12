@@ -28,10 +28,10 @@ export async function install(payload: InstallPayload): Promise<void> {
   const formData = new FormData();
   formData.append('email', payload.email);
   formData.append('password', payload.password);
-  if (payload.displayName) formData.append('display_name', payload.displayName);
-  if (payload.instanceName) formData.append('instance_name', payload.instanceName);
+  if (payload.displayName) formData.append('displayName', payload.displayName);
+  if (payload.instanceName) formData.append('instanceName', payload.instanceName);
   if (payload.locale) formData.append('locale', payload.locale);
-  if (payload.workspaceName) formData.append('workspace_name', payload.workspaceName);
+  if (payload.workspaceName) formData.append('workspaceName', payload.workspaceName);
   if (payload.selectedAgentSlugs) {
     for (const slug of payload.selectedAgentSlugs) {
       formData.append('agents[]', slug);
