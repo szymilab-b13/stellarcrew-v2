@@ -159,8 +159,8 @@ describe('InstallWizard', () => {
     const sentForm = requestInit.body as FormData;
     expect(sentForm.get('email')).toBe('admin@example.com');
     expect(sentForm.get('password')).toBe('supersecret1');
-    expect(sentForm.get('display_name')).toBe('Tomek');
-    expect(sentForm.get('workspace_name')).toBe('Acme HQ');
+    expect(sentForm.get('displayName')).toBe('Tomek');
+    expect(sentForm.get('workspaceName')).toBe('Acme HQ');
     expect(sentForm.get('locale')).toBe('en');
   });
 

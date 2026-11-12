@@ -78,6 +78,30 @@ describe('RoadmapPanel', () => {
     expect(story).toHaveClass('line-through');
   });
 
+  it('should render the ORGANIZATION milestone with BL-ORG tasks, done commits and deferred planned entries', async () => {
+    render(<RoadmapPanel />);
+
+    const header = screen.getByText(/ORGANIZATION — top-level tenant/i);
+    await userEvent.click(header);
+
+    expect(screen.getByText('BL-ORG-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-ORG-004b')).toBeInTheDocument();
+    expect(screen.getByText('BL-ORG-008')).toBeInTheDocument();
+    expect(screen.getByText('BL-ORG-010')).toBeInTheDocument();
+
+    const commitLink = screen.getByRole('link', { name: /e2d66f2/ });
+    expect(commitLink).toHaveAttribute(
+      'href',
+      'https://github.com/Nessandro/stellarcrew-v2-private/commit/e2d66f2',
+    );
+
+    const doneStory = screen.getByText(/Organization aggregate with OrganizationId VO/i);
+    expect(doneStory).toHaveClass('line-through');
+
+    const deferredStory = screen.getByText(/Deferred to Phase 1 — not needed for MVP/i);
+    expect(deferredStory).not.toHaveClass('line-through');
+  });
+
   it('should render the WORKSPACES milestone with its BL-WS tasks and commit links', async () => {
     render(<RoadmapPanel />);
 

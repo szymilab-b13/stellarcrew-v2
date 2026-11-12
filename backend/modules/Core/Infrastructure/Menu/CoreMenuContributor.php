@@ -15,8 +15,8 @@ final readonly class CoreMenuContributor implements MenuContributor
     {
         return [
             new MenuSection(
-                id: 'overview',
-                labelKey: 'menu.sections.overview',
+                id: 'general',
+                labelKey: 'menu.sections.general',
                 order: 10,
                 items: [
                     new MenuItem(
@@ -25,6 +25,22 @@ final readonly class CoreMenuContributor implements MenuContributor
                         icon: 'LayoutDashboard',
                         path: '/dashboard',
                         order: 10,
+                    ),
+                    new MenuItem(
+                        id: 'chat',
+                        labelKey: 'menu.items.chat',
+                        icon: 'MessageSquare',
+                        path: '/chat',
+                        order: 30,
+                        disabledMilestoneKey: 'menu.workspaceContext.milestones.chat',
+                    ),
+                    new MenuItem(
+                        id: 'agents',
+                        labelKey: 'menu.items.agents',
+                        icon: 'Bot',
+                        path: '/agents',
+                        order: 40,
+                        disabledMilestoneKey: 'menu.workspaceContext.milestones.agents',
                     ),
                 ],
             ),

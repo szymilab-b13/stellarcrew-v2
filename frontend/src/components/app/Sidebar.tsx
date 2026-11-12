@@ -11,6 +11,7 @@ import { LanguageSwitcher } from '@/features/settings/LanguageSwitcher';
 import { ThemeToggle } from '@/features/theme/ThemeToggle';
 
 import { resolveIcon } from './iconMap';
+import { OrgIdHeader } from './OrgIdHeader';
 import { ProfileDropdown } from './ProfileDropdown';
 import { ProjectContextSection } from './ProjectContextSection';
 import { PINNED_MENU_LIMIT, usePinnedMenu } from './usePinnedMenu';
@@ -61,6 +62,26 @@ export function Sidebar() {
     const pinned = pins.isPinned(item.id);
     const canToggle = pinned || pins.canPinMore;
     const title = pinned ? t('menu.pinRemove') : t('menu.pinAdd');
+    const label = t(item.labelKey);
+
+    if (item.disabledMilestoneKey) {
+      const milestoneLabel = t(item.disabledMilestoneKey);
+      const tooltip = t('menu.workspaceContext.comingSoon', { milestone: milestoneLabel });
+      return (
+        <li key={item.id} className="relative">
+          <span
+            aria-disabled="true"
+            title={collapsed ? `${label} — ${tooltip}` : tooltip}
+            className={`relative flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-2 text-sm text-sc-text-muted opacity-60 ${
+              collapsed ? 'justify-center' : ''
+            }`}
+          >
+            <Icon size={16} aria-hidden />
+            {!collapsed ? <span className="flex-1 truncate">{label}</span> : null}
+          </span>
+        </li>
+      );
+    }
 
     function handleTogglePin(event: React.MouseEvent<HTMLButtonElement>) {
       event.preventDefault();
@@ -74,7 +95,7 @@ export function Sidebar() {
       <li key={item.id} className="group relative">
         <NavLink
           to={item.path}
-          title={collapsed ? t(item.labelKey) : undefined}
+          title={collapsed ? label : undefined}
           className={({ isActive }) =>
             `relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
               collapsed ? 'justify-center' : ''
@@ -86,7 +107,7 @@ export function Sidebar() {
           }
         >
           <Icon size={16} aria-hidden />
-          {!collapsed ? <span className="flex-1 truncate">{t(item.labelKey)}</span> : null}
+          {!collapsed ? <span className="flex-1 truncate">{label}</span> : null}
         </NavLink>
         {options.showStar && !collapsed ? (
           <button
@@ -113,7 +134,7 @@ export function Sidebar() {
     <aside
       className={`${widthClass} flex h-screen flex-col border-r border-sc-border bg-sc-bg-secondary transition-[width] duration-200`}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-sc-border px-3 py-3">
+      <div className="flex items-center justify-between gap-2 px-3 py-3">
         <div className={`flex items-center gap-2 ${collapsed ? 'mx-auto' : ''}`}>
           <Logo size={28} />
           {!collapsed ? (
@@ -135,7 +156,11 @@ export function Sidebar() {
         </button>
       </div>
 
-      <div className={`px-3 ${collapsed ? 'py-2' : 'py-3'}`}>
+      <div className={`px-3 ${collapsed ? 'py-1' : 'pt-0 pb-2'}`}>
+        <OrgIdHeader collapsed={collapsed} />
+      </div>
+
+      <div className={`border-b border-sc-border px-3 ${collapsed ? 'py-2' : 'pt-0 pb-3'}`}>
         <WorkspaceSwitcher collapsed={collapsed} />
       </div>
 

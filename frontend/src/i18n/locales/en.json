@@ -37,10 +37,15 @@
     "loading": "Loading menu…",
     "loadError": "Could not load the menu.",
     "greeting": "Signed in as {{name}}",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "orgIdLabel": "Organization ID",
+    "orgIdCopied": "Copied",
+    "orgIdLoading": "Loading organization…",
+    "orgIdCopyAria": "Copy organization ID: {{id}}"
   },
   "menu": {
     "sections": {
+      "general": "General",
       "overview": "Overview",
       "workspaces": "Workspaces",
       "workspace": "Workspace",
@@ -50,6 +55,8 @@
     },
     "items": {
       "dashboard": "Dashboard",
+      "chat": "Chat",
+      "agents": "Agents",
       "workspaces": "Workspaces",
       "workspaceOverview": "Overview",
       "workspaceProjects": "Projects",
@@ -73,6 +80,7 @@
       "milestones": {
         "projects": "PROJECTS",
         "agents": "AGENTS",
+        "chat": "CHAT",
         "scheduler": "SCHEDULER",
         "settings": "WORKSPACE_SETTINGS"
       }
@@ -581,7 +589,8 @@
       "actionGroups": {
         "user_management": "User management",
         "workspaces": "Workspaces",
-        "projects": "Projects"
+        "projects": "Projects",
+        "organizations": "Organizations"
       },
       "resourceType": "Resource type",
       "resourceTypePlaceholder": "e.g. User",
@@ -642,7 +651,9 @@
       "projects.project.created": "Created project",
       "projects.project.updated": "Updated project",
       "projects.project.deleted": "Deleted project",
-      "projects.project.restored": "Restored project"
+      "projects.project.restored": "Restored project",
+      "organizations.organization.created": "Created organization",
+      "organizations.organization.updated": "Updated organization"
     },
     "undoDialog": {
       "title": "Undo this action?",
@@ -718,6 +729,9 @@
       },
       "workspaceUx": {
         "title": "WORKSPACE UX — overview dashboard + context-aware menu + 4-col grid"
+      },
+      "organization": {
+        "title": "ORGANIZATION — top-level tenant (owner 1:1, auto-created on signup)"
       },
       "projectsLayer": {
         "title": "PROJECTS — Workspace → Project layer (settings, members, tasks)"
@@ -1078,6 +1092,39 @@
       },
       "BL-PROJ-015": {
         "story": "Project Settings page (`/workspace/:wsId/project/:projId/settings`): edit form (name / slug / description) + Danger Zone section with Delete button (confirm modal, redirect to `/workspace/:wsId/projects` and toast linking to Undo via Audit)."
+      },
+      "BL-ORG-001": {
+        "story": "Organization aggregate with OrganizationId VO (UUID v7) + domain exceptions. Lifecycle: create / rename / changeSlug / softDelete / restore. Guards: name 1-100, slug kebab-case 1-120. 1:1 relation to owner (UserId) enforced at repository level."
+      },
+      "BL-ORG-002": {
+        "story": "Public Organizations module API — `OrganizationsApi` (findById / findByOwner / findBySlug / exists), `OrganizationView` DTO and integration events (OrganizationCreated / Renamed / Deleted / Restored) for cross-module consumers."
+      },
+      "BL-ORG-003": {
+        "story": "Doctrine XML mapping for Organization aggregate + Postgres migration: new `organizations` schema, `organizations.organizations` table, partial unique indexes on `(owner_user_id)` and `(slug)` WHERE deleted_at IS NULL, custom `OrganizationIdType`."
+      },
+      "BL-ORG-004": {
+        "story": "`CreateOrganization` command / handler + POST `/api/organizations`. Auto-create on signup via `UserRegistered` event listener (name defaults to “{displayName}'s Organization”). Workspaces migration backfills `organization_id` column and indexes it."
+      },
+      "BL-ORG-004b": {
+        "story": "Follow-up on workspace FK: make `workspaces.organization_id` NOT NULL + add FK constraint + wire `CreateWorkspaceCommand` to set the org from the acting user. Deferred — flagged in `questions-for-boss.md` (split vs monolith with BL-ORG-004)."
+      },
+      "BL-ORG-005": {
+        "story": "`UpdateOrganization` command / handler (partial name / slug) + PUT `/api/organizations/{id}`. Owner-only (403 for others), 404 for soft-deleted, slug uniqueness retried with random suffix on clash."
+      },
+      "BL-ORG-006": {
+        "story": "`GetMyOrganizationQuery` + GET `/api/my/organization` returns the acting user's organization (null for invited users without an org). Powers sidebar OrgIdHeader and future owner-only gating."
+      },
+      "BL-ORG-007": {
+        "story": "Organizations audit integration: `AuditLogger` wired into create / update handlers, `OrganizationsUndoer` + `OrganizationsUndoDescriber` enable Undo in Audit UI (Created → soft delete, Updated → restore previous name + slug)."
+      },
+      "BL-ORG-008": {
+        "story": "Sidebar refactor: top-level `OrgIdHeader` (short UUID + click-to-copy via `useMyOrganization()`), menu consolidated into one “General” section, Chat and Agents added as locked stubs, WorkspaceSwitcher trimmed (label + role pill removed)."
+      },
+      "BL-ORG-009": {
+        "story": "Organization Settings page (`/organization/settings`): edit form (name / slug with live-sync) + Danger Zone placeholder (delete deferred). Deferred to Phase 1 — not needed for MVP."
+      },
+      "BL-ORG-010": {
+        "story": "Breadcrumbs owner / invited gating via `useMyOrganization()`: owners see `{OrgName} > {WorkspaceName} > ...`, invited users see `{WorkspaceName} > ...`. Deferred to Phase 1."
       },
       "BL-PDOC-001": {
         "story": "ProjectDoc aggregate with value objects (ProjectDocId / Slug / DisplayId) + DocType enum (ADR / Brief / Knowledge Base) + repository interface + ProjectDocsBundle skeleton."

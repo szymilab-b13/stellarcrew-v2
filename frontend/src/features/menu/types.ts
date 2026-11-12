@@ -4,6 +4,7 @@ export interface MenuItem {
   icon: string;
   path: string;
   order: number;
+  disabledMilestoneKey?: string | null;
 }
 
 export interface MenuSection {

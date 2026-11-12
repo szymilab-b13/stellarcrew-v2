@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
-import { RolePill } from '@/features/user-management/components/RolePill';
 import { useWorkspacesList } from '@/features/workspaces/api/useWorkspaces';
 import { useCurrentWorkspace } from '@/features/workspaces/state/useCurrentWorkspace';
 import { findColorOption, type Workspace } from '@/features/workspaces/types';
@@ -69,21 +68,11 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
         aria-expanded={open}
         onClick={() => setOpen((previous) => !previous)}
         disabled={list.isPending}
-        className="flex w-full items-center justify-between gap-2 rounded-md border border-sc-border bg-sc-bg-card px-3 py-2 text-left text-sm font-medium text-sc-text transition-colors hover:border-sc-text-muted disabled:cursor-wait disabled:opacity-70"
+        className="flex w-full items-center justify-between gap-2 rounded-md border border-sc-border bg-sc-bg-card px-3 py-1.5 text-left text-sm font-medium text-sc-text transition-colors hover:border-sc-text-muted disabled:cursor-wait disabled:opacity-70"
       >
         <span className="flex min-w-0 items-center gap-2">
           <WorkspaceIconSmall workspace={current} />
-          <span className="flex min-w-0 flex-col">
-            <span className="truncate text-xs text-sc-text-muted">
-              {t('workspaceSwitcher.label')}
-            </span>
-            <span className="truncate text-sm font-semibold text-sc-text">{displayName}</span>
-            {current?.role ? (
-              <span className="mt-0.5">
-                <RolePill role={current.role} size="sm" />
-              </span>
-            ) : null}
-          </span>
+          <span className="min-w-0 truncate text-sm font-semibold text-sc-text">{displayName}</span>
         </span>
         {list.isPending ? (
           <Loader2 size={14} className="flex-none animate-spin text-sc-text-muted" aria-hidden />
@@ -117,7 +106,6 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
                     >
                       <WorkspaceIconSmall workspace={workspace} />
                       <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
-                      {workspace.role ? <RolePill role={workspace.role} size="sm" /> : null}
                     </button>
                   </li>
                 );

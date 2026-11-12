@@ -13,8 +13,10 @@ use Modules\Auth\Api\AuthApi;
 use Modules\Core\Domain\SystemSetting;
 use Modules\Core\Domain\SystemSettingRepository;
 use Modules\Shared\Kernel\Clock;
+use Modules\UserManagement\Api\Event\UserRegistered;
 use Modules\UserManagement\Api\UserManagementApi;
 use Modules\Workspaces\Api\WorkspacesApi;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 use function strlen;
 use function trim;
@@ -43,6 +45,7 @@ final readonly class InstallSystemCommandHandler
         private WorkspacesApi $workspaces,
         private UserManagementApi $userManagement,
         private Clock $clock,
+        private EventDispatcherInterface $events,
     ) {
     }
 
@@ -65,10 +68,17 @@ final readonly class InstallSystemCommandHandler
             $command->adminDisplayName,
         );
 
+        $now = $this->clock->now();
+
+        $this->events->dispatch(new UserRegistered(
+            $admin->id,
+            $command->adminEmail,
+            $command->adminDisplayName,
+            $now,
+        ));
+
         $workspaceName = $this->normalise($command->workspaceName) ?? self::DEFAULT_WORKSPACE_NAME;
         $this->workspaces->createForOwner($admin->id, $workspaceName);
-
-        $now = $this->clock->now();
 
         $this->saveSetting(self::KEY_INSTANCE_NAME, $this->normalise($command->instanceName), $now);
         $this->saveSetting(self::KEY_LOCALE, $command->locale, $now);

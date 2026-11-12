@@ -88,6 +88,10 @@ services:
     Modules\Projects\Domain\ProjectRepository:
         alias: Modules\Projects\Infrastructure\Doctrine\Repository\DoctrineProjectRepository
 
+    # Organizations module bindings
+    Modules\Organizations\Domain\OrganizationRepository:
+        alias: Modules\Organizations\Infrastructure\Doctrine\Repository\DoctrineOrganizationRepository
+
     # UserManagement module bindings
     Modules\UserManagement\Domain\UserProfileRepository:
         alias: Modules\UserManagement\Infrastructure\Doctrine\Repository\DoctrineUserProfileRepository
@@ -117,6 +121,7 @@ when@test:
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceMembersReadModel: ~
         App\Tests\Fixtures\Projects\InMemoryProjectRepository: ~
+        App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel: ~
 
@@ -140,6 +145,9 @@ when@test:
 
         Modules\Projects\Domain\ProjectRepository:
             alias: App\Tests\Fixtures\Projects\InMemoryProjectRepository
+
+        Modules\Organizations\Domain\OrganizationRepository:
+            alias: App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository
 
         Modules\UserManagement\Domain\UserProfileRepository:
             alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository

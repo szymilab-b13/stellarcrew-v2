@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Modules\Core\Application\Install;
 
 use App\Tests\Fixtures\Auth\SpyAuthApi;
+use App\Tests\Fixtures\Core\SpyEventDispatcher;
 use App\Tests\Fixtures\UserManagement\SpyUserManagementApi;
 use App\Tests\Fixtures\Workspaces\SpyWorkspacesApi;
 use DateTimeImmutable;
@@ -16,6 +17,7 @@ use Modules\Core\Application\Install\SystemAlreadyInstalledException;
 use Modules\Core\Domain\SystemSetting;
 use Modules\Core\Domain\SystemSettingRepository;
 use Modules\Shared\Kernel\FrozenClock;
+use Modules\UserManagement\Api\Event\UserRegistered;
 use PHPUnit\Framework\TestCase;
 
 final class InstallSystemCommandHandlerTest extends TestCase
@@ -29,6 +31,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             new SpyWorkspacesApi(),
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $sut(new InstallSystemCommand('admin@example.com', 'secret-pass-long-enough'));
@@ -49,6 +52,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             new SpyWorkspacesApi(),
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $sut(new InstallSystemCommand('admin@example.com', 'secret-pass-long-enough'));
@@ -73,6 +77,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             new SpyWorkspacesApi(),
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $this->expectException(SystemAlreadyInstalledException::class);
@@ -88,6 +93,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             new SpyWorkspacesApi(),
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $this->expectException(InvalidInstallInputException::class);
@@ -103,6 +109,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             new SpyWorkspacesApi(),
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $this->expectException(InvalidInstallInputException::class);
@@ -120,6 +127,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             new SpyWorkspacesApi(),
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $sut(new InstallSystemCommand(
@@ -151,6 +159,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             $workspaces,
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $sut(new InstallSystemCommand(
@@ -173,6 +182,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             new SpyWorkspacesApi(),
             $userManagement,
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $sut(new InstallSystemCommand(
@@ -195,6 +205,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             $workspaces,
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $sut(new InstallSystemCommand('admin@example.com', 'secret-pass-long-enough'));
@@ -214,6 +225,7 @@ final class InstallSystemCommandHandlerTest extends TestCase
             new SpyWorkspacesApi(),
             new SpyUserManagementApi(),
             new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $this->expectException(InvalidInstallInputException::class);
@@ -223,6 +235,60 @@ final class InstallSystemCommandHandlerTest extends TestCase
             adminPlaintextPassword: 'secret-pass-long-enough',
             locale: 'fr',
         ));
+    }
+
+    public function testShouldDispatchUserRegisteredEventAfterCreatingAdmin(): void
+    {
+        $auth = new SpyAuthApi();
+        $events = new SpyEventDispatcher();
+        $sut = new InstallSystemCommandHandler(
+            $auth,
+            $this->settingRepository([]),
+            new SpyWorkspacesApi(),
+            new SpyUserManagementApi(),
+            new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            $events,
+        );
+
+        $sut(new InstallSystemCommand(
+            adminEmail: 'admin@example.com',
+            adminPlaintextPassword: 'secret-pass-long-enough',
+            adminDisplayName: 'Tomek',
+        ));
+
+        self::assertCount(1, $events->dispatched);
+        $event = $events->dispatched[0];
+        self::assertInstanceOf(UserRegistered::class, $event);
+        self::assertSame('admin@example.com', $event->email);
+        self::assertSame('Tomek', $event->displayName);
+        self::assertEquals(new DateTimeImmutable('2026-11-05T09:00:00+00:00'), $event->occurredAt);
+    }
+
+    public function testShouldNotDispatchUserRegisteredEventWhenSystemAlreadyInstalled(): void
+    {
+        $settings = $this->settingRepository([
+            IsInstalledQueryHandler::FLAG_NAME => new SystemSetting(
+                IsInstalledQueryHandler::FLAG_NAME,
+                IsInstalledQueryHandler::TRUE_VALUE,
+                new DateTimeImmutable('2026-11-04T09:00:00+00:00'),
+            ),
+        ]);
+        $events = new SpyEventDispatcher();
+        $sut = new InstallSystemCommandHandler(
+            new SpyAuthApi(),
+            $settings,
+            new SpyWorkspacesApi(),
+            new SpyUserManagementApi(),
+            new FrozenClock(new DateTimeImmutable('2026-11-05T09:00:00+00:00')),
+            $events,
+        );
+
+        try {
+            $sut(new InstallSystemCommand('admin@example.com', 'secret-pass-long-enough'));
+            self::fail('Expected SystemAlreadyInstalledException');
+        } catch (SystemAlreadyInstalledException) {
+            self::assertSame([], $events->dispatched);
+        }
     }
 
     /**

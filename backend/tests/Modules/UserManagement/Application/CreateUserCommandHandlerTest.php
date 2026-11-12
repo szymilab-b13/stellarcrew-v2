@@ -6,11 +6,13 @@ namespace App\Tests\Modules\UserManagement\Application;
 
 use App\Tests\Fixtures\Auth\SpyAuthApi;
 use App\Tests\Fixtures\Core\SpyAuditLogger;
+use App\Tests\Fixtures\Core\SpyEventDispatcher;
 use App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository;
 use DateTimeImmutable;
 use Modules\Auth\Api\Exception\EmailTakenException;
 use Modules\Shared\Kernel\FrozenClock;
 use Modules\Shared\Kernel\UserId;
+use Modules\UserManagement\Api\Event\UserRegistered;
 use Modules\UserManagement\Application\CreateUserCommand;
 use Modules\UserManagement\Application\CreateUserCommandHandler;
 use Modules\UserManagement\Domain\AvatarColorPicker;
@@ -29,6 +31,7 @@ final class CreateUserCommandHandlerTest extends TestCase
             $profiles,
             new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-07T14:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $dto = $sut(new CreateUserCommand($actorUserId, 'new@example.com', 'long-enough-password', false));
@@ -50,6 +53,7 @@ final class CreateUserCommandHandlerTest extends TestCase
             $profiles,
             new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-07T14:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $sut(new CreateUserCommand($actorUserId, 'deterministic@example.com', 'long-enough-password'));
@@ -66,6 +70,7 @@ final class CreateUserCommandHandlerTest extends TestCase
             new InMemoryUserProfileRepository(),
             $audit,
             new FrozenClock(new DateTimeImmutable('2026-11-07T14:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $sut(new CreateUserCommand($actorUserId, 'audited@example.com', 'long-enough-password', true));
@@ -90,6 +95,7 @@ final class CreateUserCommandHandlerTest extends TestCase
             $profiles,
             $audit,
             new FrozenClock(new DateTimeImmutable('2026-11-07T14:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         try {
@@ -101,6 +107,50 @@ final class CreateUserCommandHandlerTest extends TestCase
         }
     }
 
+    public function testShouldDispatchUserRegisteredEventAfterSuccessfulCreation(): void
+    {
+        $actorUserId = new UserId(Uuid::v7());
+        $auth = new SpyAuthApi();
+        $events = new SpyEventDispatcher();
+        $sut = new CreateUserCommandHandler(
+            $auth,
+            new InMemoryUserProfileRepository(),
+            new SpyAuditLogger(),
+            new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
+            $events,
+        );
+
+        $sut(new CreateUserCommand($actorUserId, 'registered@example.com', 'long-enough-password', false, 'Alice'));
+
+        self::assertCount(1, $events->dispatched);
+        $event = $events->dispatched[0];
+        self::assertInstanceOf(UserRegistered::class, $event);
+        self::assertSame('registered@example.com', $event->email);
+        self::assertSame('Alice', $event->displayName);
+        self::assertEquals(new DateTimeImmutable('2026-11-10T14:00:00+00:00'), $event->occurredAt);
+    }
+
+    public function testShouldNotDispatchUserRegisteredEventWhenAuthRejectsEmail(): void
+    {
+        $actorUserId = new UserId(Uuid::v7());
+        $auth = (new SpyAuthApi())->withTakenEmail('taken@example.com');
+        $events = new SpyEventDispatcher();
+        $sut = new CreateUserCommandHandler(
+            $auth,
+            new InMemoryUserProfileRepository(),
+            new SpyAuditLogger(),
+            new FrozenClock(new DateTimeImmutable('2026-11-10T14:00:00+00:00')),
+            $events,
+        );
+
+        try {
+            $sut(new CreateUserCommand($actorUserId, 'taken@example.com', 'long-enough-password'));
+            self::fail('Expected EmailTakenException');
+        } catch (EmailTakenException) {
+            self::assertSame([], $events->dispatched);
+        }
+    }
+
     public function testShouldReturnUserProfileDtoWhenCreated(): void
     {
         $actorUserId = new UserId(Uuid::v7());
@@ -109,6 +159,7 @@ final class CreateUserCommandHandlerTest extends TestCase
             new InMemoryUserProfileRepository(),
             new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-07T14:00:00+00:00')),
+            new SpyEventDispatcher(),
         );
 
         $dto = $sut(new CreateUserCommand($actorUserId, 'dto@example.com', 'long-enough-password'));

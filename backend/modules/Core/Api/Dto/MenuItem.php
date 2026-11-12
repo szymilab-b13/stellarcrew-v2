@@ -13,6 +13,7 @@ final readonly class MenuItem
         public string $path,
         public int $order = 100,
         public ?string $requiresRole = null,
+        public ?string $disabledMilestoneKey = null,
     ) {
     }
 }

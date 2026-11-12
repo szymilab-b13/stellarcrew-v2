@@ -18,16 +18,16 @@ final readonly class WorkspacesMenuContributor implements MenuContributor
     {
         return [
             new MenuSection(
-                id: 'workspaces',
-                labelKey: 'menu.sections.workspaces',
-                order: 20,
+                id: 'general',
+                labelKey: 'menu.sections.general',
+                order: 10,
                 items: [
                     new MenuItem(
                         id: 'workspaces.list',
                         labelKey: 'menu.items.workspaces',
                         icon: 'Building2',
                         path: '/workspaces',
-                        order: 10,
+                        order: 20,
                     ),
                 ],
             ),
