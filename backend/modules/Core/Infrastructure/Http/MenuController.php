@@ -53,7 +53,7 @@ final readonly class MenuController
     }
 
     /**
-     * @return array{id: string, labelKey: string, icon: string, path: string, order: int}
+     * @return array{id: string, labelKey: string, icon: string, path: string, order: int, disabledMilestoneKey: ?string}
      */
     private function serialiseItem(MenuItem $item): array
     {
@@ -63,6 +63,7 @@ final readonly class MenuController
             'icon' => $item->icon,
             'path' => $item->path,
             'order' => $item->order,
+            'disabledMilestoneKey' => $item->disabledMilestoneKey,
         ];
     }
 }

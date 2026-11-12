@@ -1,8 +1,19 @@
-import { Building2, Circle, LayoutDashboard, Settings, Users, type LucideIcon } from 'lucide-react';
+import {
+  Bot,
+  Building2,
+  Circle,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard,
   Building2,
+  MessageSquare,
+  Bot,
   Settings,
   Users,
 };

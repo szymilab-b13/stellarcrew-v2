@@ -37,10 +37,15 @@
     "loading": "Loading menu…",
     "loadError": "Could not load the menu.",
     "greeting": "Signed in as {{name}}",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "orgIdLabel": "Organization ID",
+    "orgIdCopied": "Copied",
+    "orgIdLoading": "Loading organization…",
+    "orgIdCopyAria": "Copy organization ID: {{id}}"
   },
   "menu": {
     "sections": {
+      "general": "General",
       "overview": "Overview",
       "workspaces": "Workspaces",
       "workspace": "Workspace",
@@ -50,6 +55,8 @@
     },
     "items": {
       "dashboard": "Dashboard",
+      "chat": "Chat",
+      "agents": "Agents",
       "workspaces": "Workspaces",
       "workspaceOverview": "Overview",
       "workspaceProjects": "Projects",
@@ -73,6 +80,7 @@
       "milestones": {
         "projects": "PROJECTS",
         "agents": "AGENTS",
+        "chat": "CHAT",
         "scheduler": "SCHEDULER",
         "settings": "WORKSPACE_SETTINGS"
       }

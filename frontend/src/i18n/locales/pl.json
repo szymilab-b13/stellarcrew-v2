@@ -37,10 +37,15 @@
     "loading": "Ładowanie menu…",
     "loadError": "Nie udało się pobrać menu.",
     "greeting": "Zalogowano jako {{name}}",
-    "logout": "Wyloguj się"
+    "logout": "Wyloguj się",
+    "orgIdLabel": "ID Organizacji",
+    "orgIdCopied": "Skopiowano",
+    "orgIdLoading": "Ładuję organizację…",
+    "orgIdCopyAria": "Skopiuj ID organizacji: {{id}}"
   },
   "menu": {
     "sections": {
+      "general": "Ogólne",
       "overview": "Przegląd",
       "workspaces": "Workspace’y",
       "workspace": "Workspace",
@@ -49,8 +54,10 @@
       "pinned": "Przypięte"
     },
     "items": {
-      "dashboard": "Panel",
-      "workspaces": "Workspace’y",
+      "dashboard": "Dashboard",
+      "chat": "Chat",
+      "agents": "Agenci",
+      "workspaces": "Przestrzenie robocze",
       "workspaceOverview": "Przegląd",
       "workspaceProjects": "Projekty",
       "workspaceMembers": "Członkowie",
@@ -73,6 +80,7 @@
       "milestones": {
         "projects": "PROJECTS",
         "agents": "AGENTS",
+        "chat": "CHAT",
         "scheduler": "SCHEDULER",
         "settings": "WORKSPACE_SETTINGS"
       }

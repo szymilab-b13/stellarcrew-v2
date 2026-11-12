@@ -44,19 +44,35 @@ final class MenuEndpointTest extends WebTestCase
         $payload = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
 
         $sectionIds = array_map(static fn (array $section): string => $section['id'], $payload['sections']);
-        self::assertSame(['overview', 'workspaces', 'admin'], $sectionIds);
+        self::assertSame(['general', 'admin'], $sectionIds);
 
-        $overview = $payload['sections'][0];
-        self::assertSame('menu.sections.overview', $overview['labelKey']);
-        self::assertSame('dashboard', $overview['items'][0]['id']);
-        self::assertSame('/dashboard', $overview['items'][0]['path']);
-        self::assertSame('LayoutDashboard', $overview['items'][0]['icon']);
+        $general = $payload['sections'][0];
+        self::assertSame('menu.sections.general', $general['labelKey']);
 
-        $workspaces = $payload['sections'][1];
-        self::assertSame('workspaces.list', $workspaces['items'][0]['id']);
-        self::assertSame('/workspaces', $workspaces['items'][0]['path']);
+        $generalItemIds = array_map(static fn (array $item): string => $item['id'], $general['items']);
+        self::assertSame(['dashboard', 'workspaces.list', 'chat', 'agents'], $generalItemIds);
 
-        $admin = $payload['sections'][2];
+        self::assertSame('dashboard', $general['items'][0]['id']);
+        self::assertSame('/dashboard', $general['items'][0]['path']);
+        self::assertSame('LayoutDashboard', $general['items'][0]['icon']);
+        self::assertNull($general['items'][0]['disabledMilestoneKey']);
+
+        self::assertSame('workspaces.list', $general['items'][1]['id']);
+        self::assertSame('/workspaces', $general['items'][1]['path']);
+        self::assertSame('Building2', $general['items'][1]['icon']);
+        self::assertNull($general['items'][1]['disabledMilestoneKey']);
+
+        self::assertSame('chat', $general['items'][2]['id']);
+        self::assertSame('/chat', $general['items'][2]['path']);
+        self::assertSame('MessageSquare', $general['items'][2]['icon']);
+        self::assertSame('menu.workspaceContext.milestones.chat', $general['items'][2]['disabledMilestoneKey']);
+
+        self::assertSame('agents', $general['items'][3]['id']);
+        self::assertSame('/agents', $general['items'][3]['path']);
+        self::assertSame('Bot', $general['items'][3]['icon']);
+        self::assertSame('menu.workspaceContext.milestones.agents', $general['items'][3]['disabledMilestoneKey']);
+
+        $admin = $payload['sections'][1];
         self::assertSame('menu.sections.admin', $admin['labelKey']);
 
         $adminItemIds = array_map(static fn (array $item): string => $item['id'], $admin['items']);
