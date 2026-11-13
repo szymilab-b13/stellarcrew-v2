@@ -780,6 +780,9 @@
       },
       "plansUsage": {
         "title": "PLANS & USAGE — per-tier limits + usage quotas across modules (billing-ready)"
+      },
+      "agentsOrchestration": {
+        "title": "AGENTS ORCHESTRATION — multi-step agentic workflow with sub-agents, scratchpad, TODO, trace"
       }
     },
     "tasks": {

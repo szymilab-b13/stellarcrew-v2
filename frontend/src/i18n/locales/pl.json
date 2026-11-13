@@ -780,6 +780,9 @@
       },
       "plansUsage": {
         "title": "PLANY I USAGE — limity per plan + liczniki wykorzystania w modułach (billing-ready)"
+      },
+      "agentsOrchestration": {
+        "title": "ORKIESTRACJA AGENTÓW — wieloetapowy flow z sub-agentami, scratchpad, TODO, trace"
       }
     },
     "tasks": {
