@@ -6,6 +6,8 @@ namespace Modules\Core\Infrastructure\Http;
 
 use function array_slice;
 
+use Modules\Agents\Domain\AgentLimitReachedException;
+use Modules\Agents\Domain\AgentSlugAlreadyTakenException;
 use Modules\Audit\Api\Exception\AuditEntryAlreadyUndoneException;
 use Modules\Audit\Api\Exception\AuditEntryNotFoundException;
 use Modules\Audit\Api\Exception\UndoConflictException;
@@ -108,6 +110,14 @@ final readonly class ExceptionListener
 
         if ($throwable instanceof OwnerHasNoOrganizationException) {
             return [Response::HTTP_CONFLICT, 'OWNER_HAS_NO_ORGANIZATION', null];
+        }
+
+        if ($throwable instanceof AgentLimitReachedException) {
+            return [Response::HTTP_CONFLICT, 'AGENT_LIMIT_REACHED', null];
+        }
+
+        if ($throwable instanceof AgentSlugAlreadyTakenException) {
+            return [Response::HTTP_CONFLICT, 'AGENT_SLUG_ALREADY_TAKEN', null];
         }
 
         if ($throwable instanceof AdminMustBeDowngradedFirstException) {
