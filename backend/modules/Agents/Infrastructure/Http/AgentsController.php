@@ -7,6 +7,8 @@ namespace Modules\Agents\Infrastructure\Http;
 use DateTimeInterface;
 use Modules\Agents\Application\CreateAgentCommand;
 use Modules\Agents\Application\CreateAgentCommandHandler;
+use Modules\Agents\Application\DeleteAgentCommand;
+use Modules\Agents\Application\DeleteAgentCommandHandler;
 use Modules\Agents\Application\Query\GetAgentQuery;
 use Modules\Agents\Application\Query\GetAgentQueryHandler;
 use Modules\Agents\Application\Query\ListAgentsQuery;
@@ -32,6 +34,7 @@ final readonly class AgentsController
         private ListAgentsQueryHandler $list,
         private GetAgentQueryHandler $get,
         private UpdateAgentCommandHandler $update,
+        private DeleteAgentCommandHandler $delete,
     ) {
     }
 
@@ -147,6 +150,36 @@ final readonly class AgentsController
         ));
 
         return new JsonResponse($this->serialise($agent), Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/agents/{id}',
+        name: 'agents_delete',
+        requirements: ['id' => self::AGENT_ID_REQUIREMENT],
+        methods: ['DELETE'],
+    )]
+    #[OA\Delete(
+        path: '/api/agents/{id}',
+        summary: 'Soft-delete an agent owned by the current user (idempotent).',
+        tags: ['agents'],
+        responses: [
+            new OA\Response(response: 204, description: 'Agent soft-deleted'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not the agent owner'),
+            new OA\Response(response: 404, description: 'Agent not found'),
+        ],
+    )]
+    public function delete(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): Response {
+        ($this->delete)(new DeleteAgentCommand(
+            actorId: $user->domainUser()->id(),
+            agentId: AgentId::fromString($id),
+        ));
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**

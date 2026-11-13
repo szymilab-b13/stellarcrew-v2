@@ -411,6 +411,117 @@ final class AgentsEndpointTest extends WebTestCase
         self::assertSame('You are Maja, the PM.', $payload['instructions']);
     }
 
+    public function testShouldReturn401OnDeleteWhenTokenMissing(): void
+    {
+        $this->deleteJson('/api/agents/'.Uuid::v7()->toRfc4122(), null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnDeleteWhenAgentDoesNotExist(): void
+    {
+        $token = $this->seedUserWithOrganization();
+
+        $this->deleteJson('/api/agents/'.Uuid::v7()->toRfc4122(), $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnDeleteWhenForeignUserIsNotOwner(): void
+    {
+        [, $ownerToken] = $this->seedUserWithOrganizationAndId();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Private', 'slug' => 'private']), $ownerToken);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $privateId = (string) $this->decode()['id'];
+        $this->seedAdmin('foreign@example.com', 'secret-pass-long-enough');
+        $foreignToken = $this->login('foreign@example.com', 'secret-pass-long-enough');
+
+        $this->deleteJson('/api/agents/'.$privateId, $foreignToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnDeleteWhenSharedMemberIsNotOwner(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedUserWithOrganizationAndId();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Shared', 'slug' => 'shared']), $ownerToken);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $sharedId = AgentId::fromString((string) $this->decode()['id']);
+        $invited = $this->seedAdmin('invited@example.com', 'secret-pass-long-enough');
+        $this->agentMembers()->save(AgentMember::grant(
+            $sharedId,
+            $invited->id(),
+            $ownerId,
+            new DateTimeImmutable('2026-11-13T15:00:00+00:00'),
+        ));
+        $invitedToken = $this->login('invited@example.com', 'secret-pass-long-enough');
+
+        $this->deleteJson('/api/agents/'.$sharedId, $invitedToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn204OnDeleteForOwner(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Target', 'slug' => 'target']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = (string) $this->decode()['id'];
+
+        $this->deleteJson('/api/agents/'.$agentId, $token);
+
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+        self::assertSame('', (string) $this->client->getResponse()->getContent());
+    }
+
+    public function testShouldReturn404OnGetAfterDelete(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Target', 'slug' => 'target']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = (string) $this->decode()['id'];
+        $this->deleteJson('/api/agents/'.$agentId, $token);
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+
+        $this->getJson('/api/agents/'.$agentId, $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldExcludeSoftDeletedAgentFromList(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Keep', 'slug' => 'keep']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Drop', 'slug' => 'drop']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $dropId = (string) $this->decode()['id'];
+
+        $this->deleteJson('/api/agents/'.$dropId, $token);
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+
+        $this->getJson('/api/agents', $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decodeList();
+        self::assertCount(1, $payload);
+        self::assertSame('Keep', $payload[0]['name']);
+    }
+
+    public function testShouldBeIdempotentOnSecondDelete(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Target', 'slug' => 'target']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = (string) $this->decode()['id'];
+        $this->deleteJson('/api/agents/'.$agentId, $token);
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+
+        $this->deleteJson('/api/agents/'.$agentId, $token);
+
+        self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
+    }
+
     /**
      * @param array<string, mixed> $overrides
      *
@@ -533,6 +644,16 @@ final class AgentsEndpointTest extends WebTestCase
         }
 
         $this->client->request('PUT', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
+    }
+
+    private function deleteJson(string $path, ?string $token): void
+    {
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        if ($token !== null) {
+            $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
+        }
+
+        $this->client->request('DELETE', $path, server: $server);
     }
 
     /**
