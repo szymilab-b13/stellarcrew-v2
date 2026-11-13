@@ -300,6 +300,117 @@ final class AgentsEndpointTest extends WebTestCase
         self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
     }
 
+    public function testShouldReturn401OnUpdateWhenTokenMissing(): void
+    {
+        $this->putJson('/api/agents/'.Uuid::v7()->toRfc4122(), ['name' => 'any'], null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnUpdateWhenAgentDoesNotExist(): void
+    {
+        $token = $this->seedUserWithOrganization();
+
+        $this->putJson('/api/agents/'.Uuid::v7()->toRfc4122(), ['name' => 'any'], $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnUpdateWhenForeignUserIsNotOwner(): void
+    {
+        [, $ownerToken] = $this->seedUserWithOrganizationAndId();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Private', 'slug' => 'private']), $ownerToken);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $privateId = (string) $this->decode()['id'];
+        $this->seedAdmin('foreign@example.com', 'secret-pass-long-enough');
+        $foreignToken = $this->login('foreign@example.com', 'secret-pass-long-enough');
+
+        $this->putJson('/api/agents/'.$privateId, ['name' => 'Hijacked'], $foreignToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn403OnUpdateWhenSharedMemberIsNotOwner(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedUserWithOrganizationAndId();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Shared', 'slug' => 'shared']), $ownerToken);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $sharedId = AgentId::fromString((string) $this->decode()['id']);
+        $invited = $this->seedAdmin('invited@example.com', 'secret-pass-long-enough');
+        $this->agentMembers()->save(AgentMember::grant(
+            $sharedId,
+            $invited->id(),
+            $ownerId,
+            new DateTimeImmutable('2026-11-13T15:00:00+00:00'),
+        ));
+        $invitedToken = $this->login('invited@example.com', 'secret-pass-long-enough');
+
+        $this->putJson('/api/agents/'.$sharedId, ['name' => 'Hijacked'], $invitedToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn422OnUpdateWhenNameIsBlank(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Target', 'slug' => 'target']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = (string) $this->decode()['id'];
+
+        $this->putJson('/api/agents/'.$agentId, ['name' => ''], $token);
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn422OnUpdateWhenRoleExceedsMaxLength(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Target', 'slug' => 'target']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = (string) $this->decode()['id'];
+
+        $this->putJson('/api/agents/'.$agentId, ['role' => str_repeat('a', 121)], $token);
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn200OnUpdateForOwnerWithAllFields(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Maja PM', 'slug' => 'maja-pm']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = (string) $this->decode()['id'];
+
+        $this->putJson('/api/agents/'.$agentId, [
+            'name' => 'Viktor Architect',
+            'role' => 'Architect',
+            'instructions' => 'You are Viktor.',
+        ], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('Viktor Architect', $payload['name']);
+        self::assertSame('Architect', $payload['role']);
+        self::assertSame('You are Viktor.', $payload['instructions']);
+        self::assertSame('maja-pm', $payload['slug']);
+    }
+
+    public function testShouldReturn200OnUpdateForOwnerWithOnlyName(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Maja PM', 'slug' => 'maja-pm']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = (string) $this->decode()['id'];
+
+        $this->putJson('/api/agents/'.$agentId, ['name' => 'Renamed Maja'], $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('Renamed Maja', $payload['name']);
+        self::assertSame('Project Manager', $payload['role']);
+        self::assertSame('You are Maja, the PM.', $payload['instructions']);
+    }
+
     /**
      * @param array<string, mixed> $overrides
      *
@@ -409,6 +520,19 @@ final class AgentsEndpointTest extends WebTestCase
         }
 
         $this->client->request('GET', $path, server: $server);
+    }
+
+    /**
+     * @param array<string, mixed> $body
+     */
+    private function putJson(string $path, array $body, ?string $token): void
+    {
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        if ($token !== null) {
+            $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
+        }
+
+        $this->client->request('PUT', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
     }
 
     /**

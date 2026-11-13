@@ -11,6 +11,8 @@ use Modules\Agents\Application\Query\GetAgentQuery;
 use Modules\Agents\Application\Query\GetAgentQueryHandler;
 use Modules\Agents\Application\Query\ListAgentsQuery;
 use Modules\Agents\Application\Query\ListAgentsQueryHandler;
+use Modules\Agents\Application\UpdateAgentCommand;
+use Modules\Agents\Application\UpdateAgentCommandHandler;
 use Modules\Agents\Domain\Agent;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Shared\Kernel\AgentId;
@@ -29,6 +31,7 @@ final readonly class AgentsController
         private CreateAgentCommandHandler $create,
         private ListAgentsQueryHandler $list,
         private GetAgentQueryHandler $get,
+        private UpdateAgentCommandHandler $update,
     ) {
     }
 
@@ -105,6 +108,42 @@ final readonly class AgentsController
         $agent = ($this->get)(new GetAgentQuery(
             actorId: $user->domainUser()->id(),
             agentId: AgentId::fromString($id),
+        ));
+
+        return new JsonResponse($this->serialise($agent), Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/api/agents/{id}',
+        name: 'agents_update',
+        requirements: ['id' => self::AGENT_ID_REQUIREMENT],
+        methods: ['PUT'],
+    )]
+    #[OA\Put(
+        path: '/api/agents/{id}',
+        summary: 'Update an agent owned by the current user (partial: name/role/instructions).',
+        tags: ['agents'],
+        responses: [
+            new OA\Response(response: 200, description: 'Agent updated'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not the agent owner'),
+            new OA\Response(response: 404, description: 'Agent not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function update(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+        #[MapRequestPayload]
+        UpdateAgentRequest $input,
+    ): JsonResponse {
+        $agent = ($this->update)(new UpdateAgentCommand(
+            actorId: $user->domainUser()->id(),
+            agentId: AgentId::fromString($id),
+            name: $input->name,
+            role: $input->role,
+            instructions: $input->instructions,
         ));
 
         return new JsonResponse($this->serialise($agent), Response::HTTP_OK);
