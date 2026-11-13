@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Agents\Domain\Agent" table="agents" schema="agents">
+
+        <id name="id" type="agent_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="organizationId" type="organization_id_vo" column="organization_id" nullable="false"/>
+        <field name="ownerUserId" type="user_id_vo" column="owner_user_id" nullable="false"/>
+        <field name="sourceTemplateId" type="agent_id_vo" column="source_template_id" nullable="true"/>
+        <field name="slug" type="string" column="slug" length="80" nullable="false"/>
+        <field name="name" type="string" column="name" length="80" nullable="false"/>
+        <field name="role" type="string" column="role" length="120" nullable="false"/>
+        <field name="instructions" type="text" column="instructions" nullable="false"/>
+        <field name="isActive" type="boolean" column="is_active" nullable="false"/>
+        <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+        <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
+        <field name="deletedAt" type="datetimetz_immutable" column="deleted_at" nullable="true"/>
+
+    </entity>
+
+</doctrine-mapping>
