@@ -777,6 +777,9 @@
       },
       "threads": {
         "title": "Wątki pozamilestone’owe — DX i dokumentacja"
+      },
+      "plansUsage": {
+        "title": "PLANY I USAGE — limity per plan + liczniki wykorzystania w modułach (billing-ready)"
       }
     },
     "tasks": {

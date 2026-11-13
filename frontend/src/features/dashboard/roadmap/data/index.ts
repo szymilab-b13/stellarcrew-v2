@@ -12,6 +12,7 @@ import { INTEGRATION_TESTS_MILESTONE } from './integrationTests';
 import { KNOWLEDGE_MILESTONE } from './knowledge';
 import { ORGANIZATION_MILESTONE } from './organization';
 import { PERMISSIONS_MILESTONE } from './permissions';
+import { PLANS_USAGE_MILESTONE } from './plansUsage';
 import { PLUGINS_MILESTONE } from './plugins';
 import { PROJECT_DASHBOARDS_MILESTONE } from './projectDashboards';
 import { PROJECT_DOCS_MILESTONE } from './projectDocs';
@@ -51,4 +52,5 @@ export const ROADMAP: RoadmapMilestone[] = [
   AUTH_REFRESH_MILESTONE,
   CHAT_MILESTONE,
   THREADS_MILESTONE,
+  PLANS_USAGE_MILESTONE,
 ];

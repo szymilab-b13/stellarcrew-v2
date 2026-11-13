@@ -777,6 +777,9 @@
       },
       "threads": {
         "title": "Non-milestone threads — DX and documentation"
+      },
+      "plansUsage": {
+        "title": "PLANS & USAGE — per-tier limits + usage quotas across modules (billing-ready)"
       }
     },
     "tasks": {
