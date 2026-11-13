@@ -7,6 +7,8 @@ namespace Modules\Agents\Infrastructure\Http;
 use DateTimeInterface;
 use Modules\Agents\Application\CreateAgentCommand;
 use Modules\Agents\Application\CreateAgentCommandHandler;
+use Modules\Agents\Application\Query\GetAgentQuery;
+use Modules\Agents\Application\Query\GetAgentQueryHandler;
 use Modules\Agents\Application\Query\ListAgentsQuery;
 use Modules\Agents\Application\Query\ListAgentsQueryHandler;
 use Modules\Agents\Domain\Agent;
@@ -21,9 +23,12 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 final readonly class AgentsController
 {
+    private const string AGENT_ID_REQUIREMENT = '[0-9a-fA-F-]{36}';
+
     public function __construct(
         private CreateAgentCommandHandler $create,
         private ListAgentsQueryHandler $list,
+        private GetAgentQueryHandler $get,
     ) {
     }
 
@@ -73,6 +78,36 @@ final readonly class AgentsController
         $agents = ($this->list)(new ListAgentsQuery(actorId: $user->domainUser()->id()));
 
         return new JsonResponse(array_map($this->serialise(...), $agents));
+    }
+
+    #[Route(
+        '/api/agents/{id}',
+        name: 'agents_get',
+        requirements: ['id' => self::AGENT_ID_REQUIREMENT],
+        methods: ['GET'],
+    )]
+    #[OA\Get(
+        path: '/api/agents/{id}',
+        summary: 'Get a single agent by id (requires AgentMember membership).',
+        tags: ['agents'],
+        responses: [
+            new OA\Response(response: 200, description: 'Agent'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 403, description: 'Caller is not a member of the agent'),
+            new OA\Response(response: 404, description: 'Agent not found'),
+        ],
+    )]
+    public function get(
+        string $id,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $agent = ($this->get)(new GetAgentQuery(
+            actorId: $user->domainUser()->id(),
+            agentId: AgentId::fromString($id),
+        ));
+
+        return new JsonResponse($this->serialise($agent), Response::HTTP_OK);
     }
 
     /**

@@ -232,6 +232,74 @@ final class AgentsEndpointTest extends WebTestCase
         self::assertSame((string) $sharedId, $payload[0]['id']);
     }
 
+    public function testShouldReturn401OnGetWhenTokenMissing(): void
+    {
+        $this->getJson('/api/agents/'.Uuid::v7()->toRfc4122(), null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnGetWhenAgentDoesNotExist(): void
+    {
+        $token = $this->seedUserWithOrganization();
+
+        $this->getJson('/api/agents/'.Uuid::v7()->toRfc4122(), $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn200OnGetForOwner(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Owned', 'slug' => 'owned']), $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = (string) $this->decode()['id'];
+
+        $this->getJson('/api/agents/'.$agentId, $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame($agentId, $payload['id']);
+        self::assertSame('Owned', $payload['name']);
+        self::assertSame('owned', $payload['slug']);
+    }
+
+    public function testShouldReturn200OnGetForSharedMember(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedUserWithOrganizationAndId();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Shared', 'slug' => 'shared']), $ownerToken);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $sharedId = AgentId::fromString((string) $this->decode()['id']);
+        $invited = $this->seedAdmin('invited@example.com', 'secret-pass-long-enough');
+        $this->agentMembers()->save(AgentMember::grant(
+            $sharedId,
+            $invited->id(),
+            $ownerId,
+            new DateTimeImmutable('2026-11-13T15:00:00+00:00'),
+        ));
+        $invitedToken = $this->login('invited@example.com', 'secret-pass-long-enough');
+
+        $this->getJson('/api/agents/'.$sharedId, $invitedToken);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        self::assertSame((string) $sharedId, $this->decode()['id']);
+        self::assertSame('Shared', $this->decode()['name']);
+    }
+
+    public function testShouldReturn403OnGetWhenActorIsNotMember(): void
+    {
+        [, $ownerToken] = $this->seedUserWithOrganizationAndId();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Private', 'slug' => 'private']), $ownerToken);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $privateId = (string) $this->decode()['id'];
+        $this->seedAdmin('foreign@example.com', 'secret-pass-long-enough');
+        $foreignToken = $this->login('foreign@example.com', 'secret-pass-long-enough');
+
+        $this->getJson('/api/agents/'.$privateId, $foreignToken);
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
+    }
+
     /**
      * @param array<string, mixed> $overrides
      *
