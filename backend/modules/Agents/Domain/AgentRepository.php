@@ -18,4 +18,11 @@ interface AgentRepository
     public function existsSlug(OrganizationId $organizationId, string $slug): bool;
 
     public function countActiveFor(OrganizationId $organizationId): int;
+
+    /**
+     * @param list<AgentId> $ids
+     *
+     * @return list<Agent>
+     */
+    public function findActiveByIds(array $ids): array;
 }

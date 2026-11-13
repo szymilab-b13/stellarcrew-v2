@@ -65,4 +65,33 @@ final class InMemoryAgentRepository implements AgentRepository
 
         return $count;
     }
+
+    public function findActiveByIds(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        $wanted = [];
+        foreach ($ids as $id) {
+            $wanted[(string) $id] = true;
+        }
+
+        $result = [];
+        foreach ($this->agents as $agent) {
+            if (!isset($wanted[(string) $agent->id()])) {
+                continue;
+            }
+
+            if ($agent->isDeleted()) {
+                continue;
+            }
+
+            $result[] = $agent;
+        }
+
+        usort($result, static fn (Agent $a, Agent $b): int => strcmp($a->name(), $b->name()));
+
+        return $result;
+    }
 }

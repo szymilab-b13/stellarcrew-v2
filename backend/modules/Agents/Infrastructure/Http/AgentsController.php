@@ -7,6 +7,8 @@ namespace Modules\Agents\Infrastructure\Http;
 use DateTimeInterface;
 use Modules\Agents\Application\CreateAgentCommand;
 use Modules\Agents\Application\CreateAgentCommandHandler;
+use Modules\Agents\Application\Query\ListAgentsQuery;
+use Modules\Agents\Application\Query\ListAgentsQueryHandler;
 use Modules\Agents\Domain\Agent;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Shared\Kernel\AgentId;
@@ -19,8 +21,10 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 final readonly class AgentsController
 {
-    public function __construct(private CreateAgentCommandHandler $create)
-    {
+    public function __construct(
+        private CreateAgentCommandHandler $create,
+        private ListAgentsQueryHandler $list,
+    ) {
     }
 
     #[Route('/api/agents', name: 'agents_create', methods: ['POST'])]
@@ -50,6 +54,25 @@ final readonly class AgentsController
         ));
 
         return new JsonResponse($this->serialise($agent), Response::HTTP_CREATED);
+    }
+
+    #[Route('/api/agents', name: 'agents_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/agents',
+        summary: 'List agents the current user owns or has been granted access to.',
+        tags: ['agents'],
+        responses: [
+            new OA\Response(response: 200, description: 'List of agents accessible to the current user'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+        ],
+    )]
+    public function list(
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        $agents = ($this->list)(new ListAgentsQuery(actorId: $user->domainUser()->id()));
+
+        return new JsonResponse(array_map($this->serialise(...), $agents));
     }
 
     /**

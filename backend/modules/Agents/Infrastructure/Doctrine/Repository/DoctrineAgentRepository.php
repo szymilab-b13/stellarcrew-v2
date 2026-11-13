@@ -72,4 +72,24 @@ final readonly class DoctrineAgentRepository implements AgentRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function findActiveByIds(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+
+        $rows = $this->em->createQueryBuilder()
+            ->select('a')
+            ->from(Agent::class, 'a')
+            ->where('a.id IN (:ids)')
+            ->andWhere('a.deletedAt IS NULL')
+            ->orderBy('a.name', 'ASC')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+
+        /** @var list<Agent> $rows */
+        return $rows;
+    }
 }

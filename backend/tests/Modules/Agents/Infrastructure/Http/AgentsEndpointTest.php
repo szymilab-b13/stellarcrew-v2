@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Modules\Agents\Infrastructure\Http;
 
 use DateTimeImmutable;
+use Modules\Agents\Domain\AgentMember;
 use Modules\Agents\Domain\AgentMemberRepository;
 use Modules\Agents\Domain\AgentRepository;
 use Modules\Auth\Domain\User;
@@ -174,6 +175,63 @@ final class AgentsEndpointTest extends WebTestCase
         self::assertTrue($this->agentMembers()->exists($agentId, $userId));
     }
 
+    public function testShouldReturn401OnListWhenTokenMissing(): void
+    {
+        $this->getJson('/api/agents', null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturnEmptyArrayWhenUserHasNoAgents(): void
+    {
+        $this->seedAdmin(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
+        $token = $this->login(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
+
+        $this->getJson('/api/agents', $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        self::assertSame([], $this->decodeList());
+    }
+
+    public function testShouldReturnOwnedAgentsSortedByName(): void
+    {
+        [, $token] = $this->seedUserWithOrganizationAndId();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Viktor', 'slug' => 'viktor']), $token);
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Maja', 'slug' => 'maja']), $token);
+
+        $this->getJson('/api/agents', $token);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decodeList();
+        self::assertCount(2, $payload);
+        self::assertSame(['Maja', 'Viktor'], array_map(static fn (array $a): string => (string) $a['name'], $payload));
+    }
+
+    public function testShouldReturnSharedAgentFromDifferentOwner(): void
+    {
+        [$ownerId, $ownerToken] = $this->seedUserWithOrganizationAndId();
+        $this->postJson('/api/agents', $this->validBody(['name' => 'Shared', 'slug' => 'shared']), $ownerToken);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $sharedId = AgentId::fromString((string) $this->decode()['id']);
+
+        $invited = $this->seedAdmin('invited@example.com', 'secret-pass-long-enough');
+        $this->agentMembers()->save(AgentMember::grant(
+            $sharedId,
+            $invited->id(),
+            $ownerId,
+            new DateTimeImmutable('2026-11-13T15:00:00+00:00'),
+        ));
+        $invitedToken = $this->login('invited@example.com', 'secret-pass-long-enough');
+
+        $this->getJson('/api/agents', $invitedToken);
+
+        self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decodeList();
+        self::assertCount(1, $payload);
+        self::assertSame('Shared', $payload[0]['name']);
+        self::assertSame((string) $sharedId, $payload[0]['id']);
+    }
+
     /**
      * @param array<string, mixed> $overrides
      *
@@ -275,12 +333,33 @@ final class AgentsEndpointTest extends WebTestCase
         $this->client->request('POST', $path, server: $server, content: json_encode($body, JSON_THROW_ON_ERROR));
     }
 
+    private function getJson(string $path, ?string $token): void
+    {
+        $server = ['CONTENT_TYPE' => 'application/json'];
+        if ($token !== null) {
+            $server['HTTP_AUTHORIZATION'] = 'Bearer '.$token;
+        }
+
+        $this->client->request('GET', $path, server: $server);
+    }
+
     /**
      * @return array<string, mixed>
      */
     private function decode(): array
     {
         /** @var array<string, mixed> $decoded */
+        $decoded = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
+
+        return $decoded;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function decodeList(): array
+    {
+        /** @var list<array<string, mixed>> $decoded */
         $decoded = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
 
         return $decoded;
