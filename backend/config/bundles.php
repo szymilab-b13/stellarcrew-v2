@@ -15,4 +15,5 @@ return [
     Modules\Audit\Infrastructure\Bundle\AuditBundle::class => ['all' => true],
     Modules\Projects\Infrastructure\Bundle\ProjectsBundle::class => ['all' => true],
     Modules\Organizations\Infrastructure\Bundle\OrganizationsBundle::class => ['all' => true],
+    Modules\Agents\Infrastructure\Bundle\AgentsBundle::class => ['all' => true],
 ];
