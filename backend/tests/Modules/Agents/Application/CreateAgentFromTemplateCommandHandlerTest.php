@@ -9,7 +9,9 @@ use App\Tests\Fixtures\Agents\FakePlanLimitsService;
 use App\Tests\Fixtures\Agents\InMemoryAgentMemberRepository;
 use App\Tests\Fixtures\Agents\InMemoryAgentRepository;
 use App\Tests\Fixtures\Agents\InMemoryAgentTemplateRepository;
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use DateTimeImmutable;
+use Modules\Agents\Application\CreateAgentCommandHandler;
 use Modules\Agents\Application\CreateAgentFromTemplateCommand;
 use Modules\Agents\Application\CreateAgentFromTemplateCommandHandler;
 use Modules\Agents\Domain\AgentLimitReachedException;
@@ -206,6 +208,7 @@ final class CreateAgentFromTemplateCommandHandlerTest extends TestCase
             $templates,
             new FakeOrganizationsApi(),
             (new FakePlanLimitsService())->withLimit(LimitType::Agents, 5),
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-15T15:00:00+00:00')),
         );
 
@@ -291,6 +294,50 @@ final class CreateAgentFromTemplateCommandHandlerTest extends TestCase
         self::assertEquals($now, $agent->updatedAt());
     }
 
+    public function testShouldRecordAuditEntryWithAfterStateAndTemplateReference(): void
+    {
+        $actorId = new UserId(Uuid::v7());
+        $organizationId = new OrganizationId(Uuid::v7());
+        $templates = new InMemoryAgentTemplateRepository();
+        $template = $this->seedTemplate($templates);
+        $audit = new SpyAuditLogger();
+        $sut = $this->buildHandler(
+            actorId: $actorId,
+            organizationId: $organizationId,
+            templates: $templates,
+            audit: $audit,
+        );
+
+        $agent = $sut(new CreateAgentFromTemplateCommand(
+            actorId: $actorId,
+            templateSlug: 'maja',
+        ));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(CreateAgentFromTemplateCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(CreateAgentCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $agent->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($actorId));
+        self::assertArrayHasKey('after_state', $entry->metadata);
+        self::assertSame((string) $agent->id(), $entry->metadata['after_state']['id']);
+        self::assertSame((string) $organizationId, $entry->metadata['after_state']['organization_id']);
+        self::assertSame((string) $actorId, $entry->metadata['after_state']['owner_user_id']);
+        self::assertSame((string) $template->id(), $entry->metadata['after_state']['source_template_id']);
+        self::assertSame('maja', $entry->metadata['after_state']['slug']);
+        self::assertSame($template->name(), $entry->metadata['after_state']['name']);
+        self::assertSame($template->role(), $entry->metadata['after_state']['role']);
+        self::assertSame($template->roleDescription(), $entry->metadata['after_state']['role_description']);
+        self::assertSame($template->expertise(), $entry->metadata['after_state']['expertise']);
+        self::assertSame($template->workflow(), $entry->metadata['after_state']['workflow']);
+        self::assertSame($template->style(), $entry->metadata['after_state']['style']);
+        self::assertSame($template->outputFormat(), $entry->metadata['after_state']['output_format']);
+        self::assertTrue($entry->metadata['after_state']['is_active']);
+        self::assertSame('maja', $entry->metadata['template_slug']);
+        self::assertArrayNotHasKey('before_state', $entry->metadata);
+    }
+
     private function seedTemplate(InMemoryAgentTemplateRepository $templates): AgentTemplate
     {
         $template = AgentTemplate::create(
@@ -317,6 +364,7 @@ final class CreateAgentFromTemplateCommandHandlerTest extends TestCase
         ?InMemoryAgentMemberRepository $members = null,
         int $agentLimit = 5,
         ?DateTimeImmutable $now = null,
+        ?SpyAuditLogger $audit = null,
     ): CreateAgentFromTemplateCommandHandler {
         $organizations = (new FakeOrganizationsApi())->withOrganization($organizationId, $actorId);
         $planLimits = (new FakePlanLimitsService())->withLimit(LimitType::Agents, $agentLimit);
@@ -327,6 +375,7 @@ final class CreateAgentFromTemplateCommandHandlerTest extends TestCase
             $templates,
             $organizations,
             $planLimits,
+            $audit ?? new SpyAuditLogger(),
             new FrozenClock($now ?? new DateTimeImmutable('2026-11-15T15:00:00+00:00')),
         );
     }

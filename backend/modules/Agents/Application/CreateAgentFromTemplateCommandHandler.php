@@ -13,6 +13,8 @@ use Modules\Agents\Domain\AgentSlugAlreadyTakenException;
 use Modules\Agents\Domain\AgentSlugGenerator;
 use Modules\Agents\Domain\AgentTemplate;
 use Modules\Agents\Domain\AgentTemplateRepository;
+use Modules\Core\Api\AuditLoggerInterface;
+use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Organizations\Api\Dto\OrganizationView;
 use Modules\Organizations\Api\OrganizationsApi;
 use Modules\Shared\Api\LimitType;
@@ -28,12 +30,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final readonly class CreateAgentFromTemplateCommandHandler
 {
+    public const string AUDIT_ACTION = 'agents.agent.created_from_template';
+
     public function __construct(
         private AgentRepository $agents,
         private AgentMemberRepository $agentMembers,
         private AgentTemplateRepository $templates,
         private OrganizationsApi $organizations,
         private PlanLimitsService $planLimits,
+        private AuditLoggerInterface $audit,
         private Clock $clock,
     ) {
     }
@@ -88,6 +93,18 @@ final readonly class CreateAgentFromTemplateCommandHandler
             $command->actorId,
             $command->actorId,
             $now,
+        ));
+
+        $this->audit->log(new AuditEntry(
+            userId: $command->actorId,
+            action: self::AUDIT_ACTION,
+            occurredAt: $now,
+            resourceType: CreateAgentCommandHandler::AUDIT_RESOURCE_TYPE,
+            resourceId: (string) $agent->id(),
+            metadata: [
+                'after_state' => CreateAgentCommandHandler::snapshot($agent),
+                'template_slug' => $template->slug(),
+            ],
         ));
 
         return $agent;
