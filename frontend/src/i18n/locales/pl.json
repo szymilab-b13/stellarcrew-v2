@@ -745,6 +745,9 @@
       "agents": {
         "title": "AGENTS — katalog, user agenty, przypisania, pamięć"
       },
+      "agentsAudit": {
+        "title": "AGENTS AUDIT — logi audytu dla create, update, delete i create-from-template agentów"
+      },
       "aiEngine": {
         "title": "AI ENGINE — model orchestration, memory strategy"
       },
@@ -1005,6 +1008,18 @@
       },
       "BL-AGENTS-007": {
         "story": "Przypięci agenci siedzą w sidebarze obok przełącznika workspace’ów — z badge scope i szybkim skokiem."
+      },
+      "BL-AGAUDIT-001": {
+        "story": "Utworzenie agenta trafia do audit logu z pełnym snapshotem stanu końcowego (wszystkie pola)."
+      },
+      "BL-AGAUDIT-002": {
+        "story": "Edycja agenta jest logowana ze snapshotami before i after, w audycie widać dokładnie co się zmieniło."
+      },
+      "BL-AGAUDIT-003": {
+        "story": "Soft-delete agenta loguje snapshot before; powtórne usunięcie zostaje no-opem i nie trafia do logu."
+      },
+      "BL-AGAUDIT-004": {
+        "story": "Utworzenie agenta z szablonu loguje pełen snapshot plus slug szablonu-źródła dla traceability."
       },
       "BL-WSUX-001": {
         "story": "Siatka workspace'ów na dużych ekranach (≥1280px) pokazuje 4 kafelki w rzędzie zamiast 3 — lepsze wykorzystanie szerokości ekranu."

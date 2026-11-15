@@ -8,6 +8,7 @@ use App\Tests\Fixtures\Agents\FakeOrganizationsApi;
 use App\Tests\Fixtures\Agents\FakePlanLimitsService;
 use App\Tests\Fixtures\Agents\InMemoryAgentMemberRepository;
 use App\Tests\Fixtures\Agents\InMemoryAgentRepository;
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use DateTimeImmutable;
 use Modules\Agents\Application\CreateAgentCommand;
 use Modules\Agents\Application\CreateAgentCommandHandler;
@@ -36,6 +37,7 @@ final class CreateAgentCommandHandlerTest extends TestCase
             $members,
             $organizations,
             $planLimits,
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-13T15:00:00+00:00')),
         );
 
@@ -112,6 +114,7 @@ final class CreateAgentCommandHandlerTest extends TestCase
             new InMemoryAgentMemberRepository(),
             new FakeOrganizationsApi(),
             (new FakePlanLimitsService())->withLimit(LimitType::Agents, 5),
+            new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable('2026-11-13T15:00:00+00:00')),
         );
 
@@ -196,6 +199,52 @@ final class CreateAgentCommandHandlerTest extends TestCase
         self::assertEquals($now, $agent->updatedAt());
     }
 
+    public function testShouldRecordAuditEntryWithActorAndAfterStateSnapshot(): void
+    {
+        $actorId = new UserId(Uuid::v7());
+        $organizationId = new OrganizationId(Uuid::v7());
+        $audit = new SpyAuditLogger();
+        $sut = $this->buildHandler(
+            actorId: $actorId,
+            organizationId: $organizationId,
+            audit: $audit,
+        );
+
+        $agent = $sut(new CreateAgentCommand(
+            actorId: $actorId,
+            name: 'Maja PM',
+            role: 'Project Manager',
+            roleDescription: 'You are Maja, the PM.',
+            expertise: '- Coordination.',
+            workflow: '- Open with briefing.',
+            style: '- Terse and direct.',
+            outputFormat: '- One-line confirmations.',
+            slug: 'maja',
+        ));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(CreateAgentCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(CreateAgentCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $agent->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($actorId));
+        self::assertArrayHasKey('after_state', $entry->metadata);
+        self::assertSame((string) $agent->id(), $entry->metadata['after_state']['id']);
+        self::assertSame((string) $organizationId, $entry->metadata['after_state']['organization_id']);
+        self::assertSame((string) $actorId, $entry->metadata['after_state']['owner_user_id']);
+        self::assertNull($entry->metadata['after_state']['source_template_id']);
+        self::assertSame('maja', $entry->metadata['after_state']['slug']);
+        self::assertSame('Maja PM', $entry->metadata['after_state']['name']);
+        self::assertSame('Project Manager', $entry->metadata['after_state']['role']);
+        self::assertSame('You are Maja, the PM.', $entry->metadata['after_state']['role_description']);
+        self::assertSame('- Coordination.', $entry->metadata['after_state']['expertise']);
+        self::assertSame('- Open with briefing.', $entry->metadata['after_state']['workflow']);
+        self::assertSame('- Terse and direct.', $entry->metadata['after_state']['style']);
+        self::assertSame('- One-line confirmations.', $entry->metadata['after_state']['output_format']);
+        self::assertTrue($entry->metadata['after_state']['is_active']);
+    }
+
     private function command(
         UserId $actorId,
         string $name = 'Maja PM',
@@ -221,6 +270,7 @@ final class CreateAgentCommandHandlerTest extends TestCase
         ?InMemoryAgentMemberRepository $members = null,
         int $agentLimit = 5,
         ?DateTimeImmutable $now = null,
+        ?SpyAuditLogger $audit = null,
     ): CreateAgentCommandHandler {
         $organizations = (new FakeOrganizationsApi())->withOrganization($organizationId, $actorId);
         $planLimits = (new FakePlanLimitsService())->withLimit(LimitType::Agents, $agentLimit);
@@ -230,6 +280,7 @@ final class CreateAgentCommandHandlerTest extends TestCase
             $members ?? new InMemoryAgentMemberRepository(),
             $organizations,
             $planLimits,
+            $audit ?? new SpyAuditLogger(),
             new FrozenClock($now ?? new DateTimeImmutable('2026-11-13T15:00:00+00:00')),
         );
     }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Modules\Agents\Application;
 
 use App\Tests\Fixtures\Agents\InMemoryAgentRepository;
+use App\Tests\Fixtures\Core\SpyAuditLogger;
 use DateTimeImmutable;
+use Modules\Agents\Application\CreateAgentCommandHandler;
 use Modules\Agents\Application\UpdateAgentCommand;
 use Modules\Agents\Application\UpdateAgentCommandHandler;
 use Modules\Agents\Domain\Agent;
@@ -276,6 +278,51 @@ final class UpdateAgentCommandHandlerTest extends TestCase
         self::assertEquals($updatedAt, $result->updatedAt());
     }
 
+    public function testShouldRecordAuditEntryWithBeforeAndAfterStateSnapshots(): void
+    {
+        $ownerId = new UserId(Uuid::v7());
+        $agent = $this->seedAgent($ownerId);
+        $agents = new InMemoryAgentRepository();
+        $agents->save($agent);
+
+        $audit = new SpyAuditLogger();
+        $sut = $this->buildHandler($agents, audit: $audit);
+
+        $sut(new UpdateAgentCommand(
+            actorId: $ownerId,
+            agentId: $agent->id(),
+            name: 'Viktor Architect',
+            role: 'Architect',
+            roleDescription: 'You are Viktor, the architect.',
+            expertise: '- Architecture.',
+            workflow: '- Diagrams first.',
+            style: '- Precise.',
+            outputFormat: '- One ADR per decision.',
+        ));
+
+        self::assertCount(1, $audit->entries);
+        $entry = $audit->entries[0];
+        self::assertSame(UpdateAgentCommandHandler::AUDIT_ACTION, $entry->action);
+        self::assertSame(CreateAgentCommandHandler::AUDIT_RESOURCE_TYPE, $entry->resourceType);
+        self::assertSame((string) $agent->id(), $entry->resourceId);
+        self::assertNotNull($entry->userId);
+        self::assertTrue($entry->userId->equals($ownerId));
+        self::assertSame('Maja PM', $entry->metadata['before_state']['name']);
+        self::assertSame('Project Manager', $entry->metadata['before_state']['role']);
+        self::assertSame('You are Maja, the PM.', $entry->metadata['before_state']['role_description']);
+        self::assertSame('- Coordination.', $entry->metadata['before_state']['expertise']);
+        self::assertSame('- Open with briefing.', $entry->metadata['before_state']['workflow']);
+        self::assertSame('- Terse and direct.', $entry->metadata['before_state']['style']);
+        self::assertSame('- One-line confirmations.', $entry->metadata['before_state']['output_format']);
+        self::assertSame('Viktor Architect', $entry->metadata['after_state']['name']);
+        self::assertSame('Architect', $entry->metadata['after_state']['role']);
+        self::assertSame('You are Viktor, the architect.', $entry->metadata['after_state']['role_description']);
+        self::assertSame('- Architecture.', $entry->metadata['after_state']['expertise']);
+        self::assertSame('- Diagrams first.', $entry->metadata['after_state']['workflow']);
+        self::assertSame('- Precise.', $entry->metadata['after_state']['style']);
+        self::assertSame('- One ADR per decision.', $entry->metadata['after_state']['output_format']);
+    }
+
     private function seedAgent(UserId $ownerId, ?DateTimeImmutable $createdAt = null): Agent
     {
         return Agent::create(
@@ -294,10 +341,14 @@ final class UpdateAgentCommandHandlerTest extends TestCase
         );
     }
 
-    private function buildHandler(InMemoryAgentRepository $agents, ?DateTimeImmutable $now = null): UpdateAgentCommandHandler
-    {
+    private function buildHandler(
+        InMemoryAgentRepository $agents,
+        ?DateTimeImmutable $now = null,
+        ?SpyAuditLogger $audit = null,
+    ): UpdateAgentCommandHandler {
         return new UpdateAgentCommandHandler(
             $agents,
+            $audit ?? new SpyAuditLogger(),
             new FrozenClock($now ?? new DateTimeImmutable('2026-11-13T18:30:00+00:00')),
         );
     }

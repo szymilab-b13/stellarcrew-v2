@@ -745,6 +745,9 @@
       "agents": {
         "title": "AGENTS — catalog, user agents, assignments, memory"
       },
+      "agentsAudit": {
+        "title": "AGENTS AUDIT — audit log wiring for agent create, update, delete and create-from-template"
+      },
       "aiEngine": {
         "title": "AI ENGINE — model orchestration, memory strategy"
       },
@@ -1005,6 +1008,18 @@
       },
       "BL-AGENTS-007": {
         "story": "Pinned agents live in the sidebar next to the workspace switcher — with a scope badge and a quick jump."
+      },
+      "BL-AGAUDIT-001": {
+        "story": "Creating an agent is recorded in the audit log with a full after-state snapshot of every field."
+      },
+      "BL-AGAUDIT-002": {
+        "story": "Editing an agent is recorded with before and after snapshots, so the audit log shows exactly what changed."
+      },
+      "BL-AGAUDIT-003": {
+        "story": "Soft-deleting an agent is recorded with a before snapshot; repeating the delete stays a no-op and skips the log."
+      },
+      "BL-AGAUDIT-004": {
+        "story": "Creating an agent from a template records the full snapshot plus the origin template slug for traceability."
       },
       "BL-WSUX-001": {
         "story": "On large screens (≥1280px) the workspace grid shows 4 tiles per row instead of 3 — better use of horizontal space."
