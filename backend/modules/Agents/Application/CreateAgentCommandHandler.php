@@ -57,7 +57,11 @@ final readonly class CreateAgentCommandHandler
             $slug,
             $command->name,
             $command->role,
-            $command->instructions,
+            $command->roleDescription,
+            $command->expertise,
+            $command->workflow,
+            $command->style,
+            $command->outputFormat,
             $now,
         );
 

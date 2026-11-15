@@ -12,11 +12,15 @@
 
         <field name="organizationId" type="organization_id_vo" column="organization_id" nullable="false"/>
         <field name="ownerUserId" type="user_id_vo" column="owner_user_id" nullable="false"/>
-        <field name="sourceTemplateId" type="agent_id_vo" column="source_template_id" nullable="true"/>
+        <field name="sourceTemplateId" type="agent_template_id_vo" column="source_template_id" nullable="true"/>
         <field name="slug" type="string" column="slug" length="80" nullable="false"/>
         <field name="name" type="string" column="name" length="80" nullable="false"/>
         <field name="role" type="string" column="role" length="120" nullable="false"/>
-        <field name="instructions" type="text" column="instructions" nullable="false"/>
+        <field name="roleDescription" type="text" column="role_description" nullable="false"/>
+        <field name="expertise" type="text" column="expertise" nullable="false"/>
+        <field name="workflow" type="text" column="workflow" nullable="false"/>
+        <field name="style" type="text" column="style" nullable="false"/>
+        <field name="outputFormat" type="text" column="output_format" nullable="false"/>
         <field name="isActive" type="boolean" column="is_active" nullable="false"/>
         <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
         <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>

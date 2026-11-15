@@ -39,15 +39,11 @@ final class CreateAgentCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable('2026-11-13T15:00:00+00:00')),
         );
 
-        $agent = $sut(new CreateAgentCommand(
-            actorId: $actorId,
-            name: 'Maja PM',
-            role: 'Project Manager',
-            instructions: 'You are Maja, the PM.',
-        ));
+        $agent = $sut($this->command(actorId: $actorId, name: 'Maja PM'));
 
         self::assertSame('maja-pm', $agent->slug());
         self::assertSame('Maja PM', $agent->name());
+        self::assertNull($agent->sourceTemplateId());
         self::assertTrue($agent->organizationId()->equals($organizationId));
         self::assertTrue($agent->ownerUserId()->equals($actorId));
         self::assertNotNull($agents->findById($agent->id()));
@@ -62,11 +58,10 @@ final class CreateAgentCommandHandlerTest extends TestCase
             organizationId: $organizationId,
         );
 
-        $agent = $sut(new CreateAgentCommand(
+        $agent = $sut($this->command(
             actorId: $actorId,
             name: 'Viktor Architect',
             role: 'Architect',
-            instructions: 'You are Viktor.',
             slug: 'viktor',
         ));
 
@@ -82,9 +77,9 @@ final class CreateAgentCommandHandlerTest extends TestCase
             organizationId: $organizationId,
             agentLimit: 10,
         );
-        $sut(new CreateAgentCommand($actorId, 'Alpha', 'Role', 'Instructions.'));
+        $sut($this->command(actorId: $actorId, name: 'Alpha'));
 
-        $second = $sut(new CreateAgentCommand($actorId, 'Alpha', 'Role', 'Instructions.'));
+        $second = $sut($this->command(actorId: $actorId, name: 'Alpha'));
 
         self::assertNotSame('alpha', $second->slug());
         self::assertStringStartsWith('alpha-', $second->slug());
@@ -101,7 +96,7 @@ final class CreateAgentCommandHandlerTest extends TestCase
             members: $members,
         );
 
-        $agent = $sut(new CreateAgentCommand($actorId, 'Maja', 'PM', 'You are Maja.'));
+        $agent = $sut($this->command(actorId: $actorId, name: 'Maja'));
 
         $granted = $members->find($agent->id(), $actorId);
         self::assertNotNull($granted);
@@ -122,7 +117,7 @@ final class CreateAgentCommandHandlerTest extends TestCase
 
         $this->expectException(OwnerHasNoOrganizationException::class);
 
-        $sut(new CreateAgentCommand($actorId, 'Maja', 'PM', 'You are Maja.'));
+        $sut($this->command(actorId: $actorId, name: 'Maja'));
     }
 
     public function testShouldThrowWhenAgentLimitReached(): void
@@ -134,11 +129,11 @@ final class CreateAgentCommandHandlerTest extends TestCase
             organizationId: $organizationId,
             agentLimit: 1,
         );
-        $sut(new CreateAgentCommand($actorId, 'First', 'PM', 'Instructions.'));
+        $sut($this->command(actorId: $actorId, name: 'First'));
 
         $this->expectException(AgentLimitReachedException::class);
 
-        $sut(new CreateAgentCommand($actorId, 'Second', 'PM', 'Instructions.'));
+        $sut($this->command(actorId: $actorId, name: 'Second'));
     }
 
     public function testShouldThrowWhenProvidedSlugAlreadyTakenInOrganization(): void
@@ -150,11 +145,38 @@ final class CreateAgentCommandHandlerTest extends TestCase
             organizationId: $organizationId,
             agentLimit: 10,
         );
-        $sut(new CreateAgentCommand($actorId, 'First', 'PM', 'Instructions.', slug: 'maja'));
+        $sut($this->command(actorId: $actorId, name: 'First', slug: 'maja'));
 
         $this->expectException(AgentSlugAlreadyTakenException::class);
 
-        $sut(new CreateAgentCommand($actorId, 'Second', 'PM', 'Instructions.', slug: 'maja'));
+        $sut($this->command(actorId: $actorId, name: 'Second', slug: 'maja'));
+    }
+
+    public function testShouldPersistAllFivePromptSections(): void
+    {
+        $actorId = new UserId(Uuid::v7());
+        $organizationId = new OrganizationId(Uuid::v7());
+        $sut = $this->buildHandler(
+            actorId: $actorId,
+            organizationId: $organizationId,
+        );
+
+        $agent = $sut(new CreateAgentCommand(
+            actorId: $actorId,
+            name: 'Maja PM',
+            role: 'Project Manager',
+            roleDescription: 'You are Maja, the PM.',
+            expertise: '- Coordination.',
+            workflow: '- Open with briefing.',
+            style: '- Terse and direct.',
+            outputFormat: '- One-line confirmations.',
+        ));
+
+        self::assertSame('You are Maja, the PM.', $agent->roleDescription());
+        self::assertSame('- Coordination.', $agent->expertise());
+        self::assertSame('- Open with briefing.', $agent->workflow());
+        self::assertSame('- Terse and direct.', $agent->style());
+        self::assertSame('- One-line confirmations.', $agent->outputFormat());
     }
 
     public function testShouldStampCreatedAtAndUpdatedAtFromClock(): void
@@ -168,10 +190,29 @@ final class CreateAgentCommandHandlerTest extends TestCase
             now: $now,
         );
 
-        $agent = $sut(new CreateAgentCommand($actorId, 'Timed', 'PM', 'Instructions.'));
+        $agent = $sut($this->command(actorId: $actorId, name: 'Timed'));
 
         self::assertEquals($now, $agent->createdAt());
         self::assertEquals($now, $agent->updatedAt());
+    }
+
+    private function command(
+        UserId $actorId,
+        string $name = 'Maja PM',
+        string $role = 'Project Manager',
+        ?string $slug = null,
+    ): CreateAgentCommand {
+        return new CreateAgentCommand(
+            actorId: $actorId,
+            name: $name,
+            role: $role,
+            roleDescription: 'You are the agent.',
+            expertise: '- Core expertise.',
+            workflow: '- Core workflow.',
+            style: '- Core style.',
+            outputFormat: '- Core output format.',
+            slug: $slug,
+        );
     }
 
     private function buildHandler(

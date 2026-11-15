@@ -12,7 +12,11 @@ final readonly class CreateAgentCommand
         public UserId $actorId,
         public string $name,
         public string $role,
-        public string $instructions,
+        public string $roleDescription,
+        public string $expertise,
+        public string $workflow,
+        public string $style,
+        public string $outputFormat,
         public ?string $slug = null,
     ) {
     }

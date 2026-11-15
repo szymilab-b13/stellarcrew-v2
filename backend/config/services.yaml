@@ -95,6 +95,9 @@ services:
     Modules\Agents\Domain\AgentMemberRepository:
         alias: Modules\Agents\Infrastructure\Doctrine\Repository\DoctrineAgentMemberRepository
 
+    Modules\Agents\Domain\AgentTemplateRepository:
+        alias: Modules\Agents\Infrastructure\Doctrine\Repository\DoctrineAgentTemplateRepository
+
     # Plan limits (cross-cutting usage gate per ADR-BE-006)
     Modules\Shared\Api\PlanLimitsService:
         alias: Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService
@@ -145,6 +148,7 @@ when@test:
         App\Tests\Fixtures\Projects\InMemoryProjectRepository: ~
         App\Tests\Fixtures\Agents\InMemoryAgentRepository: ~
         App\Tests\Fixtures\Agents\InMemoryAgentMemberRepository: ~
+        App\Tests\Fixtures\Agents\InMemoryAgentTemplateRepository: ~
         App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel: ~
@@ -175,6 +179,9 @@ when@test:
 
         Modules\Agents\Domain\AgentMemberRepository:
             alias: App\Tests\Fixtures\Agents\InMemoryAgentMemberRepository
+
+        Modules\Agents\Domain\AgentTemplateRepository:
+            alias: App\Tests\Fixtures\Agents\InMemoryAgentTemplateRepository
 
         Modules\Organizations\Domain\OrganizationRepository:
             alias: App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository

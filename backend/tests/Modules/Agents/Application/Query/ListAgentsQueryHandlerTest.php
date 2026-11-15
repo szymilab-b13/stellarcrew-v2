@@ -126,7 +126,11 @@ final class ListAgentsQueryHandlerTest extends TestCase
             $slug,
             $name,
             'Role',
-            'Instructions.',
+            'Role description.',
+            '- Expertise.',
+            '- Workflow.',
+            '- Style.',
+            '- Output format.',
             $this->now(),
         );
         $agents->save($agent);

@@ -140,6 +140,10 @@ final class DeleteAgentCommandHandlerTest extends TestCase
             'Maja PM',
             'Project Manager',
             'You are Maja, the PM.',
+            '- Coordination.',
+            '- Open with briefing.',
+            '- Terse and direct.',
+            '- One-line confirmations.',
             $createdAt,
         );
         $agents = new InMemoryAgentRepository();
@@ -172,6 +176,10 @@ final class DeleteAgentCommandHandlerTest extends TestCase
             'Maja PM',
             'Project Manager',
             'You are Maja, the PM.',
+            '- Coordination.',
+            '- Open with briefing.',
+            '- Terse and direct.',
+            '- One-line confirmations.',
             new DateTimeImmutable('2026-11-13T15:00:00+00:00'),
         );
     }
