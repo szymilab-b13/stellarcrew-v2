@@ -956,6 +956,9 @@
       "agents": {
         "title": "AGENTS — katalog, user agenty, przypisania, pamięć"
       },
+      "agentsUi": {
+        "title": "AGENTS UI — lista, tworzenie (szablon/od zera), overview, ustawienia, flow usuwania"
+      },
       "agentsAudit": {
         "title": "AGENTS AUDIT — logi audytu dla create, update, delete i create-from-template agentów"
       },
@@ -1219,6 +1222,30 @@
       },
       "BL-AGENTS-007": {
         "story": "Przypięci agenci siedzą w sidebarze obok przełącznika workspace’ów — z badge scope i szybkim skokiem."
+      },
+      "BL-AGUI-001": {
+        "story": "Frontend gada z endpointami Agents i Agent Templates przez wspólną warstwę API z ośmioma typowanymi hookami."
+      },
+      "BL-AGUI-002": {
+        "story": "Strona Agents pod /agents pokazuje listę agentów jako kafelki z pustym stanem i osobnym przyciskiem Dodaj — pozycja w sidebarze jest już aktywna."
+      },
+      "BL-AGUI-003": {
+        "story": "Klik w Dodaj agenta otwiera dialog wyboru ścieżki: Z szablonu albo Od zera."
+      },
+      "BL-AGUI-004": {
+        "story": "Z szablonu prowadzi do pickera — siatki pięciu gotowych agentów z awatarem, rolą i krótkim opisem."
+      },
+      "BL-AGUI-005": {
+        "story": "Wybranie szablonu otwiera prefillowany formularz (nazwa, rola, slug + pięć sekcji promptu), który tworzy agenta po submicie."
+      },
+      "BL-AGUI-006": {
+        "story": "Od zera otwiera pusty formularz z tymi samymi pięcioma sekcjami promptu — każdą definiujesz samodzielnie."
+      },
+      "BL-AGUI-007": {
+        "story": "Każdy agent ma read-only overview z metadanymi, pięcioma sekcjami promptu i stubem aktywności (dostępne po CHAT)."
+      },
+      "BL-AGUI-008": {
+        "story": "Ustawienia agenta pozwalają zmienić nazwę, dopasować pięć sekcji i soft-delete agenta — lista pokazuje baner sukcesu z Cofnij w Audit log."
       },
       "BL-AGAUDIT-001": {
         "story": "Utworzenie agenta trafia do audit logu z pełnym snapshotem stanu końcowego (wszystkie pola)."

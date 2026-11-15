@@ -956,6 +956,9 @@
       "agents": {
         "title": "AGENTS — catalog, user agents, assignments, memory"
       },
+      "agentsUi": {
+        "title": "AGENTS UI — list, create (template/scratch), overview, settings, delete flow"
+      },
       "agentsAudit": {
         "title": "AGENTS AUDIT — audit log wiring for agent create, update, delete and create-from-template"
       },
@@ -1219,6 +1222,30 @@
       },
       "BL-AGENTS-007": {
         "story": "Pinned agents live in the sidebar next to the workspace switcher — with a scope badge and a quick jump."
+      },
+      "BL-AGUI-001": {
+        "story": "The frontend talks to the Agents and Agent Templates endpoints through a shared API layer with eight typed hooks."
+      },
+      "BL-AGUI-002": {
+        "story": "An Agents page at /agents lists your agents as tiles with an empty state and a dedicated Add button — the sidebar entry is now live."
+      },
+      "BL-AGUI-003": {
+        "story": "Clicking Add agent opens a choose-path dialog that offers either From template or From scratch."
+      },
+      "BL-AGUI-004": {
+        "story": "From template leads to a picker grid of five predefined agents with avatars, role and short description."
+      },
+      "BL-AGUI-005": {
+        "story": "Picking a template opens a pre-filled form (name, role, slug + five prompt sections) that creates the agent on submit."
+      },
+      "BL-AGUI-006": {
+        "story": "From scratch opens an empty form with the same five prompt sections — you define every section yourself."
+      },
+      "BL-AGUI-007": {
+        "story": "Each agent has a read-only overview with metadata, five prompt sections and an activity stub (Coming after CHAT)."
+      },
+      "BL-AGUI-008": {
+        "story": "Agent settings let you rename, retune the five sections and soft-delete the agent — the list shows a success banner with Undo in the Audit log."
       },
       "BL-AGAUDIT-001": {
         "story": "Creating an agent is recorded in the audit log with a full after-state snapshot of every field."
