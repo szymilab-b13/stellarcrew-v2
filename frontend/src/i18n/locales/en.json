@@ -374,6 +374,79 @@
       "aria": "Template {{name}}",
       "openAria": "Open {{name}}",
       "useThis": "Use this template"
+    },
+    "form": {
+      "nameLabel": "Name",
+      "roleLabel": "Role",
+      "slugLabel": "Slug",
+      "slugHint": "URL-friendly identifier used in agent paths. Lowercase letters, digits and dashes.",
+      "roleDescriptionLabel": "Role description",
+      "roleDescriptionHint": "One or two sentences describing what the agent is responsible for.",
+      "expertiseLabel": "Expertise",
+      "expertiseHint": "Tools, stacks and domains the agent is strong in.",
+      "workflowLabel": "Workflow",
+      "workflowHint": "Step-by-step flow the agent follows when it gets a task.",
+      "styleLabel": "Style",
+      "styleHint": "Voice, tone and defaults the agent uses in replies.",
+      "outputFormatLabel": "Output format",
+      "outputFormatHint": "Preferred shape of answers (TL;DR, bullet lists, code blocks and so on).",
+      "errors": {
+        "name": {
+          "required": "Name is required.",
+          "tooLong": "Name must be 80 characters or fewer."
+        },
+        "role": {
+          "required": "Role is required.",
+          "tooLong": "Role must be 120 characters or fewer."
+        },
+        "slug": {
+          "required": "Slug is required.",
+          "tooLong": "Slug must be 80 characters or fewer.",
+          "invalid": "Slug must contain lowercase letters, digits and dashes only."
+        },
+        "roleDescription": {
+          "required": "Role description is required.",
+          "tooLong": "Role description must be 500 characters or fewer."
+        },
+        "expertise": {
+          "required": "Expertise is required.",
+          "tooLong": "Expertise must be 2000 characters or fewer."
+        },
+        "workflow": {
+          "required": "Workflow is required.",
+          "tooLong": "Workflow must be 2000 characters or fewer."
+        },
+        "style": {
+          "required": "Style is required.",
+          "tooLong": "Style must be 2000 characters or fewer."
+        },
+        "outputFormat": {
+          "required": "Output format is required.",
+          "tooLong": "Output format must be 2000 characters or fewer."
+        },
+        "server": {
+          "unauthorized": "You are not authorized. Please sign in again.",
+          "templateNotFound": "This template is no longer available.",
+          "slugTaken": "This slug is already taken. Pick a different one.",
+          "limitReached": "You have reached the agent limit for this organization.",
+          "noOrganization": "You do not belong to any organization yet.",
+          "conflict": "The agent could not be saved. Adjust the fields and try again.",
+          "validation": "Some fields are invalid. Please review and try again.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
+    },
+    "fromTemplate": {
+      "breadcrumbFallback": "Template",
+      "back": "Back to templates",
+      "title": "Create agent from {{name}}",
+      "titleFallback": "Create agent from template",
+      "subtitle": "Prompt sections are pre-filled from the template. Tweak anything before saving.",
+      "sectionAria": "New agent form",
+      "loading": "Loading template…",
+      "loadError": "Could not load the template.",
+      "submit": "Create agent",
+      "submitting": "Creating…"
     }
   },
   "projects": {

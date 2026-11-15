@@ -374,6 +374,79 @@
       "aria": "Szablon {{name}}",
       "openAria": "Otwórz {{name}}",
       "useThis": "Użyj tego szablonu"
+    },
+    "form": {
+      "nameLabel": "Nazwa",
+      "roleLabel": "Rola",
+      "slugLabel": "Slug",
+      "slugHint": "Identyfikator w URL agenta. Małe litery, cyfry i myślniki.",
+      "roleDescriptionLabel": "Opis roli",
+      "roleDescriptionHint": "Jedno lub dwa zdania, za co agent odpowiada.",
+      "expertiseLabel": "Ekspertyza",
+      "expertiseHint": "Narzędzia, stacki i domeny, w których agent jest mocny.",
+      "workflowLabel": "Workflow",
+      "workflowHint": "Krok po kroku, jak agent realizuje zadanie.",
+      "styleLabel": "Styl",
+      "styleHint": "Głos, ton i domyślne zachowania w odpowiedziach.",
+      "outputFormatLabel": "Format wyjścia",
+      "outputFormatHint": "Preferowana forma odpowiedzi (TL;DR, listy, bloki kodu).",
+      "errors": {
+        "name": {
+          "required": "Nazwa jest wymagana.",
+          "tooLong": "Nazwa może mieć maksymalnie 80 znaków."
+        },
+        "role": {
+          "required": "Rola jest wymagana.",
+          "tooLong": "Rola może mieć maksymalnie 120 znaków."
+        },
+        "slug": {
+          "required": "Slug jest wymagany.",
+          "tooLong": "Slug może mieć maksymalnie 80 znaków.",
+          "invalid": "Slug może zawierać tylko małe litery, cyfry i myślniki."
+        },
+        "roleDescription": {
+          "required": "Opis roli jest wymagany.",
+          "tooLong": "Opis roli może mieć maksymalnie 500 znaków."
+        },
+        "expertise": {
+          "required": "Ekspertyza jest wymagana.",
+          "tooLong": "Ekspertyza może mieć maksymalnie 2000 znaków."
+        },
+        "workflow": {
+          "required": "Workflow jest wymagany.",
+          "tooLong": "Workflow może mieć maksymalnie 2000 znaków."
+        },
+        "style": {
+          "required": "Styl jest wymagany.",
+          "tooLong": "Styl może mieć maksymalnie 2000 znaków."
+        },
+        "outputFormat": {
+          "required": "Format wyjścia jest wymagany.",
+          "tooLong": "Format wyjścia może mieć maksymalnie 2000 znaków."
+        },
+        "server": {
+          "unauthorized": "Brak autoryzacji. Zaloguj się ponownie.",
+          "templateNotFound": "Ten szablon nie jest już dostępny.",
+          "slugTaken": "Ten slug jest już zajęty. Wybierz inny.",
+          "limitReached": "Osiągnięto limit agentów dla tej organizacji.",
+          "noOrganization": "Nie należysz jeszcze do żadnej organizacji.",
+          "conflict": "Nie udało się zapisać agenta. Popraw pola i spróbuj ponownie.",
+          "validation": "Część pól jest nieprawidłowa. Sprawdź formularz.",
+          "generic": "Coś poszło nie tak. Spróbuj ponownie."
+        }
+      }
+    },
+    "fromTemplate": {
+      "breadcrumbFallback": "Szablon",
+      "back": "Wróć do szablonów",
+      "title": "Utwórz agenta z szablonu {{name}}",
+      "titleFallback": "Utwórz agenta z szablonu",
+      "subtitle": "Sekcje promptu są wypełnione z szablonu. Przed zapisem możesz je zmienić.",
+      "sectionAria": "Formularz nowego agenta",
+      "loading": "Ładuję szablon…",
+      "loadError": "Nie udało się załadować szablonu.",
+      "submit": "Utwórz agenta",
+      "submitting": "Tworzę…"
     }
   },
   "projects": {
