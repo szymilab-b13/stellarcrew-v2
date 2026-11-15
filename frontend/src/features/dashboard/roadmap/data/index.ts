@@ -1,6 +1,7 @@
 import type { RoadmapMilestone } from '../types';
 import { AGENT_RUNTIME_MILESTONE } from './agentRuntime';
 import { AGENTS_MILESTONE } from './agents';
+import { AGENTS_AUDIT_MILESTONE } from './agentsAudit';
 import { AGENTS_ORCHESTRATION_MILESTONE } from './agentsOrchestration';
 import { AI_ENGINE_MILESTONE } from './aiEngine';
 import { AUDIT_MILESTONE } from './audit';
@@ -42,6 +43,7 @@ export const ROADMAP: RoadmapMilestone[] = [
   PROJECT_DOCS_MILESTONE,
   VARIABLES_MILESTONE,
   AGENTS_MILESTONE,
+  AGENTS_AUDIT_MILESTONE,
   AI_ENGINE_MILESTONE,
   KNOWLEDGE_MILESTONE,
   SKILLS_MILESTONE,
