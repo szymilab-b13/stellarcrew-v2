@@ -7,6 +7,7 @@ namespace Modules\Agents\Infrastructure\Bundle;
 use function dirname;
 
 use Modules\Shared\Infrastructure\Doctrine\Type\AgentIdType;
+use Modules\Shared\Infrastructure\Doctrine\Type\AgentTemplateIdType;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
@@ -24,6 +25,7 @@ final class AgentsBundle extends AbstractBundle
             'dbal' => [
                 'types' => [
                     AgentIdType::NAME => AgentIdType::class,
+                    AgentTemplateIdType::NAME => AgentTemplateIdType::class,
                 ],
             ],
             'orm' => [
