@@ -16,6 +16,7 @@ interface AgentFormProps {
   serverError: string | null;
   submitLabel: string;
   submittingLabel: string;
+  slugLocked?: boolean;
 }
 
 export function AgentForm({
@@ -25,6 +26,7 @@ export function AgentForm({
   serverError,
   submitLabel,
   submittingLabel,
+  slugLocked = false,
 }: AgentFormProps) {
   const { t } = useTranslation();
   const form = useForm<AgentFormValues>({
@@ -71,7 +73,7 @@ export function AgentForm({
       <FormField
         id="agent-form-slug"
         label={t('agents.form.slugLabel')}
-        hint={t('agents.form.slugHint')}
+        hint={slugLocked ? t('agents.form.slugLockedHint') : t('agents.form.slugHint')}
         errorKey={errors.slug?.message}
       >
         <Input
@@ -79,7 +81,12 @@ export function AgentForm({
           type="text"
           autoComplete="off"
           maxLength={80}
+          readOnly={slugLocked}
+          aria-readonly={slugLocked || undefined}
           invalid={Boolean(errors.slug)}
+          className={
+            slugLocked ? 'cursor-not-allowed bg-sc-bg-muted text-sc-text-muted' : undefined
+          }
           {...form.register('slug')}
         />
       </FormField>

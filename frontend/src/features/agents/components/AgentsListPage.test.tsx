@@ -27,7 +27,7 @@ function makeFetch(agentsBody: unknown, agentsStatus = 200) {
   });
 }
 
-function renderPage(initialPath = '/agents') {
+function renderPage(initialPath: string | { pathname: string; state?: unknown } = '/agents') {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
@@ -200,5 +200,30 @@ describe('AgentsListPage', () => {
     await user.click(screen.getByRole('button', { name: /close/i }));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('should render the deleted banner with Undo link when navigated with deletedAgentName state', async () => {
+    vi.stubGlobal('fetch', makeFetch([]));
+
+    renderPage({ pathname: '/agents', state: { deletedAgentName: 'Custom One' } });
+
+    const banner = await screen.findByRole('status');
+    expect(banner).toHaveTextContent(/Agent "Custom One" was deleted/);
+    const undo = screen.getByRole('link', { name: /undo in audit log/i });
+    expect(undo).toHaveAttribute('href', '/admin/audit');
+  });
+
+  it('should dismiss the deleted banner when the dismiss button is clicked', async () => {
+    vi.stubGlobal('fetch', makeFetch([]));
+
+    renderPage({ pathname: '/agents', state: { deletedAgentName: 'Custom One' } });
+    const user = userEvent.setup();
+
+    const banner = await screen.findByRole('status');
+    expect(banner).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /dismiss/i }));
+
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 });

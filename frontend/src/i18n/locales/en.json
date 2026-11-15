@@ -332,6 +332,11 @@
     "emptyAria": "No agents yet",
     "emptyTitle": "No agents yet",
     "emptyBody": "Create the first agent to delegate work, run flows and consume templates.",
+    "deletedBanner": {
+      "body": "Agent \"{{name}}\" was deleted.",
+      "undoLink": "Undo in Audit log",
+      "dismiss": "Dismiss"
+    },
     "tile": {
       "aria": "Agent {{name}}",
       "openAria": "Open {{name}}",
@@ -380,6 +385,7 @@
       "roleLabel": "Role",
       "slugLabel": "Slug",
       "slugHint": "URL-friendly identifier used in agent paths. Lowercase letters, digits and dashes.",
+      "slugLockedHint": "Slug is fixed once the agent is created and cannot be changed later.",
       "roleDescriptionLabel": "Role description",
       "roleDescriptionHint": "One or two sentences describing what the agent is responsible for.",
       "expertiseLabel": "Expertise",
@@ -488,6 +494,42 @@
         "body": "Agent chat history and events will appear here.",
         "comingSoon": "Coming after the CHAT milestone.",
         "prototype": "Prototype"
+      }
+    },
+    "settings": {
+      "breadcrumb": "Settings",
+      "back": "Back to overview",
+      "title": "Agent settings",
+      "subtitle": "Edit \"{{name}}\" or delete the agent.",
+      "loading": "Loading agent…",
+      "loadError": "Could not load the agent.",
+      "forbidden": "You cannot edit this agent.",
+      "sectionAria": "Agent details",
+      "submit": "Save changes",
+      "saving": "Saving…",
+      "saved": "Changes saved.",
+      "errors": {
+        "forbidden": "You do not have permission to edit this agent.",
+        "notFound": "This agent no longer exists."
+      },
+      "dangerZone": {
+        "sectionAria": "Danger zone",
+        "title": "Danger zone",
+        "body": "Deleting \"{{name}}\" removes it from the organization. You can undo via the Audit log.",
+        "deleteButton": "Delete agent"
+      },
+      "delete": {
+        "title": "Delete agent",
+        "body": "You are about to delete \"{{name}}\". This action soft-deletes the agent and can be undone from the Audit log.",
+        "confirmPrompt": "Type to confirm deletion:",
+        "acknowledge": "I understand and want to delete \"{{name}}\".",
+        "confirm": "Delete agent",
+        "deleting": "Deleting…",
+        "errors": {
+          "forbidden": "You do not have permission to delete this agent.",
+          "notFound": "This agent no longer exists.",
+          "generic": "Something went wrong. Please try again."
+        }
       }
     }
   },

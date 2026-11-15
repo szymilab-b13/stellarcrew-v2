@@ -1,7 +1,7 @@
-import { Loader2 } from 'lucide-react';
-import { useMemo } from 'react';
+import { Loader2, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMatch, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom';
 
 import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
 import { Button } from '@/components/ui/Button';
@@ -11,14 +11,29 @@ import { AddAgentTile } from './AddAgentTile';
 import { AgentTile } from './AgentTile';
 import { CreateAgentChoosePathDialog } from './CreateAgentChoosePathDialog';
 
+interface LocationState {
+  deletedAgentName?: string;
+}
+
 export function AgentsListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const agentsQuery = useAgentsList();
   const createMatch = useMatch('/agents/new');
 
   const breadcrumbs = useMemo(() => [{ label: t('agents.breadcrumb') }], [t]);
   usePageBreadcrumbs(breadcrumbs);
+
+  const navState = (location.state ?? null) as LocationState | null;
+  const [deletedBanner, setDeletedBanner] = useState<string | null>(
+    navState?.deletedAgentName ?? null,
+  );
+  useEffect(() => {
+    if (navState?.deletedAgentName) {
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [navState, navigate, location.pathname]);
 
   function openCreate() {
     navigate('/agents/new');
@@ -26,6 +41,10 @@ export function AgentsListPage() {
 
   function closeCreate() {
     navigate('/agents');
+  }
+
+  function dismissBanner() {
+    setDeletedBanner(null);
   }
 
   return (
@@ -41,6 +60,28 @@ export function AgentsListPage() {
           {t('agents.addTile.label')}
         </Button>
       </header>
+
+      {deletedBanner ? (
+        <div
+          role="status"
+          className="flex items-start justify-between gap-3 rounded-md border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300"
+        >
+          <p>
+            {t('agents.deletedBanner.body', { name: deletedBanner })}{' '}
+            <Link to="/admin/audit" className="font-semibold underline">
+              {t('agents.deletedBanner.undoLink')}
+            </Link>
+          </p>
+          <button
+            type="button"
+            onClick={dismissBanner}
+            aria-label={t('agents.deletedBanner.dismiss')}
+            className="inline-flex h-6 w-6 flex-none items-center justify-center rounded-md text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300"
+          >
+            <X size={14} aria-hidden />
+          </button>
+        </div>
+      ) : null}
 
       {agentsQuery.isPending ? (
         <p className="flex items-center gap-2 text-sm text-sc-text-muted">

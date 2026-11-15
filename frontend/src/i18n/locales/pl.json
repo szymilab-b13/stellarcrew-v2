@@ -332,6 +332,11 @@
     "emptyAria": "Brak agentów",
     "emptyTitle": "Brak agentów",
     "emptyBody": "Dodaj pierwszego agenta, aby delegować pracę, uruchamiać flow i korzystać z szablonów.",
+    "deletedBanner": {
+      "body": "Agent „{{name}}\" został usunięty.",
+      "undoLink": "Cofnij w Audit log",
+      "dismiss": "Zamknij"
+    },
     "tile": {
       "aria": "Agent {{name}}",
       "openAria": "Otwórz {{name}}",
@@ -380,6 +385,7 @@
       "roleLabel": "Rola",
       "slugLabel": "Slug",
       "slugHint": "Identyfikator w URL agenta. Małe litery, cyfry i myślniki.",
+      "slugLockedHint": "Slug jest ustalany przy tworzeniu agenta i nie można go później zmienić.",
       "roleDescriptionLabel": "Opis roli",
       "roleDescriptionHint": "Jedno lub dwa zdania, za co agent odpowiada.",
       "expertiseLabel": "Ekspertyza",
@@ -488,6 +494,42 @@
         "body": "Historia czatu i zdarzenia agenta pojawią się tutaj.",
         "comingSoon": "Dostępne po milestonie CHAT.",
         "prototype": "Prototyp"
+      }
+    },
+    "settings": {
+      "breadcrumb": "Ustawienia",
+      "back": "Wróć do przeglądu",
+      "title": "Ustawienia agenta",
+      "subtitle": "Edytuj „{{name}}\" lub usuń agenta.",
+      "loading": "Ładuję agenta…",
+      "loadError": "Nie udało się załadować agenta.",
+      "forbidden": "Nie masz dostępu do edycji tego agenta.",
+      "sectionAria": "Szczegóły agenta",
+      "submit": "Zapisz zmiany",
+      "saving": "Zapisuję…",
+      "saved": "Zmiany zapisane.",
+      "errors": {
+        "forbidden": "Nie masz uprawnień do edycji tego agenta.",
+        "notFound": "Ten agent już nie istnieje."
+      },
+      "dangerZone": {
+        "sectionAria": "Strefa niebezpieczna",
+        "title": "Strefa niebezpieczna",
+        "body": "Usunięcie „{{name}}\" skasuje agenta z organizacji. Możesz to cofnąć w Audit log.",
+        "deleteButton": "Usuń agenta"
+      },
+      "delete": {
+        "title": "Usuń agenta",
+        "body": "Zamierzasz usunąć „{{name}}\". To soft-delete, można go cofnąć w Audit log.",
+        "confirmPrompt": "Zaznacz, aby potwierdzić usunięcie:",
+        "acknowledge": "Rozumiem i chcę usunąć „{{name}}\".",
+        "confirm": "Usuń agenta",
+        "deleting": "Usuwam…",
+        "errors": {
+          "forbidden": "Nie masz uprawnień do usunięcia tego agenta.",
+          "notFound": "Ten agent już nie istnieje.",
+          "generic": "Coś poszło nie tak. Spróbuj ponownie."
+        }
       }
     }
   },

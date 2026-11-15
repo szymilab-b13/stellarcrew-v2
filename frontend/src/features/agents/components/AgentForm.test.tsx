@@ -23,6 +23,7 @@ interface HarnessProps {
   onSubmit?: (values: AgentFormValues) => void;
   isSubmitting?: boolean;
   serverError?: string | null;
+  slugLocked?: boolean;
 }
 
 function renderForm({
@@ -30,6 +31,7 @@ function renderForm({
   onSubmit = vi.fn(),
   isSubmitting = false,
   serverError = null,
+  slugLocked = false,
 }: HarnessProps = {}) {
   return render(
     <AgentForm
@@ -39,6 +41,7 @@ function renderForm({
       serverError={serverError}
       submitLabel="Create agent"
       submittingLabel="Creating…"
+      slugLocked={slugLocked}
     />,
   );
 }
@@ -127,5 +130,15 @@ describe('AgentForm', () => {
     renderForm({ defaultValues: filledValues, serverError: 'This slug is already taken.' });
 
     expect(screen.getByRole('alert')).toHaveTextContent('This slug is already taken.');
+  });
+
+  it('should render the slug input as readOnly and show the locked hint when slugLocked is true', () => {
+    renderForm({ defaultValues: filledValues, slugLocked: true });
+
+    const slug = screen.getByLabelText('Slug');
+    expect(slug).toHaveAttribute('readonly');
+    expect(
+      screen.getByText('Slug is fixed once the agent is created and cannot be changed later.'),
+    ).toBeInTheDocument();
   });
 });
