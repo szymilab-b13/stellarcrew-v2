@@ -341,6 +341,22 @@
     "addTile": {
       "label": "Add agent",
       "aria": "Add agent"
+    },
+    "choosePath": {
+      "title": "Create a new agent",
+      "subtitle": "Start from a predefined template or build an agent from scratch.",
+      "template": {
+        "title": "From template",
+        "body": "Pick one of five predefined agents and tweak the five prompt sections.",
+        "cta": "Browse templates",
+        "aria": "Create agent from template"
+      },
+      "scratch": {
+        "title": "From scratch",
+        "body": "Define role, expertise, workflow, style and output format yourself.",
+        "cta": "Start from empty",
+        "aria": "Create agent from scratch"
+      }
     }
   },
   "projects": {

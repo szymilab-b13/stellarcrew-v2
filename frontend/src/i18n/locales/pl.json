@@ -341,6 +341,22 @@
     "addTile": {
       "label": "Dodaj agenta",
       "aria": "Dodaj agenta"
+    },
+    "choosePath": {
+      "title": "Utwórz nowego agenta",
+      "subtitle": "Zacznij od gotowego szablonu albo zbuduj agenta od zera.",
+      "template": {
+        "title": "Z szablonu",
+        "body": "Wybierz jednego z pięciu gotowych agentów i dopasuj pięć sekcji promptu.",
+        "cta": "Przeglądaj szablony",
+        "aria": "Utwórz agenta z szablonu"
+      },
+      "scratch": {
+        "title": "Od zera",
+        "body": "Zdefiniuj rolę, ekspertyzę, workflow, styl i format wyjścia samodzielnie.",
+        "cta": "Zacznij od pustego",
+        "aria": "Utwórz agenta od zera"
+      }
     }
   },
   "projects": {

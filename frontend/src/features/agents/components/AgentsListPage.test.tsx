@@ -37,7 +37,9 @@ function renderPage(initialPath = '/agents') {
         <MemoryRouter initialEntries={[initialPath]}>
           <Routes>
             <Route path="/agents" element={children} />
-            <Route path="/agents/new" element={<div>choose path</div>} />
+            <Route path="/agents/new" element={children} />
+            <Route path="/agents/new/template" element={<div>template picker</div>} />
+            <Route path="/agents/new/scratch" element={<div>scratch form</div>} />
           </Routes>
         </MemoryRouter>
       </QueryClientProvider>
@@ -130,7 +132,7 @@ describe('AgentsListPage', () => {
     expect(alert).toHaveTextContent(/Could not load agents/i);
   });
 
-  it('should navigate to /agents/new when the Add agent button is clicked in the empty state', async () => {
+  it('should open the choose-path dialog when the Add agent button is clicked in the empty state', async () => {
     vi.stubGlobal('fetch', makeFetch([]));
 
     renderPage();
@@ -139,10 +141,11 @@ describe('AgentsListPage', () => {
     const addButtons = await screen.findAllByRole('button', { name: /add agent/i });
     await user.click(addButtons[0]);
 
-    expect(await screen.findByText('choose path')).toBeInTheDocument();
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /create a new agent/i })).toBeInTheDocument();
   });
 
-  it('should navigate to /agents/new when the Add tile is clicked in the grid', async () => {
+  it('should open the choose-path dialog when the Add tile is clicked in the grid', async () => {
     vi.stubGlobal(
       'fetch',
       makeFetch([
@@ -174,6 +177,28 @@ describe('AgentsListPage', () => {
     const addTile = addButtons[addButtons.length - 1];
     await user.click(addTile);
 
-    expect(await screen.findByText('choose path')).toBeInTheDocument();
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /create a new agent/i })).toBeInTheDocument();
+  });
+
+  it('should render the choose-path dialog on initial /agents/new navigation', async () => {
+    vi.stubGlobal('fetch', makeFetch([]));
+
+    renderPage('/agents/new');
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /create a new agent/i })).toBeInTheDocument();
+  });
+
+  it('should close the dialog and navigate back to /agents when Close is clicked', async () => {
+    vi.stubGlobal('fetch', makeFetch([]));
+
+    renderPage('/agents/new');
+    const user = userEvent.setup();
+
+    await screen.findByRole('dialog');
+    await user.click(screen.getByRole('button', { name: /close/i }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

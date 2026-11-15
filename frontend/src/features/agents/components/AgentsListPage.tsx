@@ -1,7 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 
 import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
 import { Button } from '@/components/ui/Button';
@@ -9,17 +9,23 @@ import { Button } from '@/components/ui/Button';
 import { useAgentsList } from '../api/useAgents';
 import { AddAgentTile } from './AddAgentTile';
 import { AgentTile } from './AgentTile';
+import { CreateAgentChoosePathDialog } from './CreateAgentChoosePathDialog';
 
 export function AgentsListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const agentsQuery = useAgentsList();
+  const createMatch = useMatch('/agents/new');
 
   const breadcrumbs = useMemo(() => [{ label: t('agents.breadcrumb') }], [t]);
   usePageBreadcrumbs(breadcrumbs);
 
   function openCreate() {
     navigate('/agents/new');
+  }
+
+  function closeCreate() {
+    navigate('/agents');
   }
 
   return (
@@ -76,6 +82,8 @@ export function AgentsListPage() {
           <AddAgentTile onClick={openCreate} />
         </section>
       ) : null}
+
+      {createMatch ? <CreateAgentChoosePathDialog onClose={closeCreate} /> : null}
     </div>
   );
 }
