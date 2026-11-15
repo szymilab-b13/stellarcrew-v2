@@ -88,6 +88,25 @@ services:
     Modules\Projects\Domain\ProjectRepository:
         alias: Modules\Projects\Infrastructure\Doctrine\Repository\DoctrineProjectRepository
 
+    # Agents module bindings
+    Modules\Agents\Domain\AgentRepository:
+        alias: Modules\Agents\Infrastructure\Doctrine\Repository\DoctrineAgentRepository
+
+    Modules\Agents\Domain\AgentMemberRepository:
+        alias: Modules\Agents\Infrastructure\Doctrine\Repository\DoctrineAgentMemberRepository
+
+    # Plan limits (cross-cutting usage gate per ADR-BE-006)
+    Modules\Shared\Api\PlanLimitsService:
+        alias: Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService
+
+    Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService:
+        arguments:
+            $limits:
+                agents: '%env(int:AGENTS_MAX_PER_ORGANIZATION)%'
+                projects: '%env(int:PROJECTS_MAX_PER_WORKSPACE)%'
+                workspaces: '%env(int:WORKSPACES_MAX_PER_ORGANIZATION)%'
+                members: '%env(int:MEMBERS_MAX_PER_ORGANIZATION)%'
+
     # Organizations module bindings
     Modules\Organizations\Domain\OrganizationRepository:
         alias: Modules\Organizations\Infrastructure\Doctrine\Repository\DoctrineOrganizationRepository
@@ -124,6 +143,8 @@ when@test:
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceRepository: ~
         App\Tests\Fixtures\Workspaces\InMemoryWorkspaceMembersReadModel: ~
         App\Tests\Fixtures\Projects\InMemoryProjectRepository: ~
+        App\Tests\Fixtures\Agents\InMemoryAgentRepository: ~
+        App\Tests\Fixtures\Agents\InMemoryAgentMemberRepository: ~
         App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileRepository: ~
         App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel: ~
@@ -148,6 +169,12 @@ when@test:
 
         Modules\Projects\Domain\ProjectRepository:
             alias: App\Tests\Fixtures\Projects\InMemoryProjectRepository
+
+        Modules\Agents\Domain\AgentRepository:
+            alias: App\Tests\Fixtures\Agents\InMemoryAgentRepository
+
+        Modules\Agents\Domain\AgentMemberRepository:
+            alias: App\Tests\Fixtures\Agents\InMemoryAgentMemberRepository
 
         Modules\Organizations\Domain\OrganizationRepository:
             alias: App\Tests\Fixtures\Organizations\InMemoryOrganizationRepository
