@@ -3,6 +3,7 @@ import { AGENT_RUNTIME_MILESTONE } from './agentRuntime';
 import { AGENTS_MILESTONE } from './agents';
 import { AGENTS_AUDIT_MILESTONE } from './agentsAudit';
 import { AGENTS_ORCHESTRATION_MILESTONE } from './agentsOrchestration';
+import { AGENTS_UI_MILESTONE } from './agentsUi';
 import { AI_ENGINE_MILESTONE } from './aiEngine';
 import { AUDIT_MILESTONE } from './audit';
 import { AUTH_MILESTONE } from './auth';
@@ -43,6 +44,7 @@ export const ROADMAP: RoadmapMilestone[] = [
   PROJECT_DOCS_MILESTONE,
   VARIABLES_MILESTONE,
   AGENTS_MILESTONE,
+  AGENTS_UI_MILESTONE,
   AGENTS_AUDIT_MILESTONE,
   AI_ENGINE_MILESTONE,
   KNOWLEDGE_MILESTONE,

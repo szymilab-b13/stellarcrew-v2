@@ -322,6 +322,217 @@
     "breadcrumb": "Projects",
     "title": "Projects"
   },
+  "agents": {
+    "breadcrumb": "Agents",
+    "title": "Agents",
+    "subtitle": "AI agents available in your organization.",
+    "loading": "Loading agents…",
+    "loadError": "Could not load agents.",
+    "listAria": "Agents list",
+    "emptyAria": "No agents yet",
+    "emptyTitle": "No agents yet",
+    "emptyBody": "Create the first agent to delegate work, run flows and consume templates.",
+    "deletedBanner": {
+      "body": "Agent \"{{name}}\" was deleted.",
+      "undoLink": "Undo in Audit log",
+      "dismiss": "Dismiss"
+    },
+    "tile": {
+      "aria": "Agent {{name}}",
+      "openAria": "Open {{name}}",
+      "fromTemplate": "From template",
+      "createdAt": "Created {{date}}"
+    },
+    "addTile": {
+      "label": "Add agent",
+      "aria": "Add agent"
+    },
+    "choosePath": {
+      "title": "Create a new agent",
+      "subtitle": "Start from a predefined template or build an agent from scratch.",
+      "template": {
+        "title": "From template",
+        "body": "Pick one of five predefined agents and tweak the five prompt sections.",
+        "cta": "Browse templates",
+        "aria": "Create agent from template"
+      },
+      "scratch": {
+        "title": "From scratch",
+        "body": "Define role, expertise, workflow, style and output format yourself.",
+        "cta": "Start from empty",
+        "aria": "Create agent from scratch"
+      }
+    },
+    "templatePicker": {
+      "breadcrumb": "Browse templates",
+      "title": "Pick a template",
+      "subtitle": "Each template seeds the five prompt sections. You will still edit them before saving.",
+      "back": "Back to agents",
+      "loading": "Loading templates…",
+      "loadError": "Could not load templates.",
+      "listAria": "Agent templates",
+      "emptyAria": "No templates available",
+      "emptyTitle": "No templates available",
+      "emptyBody": "Templates have not been published yet. Create an agent from scratch instead."
+    },
+    "templateTile": {
+      "aria": "Template {{name}}",
+      "openAria": "Open {{name}}",
+      "useThis": "Use this template"
+    },
+    "form": {
+      "nameLabel": "Name",
+      "roleLabel": "Role",
+      "slugLabel": "Slug",
+      "slugHint": "URL-friendly identifier used in agent paths. Lowercase letters, digits and dashes.",
+      "slugLockedHint": "Slug is fixed once the agent is created and cannot be changed later.",
+      "roleDescriptionLabel": "Role description",
+      "roleDescriptionHint": "One or two sentences describing what the agent is responsible for.",
+      "expertiseLabel": "Expertise",
+      "expertiseHint": "Tools, stacks and domains the agent is strong in.",
+      "workflowLabel": "Workflow",
+      "workflowHint": "Step-by-step flow the agent follows when it gets a task.",
+      "styleLabel": "Style",
+      "styleHint": "Voice, tone and defaults the agent uses in replies.",
+      "outputFormatLabel": "Output format",
+      "outputFormatHint": "Preferred shape of answers (TL;DR, bullet lists, code blocks and so on).",
+      "errors": {
+        "name": {
+          "required": "Name is required.",
+          "tooLong": "Name must be 80 characters or fewer."
+        },
+        "role": {
+          "required": "Role is required.",
+          "tooLong": "Role must be 120 characters or fewer."
+        },
+        "slug": {
+          "required": "Slug is required.",
+          "tooLong": "Slug must be 80 characters or fewer.",
+          "invalid": "Slug must contain lowercase letters, digits and dashes only."
+        },
+        "roleDescription": {
+          "required": "Role description is required.",
+          "tooLong": "Role description must be 500 characters or fewer."
+        },
+        "expertise": {
+          "required": "Expertise is required.",
+          "tooLong": "Expertise must be 2000 characters or fewer."
+        },
+        "workflow": {
+          "required": "Workflow is required.",
+          "tooLong": "Workflow must be 2000 characters or fewer."
+        },
+        "style": {
+          "required": "Style is required.",
+          "tooLong": "Style must be 2000 characters or fewer."
+        },
+        "outputFormat": {
+          "required": "Output format is required.",
+          "tooLong": "Output format must be 2000 characters or fewer."
+        },
+        "server": {
+          "unauthorized": "You are not authorized. Please sign in again.",
+          "templateNotFound": "This template is no longer available.",
+          "slugTaken": "This slug is already taken. Pick a different one.",
+          "limitReached": "You have reached the agent limit for this organization.",
+          "noOrganization": "You do not belong to any organization yet.",
+          "conflict": "The agent could not be saved. Adjust the fields and try again.",
+          "validation": "Some fields are invalid. Please review and try again.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
+    },
+    "fromTemplate": {
+      "breadcrumbFallback": "Template",
+      "back": "Back to templates",
+      "title": "Create agent from {{name}}",
+      "titleFallback": "Create agent from template",
+      "subtitle": "Prompt sections are pre-filled from the template. Tweak anything before saving.",
+      "sectionAria": "New agent form",
+      "loading": "Loading template…",
+      "loadError": "Could not load the template.",
+      "submit": "Create agent",
+      "submitting": "Creating…"
+    },
+    "fromScratch": {
+      "breadcrumb": "From scratch",
+      "back": "Back to agent types",
+      "title": "Create agent from scratch",
+      "subtitle": "Define each prompt section yourself. You can always edit the agent later.",
+      "sectionAria": "New agent form",
+      "submit": "Create agent",
+      "submitting": "Creating…"
+    },
+    "overview": {
+      "breadcrumb": "Overview",
+      "loading": "Loading agent…",
+      "loadError": "Could not load the agent.",
+      "forbidden": "You cannot view this agent.",
+      "promptAria": "Prompt sections",
+      "openSettings": "Settings",
+      "openSettingsAria": "Open settings for {{name}}",
+      "sourceTemplateBadge": "From template",
+      "sourceTemplateAria": "Open {{name}} template",
+      "sections": {
+        "roleDescription": "Role description",
+        "expertise": "Expertise",
+        "workflow": "Workflow",
+        "style": "Style",
+        "outputFormat": "Output format"
+      },
+      "metadata": {
+        "title": "Metadata",
+        "slug": "Slug",
+        "createdAt": "Created at",
+        "updatedAt": "Updated at",
+        "sourceTemplate": "Source template",
+        "sourceTemplateValue": "{{name}}",
+        "sourceTemplateEmpty": "From scratch"
+      },
+      "activity": {
+        "title": "Recent activity",
+        "body": "Agent chat history and events will appear here.",
+        "comingSoon": "Coming after the CHAT milestone.",
+        "prototype": "Prototype"
+      }
+    },
+    "settings": {
+      "breadcrumb": "Settings",
+      "back": "Back to overview",
+      "title": "Agent settings",
+      "subtitle": "Edit \"{{name}}\" or delete the agent.",
+      "loading": "Loading agent…",
+      "loadError": "Could not load the agent.",
+      "forbidden": "You cannot edit this agent.",
+      "sectionAria": "Agent details",
+      "submit": "Save changes",
+      "saving": "Saving…",
+      "saved": "Changes saved.",
+      "errors": {
+        "forbidden": "You do not have permission to edit this agent.",
+        "notFound": "This agent no longer exists."
+      },
+      "dangerZone": {
+        "sectionAria": "Danger zone",
+        "title": "Danger zone",
+        "body": "Deleting \"{{name}}\" removes it from the organization. You can undo via the Audit log.",
+        "deleteButton": "Delete agent"
+      },
+      "delete": {
+        "title": "Delete agent",
+        "body": "You are about to delete \"{{name}}\". This action soft-deletes the agent and can be undone from the Audit log.",
+        "confirmPrompt": "Type to confirm deletion:",
+        "acknowledge": "I understand and want to delete \"{{name}}\".",
+        "confirm": "Delete agent",
+        "deleting": "Deleting…",
+        "errors": {
+          "forbidden": "You do not have permission to delete this agent.",
+          "notFound": "This agent no longer exists.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
+    }
+  },
   "projects": {
     "loading": "Loading projects…",
     "loadError": "Could not load projects.",
@@ -745,6 +956,9 @@
       "agents": {
         "title": "AGENTS — catalog, user agents, assignments, memory"
       },
+      "agentsUi": {
+        "title": "AGENTS UI — list, create (template/scratch), overview, settings, delete flow"
+      },
       "agentsAudit": {
         "title": "AGENTS AUDIT — audit log wiring for agent create, update, delete and create-from-template"
       },
@@ -1008,6 +1222,30 @@
       },
       "BL-AGENTS-007": {
         "story": "Pinned agents live in the sidebar next to the workspace switcher — with a scope badge and a quick jump."
+      },
+      "BL-AGUI-001": {
+        "story": "The frontend talks to the Agents and Agent Templates endpoints through a shared API layer with eight typed hooks."
+      },
+      "BL-AGUI-002": {
+        "story": "An Agents page at /agents lists your agents as tiles with an empty state and a dedicated Add button — the sidebar entry is now live."
+      },
+      "BL-AGUI-003": {
+        "story": "Clicking Add agent opens a choose-path dialog that offers either From template or From scratch."
+      },
+      "BL-AGUI-004": {
+        "story": "From template leads to a picker grid of five predefined agents with avatars, role and short description."
+      },
+      "BL-AGUI-005": {
+        "story": "Picking a template opens a pre-filled form (name, role, slug + five prompt sections) that creates the agent on submit."
+      },
+      "BL-AGUI-006": {
+        "story": "From scratch opens an empty form with the same five prompt sections — you define every section yourself."
+      },
+      "BL-AGUI-007": {
+        "story": "Each agent has a read-only overview with metadata, five prompt sections and an activity stub (Coming after CHAT)."
+      },
+      "BL-AGUI-008": {
+        "story": "Agent settings let you rename, retune the five sections and soft-delete the agent — the list shows a success banner with Undo in the Audit log."
       },
       "BL-AGAUDIT-001": {
         "story": "Creating an agent is recorded in the audit log with a full after-state snapshot of every field."
