@@ -456,6 +456,39 @@
       "sectionAria": "New agent form",
       "submit": "Create agent",
       "submitting": "Creating…"
+    },
+    "overview": {
+      "breadcrumb": "Overview",
+      "loading": "Loading agent…",
+      "loadError": "Could not load the agent.",
+      "forbidden": "You cannot view this agent.",
+      "promptAria": "Prompt sections",
+      "openSettings": "Settings",
+      "openSettingsAria": "Open settings for {{name}}",
+      "sourceTemplateBadge": "From template",
+      "sourceTemplateAria": "Open {{name}} template",
+      "sections": {
+        "roleDescription": "Role description",
+        "expertise": "Expertise",
+        "workflow": "Workflow",
+        "style": "Style",
+        "outputFormat": "Output format"
+      },
+      "metadata": {
+        "title": "Metadata",
+        "slug": "Slug",
+        "createdAt": "Created at",
+        "updatedAt": "Updated at",
+        "sourceTemplate": "Source template",
+        "sourceTemplateValue": "{{name}}",
+        "sourceTemplateEmpty": "From scratch"
+      },
+      "activity": {
+        "title": "Recent activity",
+        "body": "Agent chat history and events will appear here.",
+        "comingSoon": "Coming after the CHAT milestone.",
+        "prototype": "Prototype"
+      }
     }
   },
   "projects": {

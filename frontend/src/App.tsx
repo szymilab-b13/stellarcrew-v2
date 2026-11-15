@@ -5,6 +5,7 @@ import { InstallGate } from './components/app/InstallGate';
 import {
   AgentFromScratchFormPage,
   AgentFromTemplateFormPage,
+  AgentOverviewPage,
   AgentsListPage,
   AgentTemplatePickerPage,
 } from './features/agents';
@@ -59,6 +60,7 @@ export function App() {
             <Route path="/agents/new/template" element={<AgentTemplatePickerPage />} />
             <Route path="/agents/new/template/:slug" element={<AgentFromTemplateFormPage />} />
             <Route path="/agents/new/scratch" element={<AgentFromScratchFormPage />} />
+            <Route path="/agents/:id/overview" element={<AgentOverviewPage />} />
             <Route element={<RequireSuperAdmin />}>
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />

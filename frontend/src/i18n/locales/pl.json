@@ -456,6 +456,39 @@
       "sectionAria": "Formularz nowego agenta",
       "submit": "Utwórz agenta",
       "submitting": "Tworzę…"
+    },
+    "overview": {
+      "breadcrumb": "Przegląd",
+      "loading": "Ładuję agenta…",
+      "loadError": "Nie udało się załadować agenta.",
+      "forbidden": "Nie masz dostępu do tego agenta.",
+      "promptAria": "Sekcje promptu",
+      "openSettings": "Ustawienia",
+      "openSettingsAria": "Otwórz ustawienia agenta {{name}}",
+      "sourceTemplateBadge": "Z szablonu",
+      "sourceTemplateAria": "Otwórz szablon {{name}}",
+      "sections": {
+        "roleDescription": "Opis roli",
+        "expertise": "Ekspertyza",
+        "workflow": "Workflow",
+        "style": "Styl",
+        "outputFormat": "Format wyjścia"
+      },
+      "metadata": {
+        "title": "Metadane",
+        "slug": "Slug",
+        "createdAt": "Utworzono",
+        "updatedAt": "Zaktualizowano",
+        "sourceTemplate": "Szablon źródłowy",
+        "sourceTemplateValue": "{{name}}",
+        "sourceTemplateEmpty": "Od zera"
+      },
+      "activity": {
+        "title": "Ostatnia aktywność",
+        "body": "Historia czatu i zdarzenia agenta pojawią się tutaj.",
+        "comingSoon": "Dostępne po milestonie CHAT.",
+        "prototype": "Prototyp"
+      }
     }
   },
   "projects": {
