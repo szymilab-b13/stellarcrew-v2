@@ -447,6 +447,15 @@
       "loadError": "Nie udało się załadować szablonu.",
       "submit": "Utwórz agenta",
       "submitting": "Tworzę…"
+    },
+    "fromScratch": {
+      "breadcrumb": "Od zera",
+      "back": "Wróć do wyboru typu",
+      "title": "Utwórz agenta od zera",
+      "subtitle": "Zdefiniuj każdą sekcję promptu samodzielnie. Agenta można edytować później.",
+      "sectionAria": "Formularz nowego agenta",
+      "submit": "Utwórz agenta",
+      "submitting": "Tworzę…"
     }
   },
   "projects": {

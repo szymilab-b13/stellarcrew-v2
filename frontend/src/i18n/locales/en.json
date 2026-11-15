@@ -447,6 +447,15 @@
       "loadError": "Could not load the template.",
       "submit": "Create agent",
       "submitting": "Creating…"
+    },
+    "fromScratch": {
+      "breadcrumb": "From scratch",
+      "back": "Back to agent types",
+      "title": "Create agent from scratch",
+      "subtitle": "Define each prompt section yourself. You can always edit the agent later.",
+      "sectionAria": "New agent form",
+      "submit": "Create agent",
+      "submitting": "Creating…"
     }
   },
   "projects": {
