@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AppLayout } from './components/app/AppLayout';
 import { InstallGate } from './components/app/InstallGate';
-import { AgentsListPage } from './features/agents';
+import { AgentsListPage, AgentTemplatePickerPage } from './features/agents';
 import { LoginPage } from './features/auth';
 import { AdminAuditPage } from './features/audit';
 import { AdminUserDetailPage, AdminUsersPage } from './features/user-management';
@@ -51,6 +51,7 @@ export function App() {
             </Route>
             <Route path="/agents" element={<AgentsListPage />} />
             <Route path="/agents/new" element={<AgentsListPage />} />
+            <Route path="/agents/new/template" element={<AgentTemplatePickerPage />} />
             <Route element={<RequireSuperAdmin />}>
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />

@@ -357,6 +357,23 @@
         "cta": "Zacznij od pustego",
         "aria": "Utwórz agenta od zera"
       }
+    },
+    "templatePicker": {
+      "breadcrumb": "Przeglądaj szablony",
+      "title": "Wybierz szablon",
+      "subtitle": "Każdy szablon wypełnia pięć sekcji promptu. Przed zapisem jeszcze je dopasujesz.",
+      "back": "Wróć do agentów",
+      "loading": "Ładuję szablony…",
+      "loadError": "Nie udało się załadować szablonów.",
+      "listAria": "Szablony agentów",
+      "emptyAria": "Brak dostępnych szablonów",
+      "emptyTitle": "Brak dostępnych szablonów",
+      "emptyBody": "Szablony nie zostały jeszcze opublikowane. Utwórz agenta od zera."
+    },
+    "templateTile": {
+      "aria": "Szablon {{name}}",
+      "openAria": "Otwórz {{name}}",
+      "useThis": "Użyj tego szablonu"
     }
   },
   "projects": {

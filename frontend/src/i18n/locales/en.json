@@ -357,6 +357,23 @@
         "cta": "Start from empty",
         "aria": "Create agent from scratch"
       }
+    },
+    "templatePicker": {
+      "breadcrumb": "Browse templates",
+      "title": "Pick a template",
+      "subtitle": "Each template seeds the five prompt sections. You will still edit them before saving.",
+      "back": "Back to agents",
+      "loading": "Loading templates…",
+      "loadError": "Could not load templates.",
+      "listAria": "Agent templates",
+      "emptyAria": "No templates available",
+      "emptyTitle": "No templates available",
+      "emptyBody": "Templates have not been published yet. Create an agent from scratch instead."
+    },
+    "templateTile": {
+      "aria": "Template {{name}}",
+      "openAria": "Open {{name}}",
+      "useThis": "Use this template"
     }
   },
   "projects": {
