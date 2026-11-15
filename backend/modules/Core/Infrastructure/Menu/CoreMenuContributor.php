@@ -40,7 +40,6 @@ final readonly class CoreMenuContributor implements MenuContributor
                         icon: 'Bot',
                         path: '/agents',
                         order: 40,
-                        disabledMilestoneKey: 'menu.workspaceContext.milestones.agents',
                     ),
                 ],
             ),

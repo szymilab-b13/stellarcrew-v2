@@ -70,7 +70,7 @@ final class MenuEndpointTest extends WebTestCase
         self::assertSame('agents', $general['items'][3]['id']);
         self::assertSame('/agents', $general['items'][3]['path']);
         self::assertSame('Bot', $general['items'][3]['icon']);
-        self::assertSame('menu.workspaceContext.milestones.agents', $general['items'][3]['disabledMilestoneKey']);
+        self::assertNull($general['items'][3]['disabledMilestoneKey']);
 
         $admin = $payload['sections'][1];
         self::assertSame('menu.sections.admin', $admin['labelKey']);

@@ -322,6 +322,27 @@
     "breadcrumb": "Projekty",
     "title": "Projekty"
   },
+  "agents": {
+    "breadcrumb": "Agenci",
+    "title": "Agenci",
+    "subtitle": "Agenci AI dostępni w Twojej organizacji.",
+    "loading": "Ładuję agentów…",
+    "loadError": "Nie udało się załadować agentów.",
+    "listAria": "Lista agentów",
+    "emptyAria": "Brak agentów",
+    "emptyTitle": "Brak agentów",
+    "emptyBody": "Dodaj pierwszego agenta, aby delegować pracę, uruchamiać flow i korzystać z szablonów.",
+    "tile": {
+      "aria": "Agent {{name}}",
+      "openAria": "Otwórz {{name}}",
+      "fromTemplate": "Z szablonu",
+      "createdAt": "Utworzono {{date}}"
+    },
+    "addTile": {
+      "label": "Dodaj agenta",
+      "aria": "Dodaj agenta"
+    }
+  },
   "projects": {
     "loading": "Ładuję projekty…",
     "loadError": "Nie udało się załadować projektów.",

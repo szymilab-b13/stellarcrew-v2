@@ -322,6 +322,27 @@
     "breadcrumb": "Projects",
     "title": "Projects"
   },
+  "agents": {
+    "breadcrumb": "Agents",
+    "title": "Agents",
+    "subtitle": "AI agents available in your organization.",
+    "loading": "Loading agents…",
+    "loadError": "Could not load agents.",
+    "listAria": "Agents list",
+    "emptyAria": "No agents yet",
+    "emptyTitle": "No agents yet",
+    "emptyBody": "Create the first agent to delegate work, run flows and consume templates.",
+    "tile": {
+      "aria": "Agent {{name}}",
+      "openAria": "Open {{name}}",
+      "fromTemplate": "From template",
+      "createdAt": "Created {{date}}"
+    },
+    "addTile": {
+      "label": "Add agent",
+      "aria": "Add agent"
+    }
+  },
   "projects": {
     "loading": "Loading projects…",
     "loadError": "Could not load projects.",
