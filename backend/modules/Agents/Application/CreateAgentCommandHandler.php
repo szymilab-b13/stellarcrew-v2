@@ -11,22 +11,30 @@ use Modules\Agents\Domain\AgentMemberRepository;
 use Modules\Agents\Domain\AgentRepository;
 use Modules\Agents\Domain\AgentSlugAlreadyTakenException;
 use Modules\Agents\Domain\AgentSlugGenerator;
+use Modules\Core\Api\AuditLoggerInterface;
+use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Organizations\Api\Dto\OrganizationView;
 use Modules\Organizations\Api\OrganizationsApi;
 use Modules\Shared\Api\LimitType;
 use Modules\Shared\Api\PlanLimitsService;
 use Modules\Shared\Kernel\AgentId;
+use Modules\Shared\Kernel\AgentTemplateId;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\OrganizationId;
 use Modules\Workspaces\Api\Exception\OwnerHasNoOrganizationException;
 
 final readonly class CreateAgentCommandHandler
 {
+    public const string AUDIT_ACTION = 'agents.agent.created';
+
+    public const string AUDIT_RESOURCE_TYPE = 'agent';
+
     public function __construct(
         private AgentRepository $agents,
         private AgentMemberRepository $agentMembers,
         private OrganizationsApi $organizations,
         private PlanLimitsService $planLimits,
+        private AuditLoggerInterface $audit,
         private Clock $clock,
     ) {
     }
@@ -74,7 +82,42 @@ final readonly class CreateAgentCommandHandler
             $now,
         ));
 
+        $this->audit->log(new AuditEntry(
+            userId: $command->actorId,
+            action: self::AUDIT_ACTION,
+            occurredAt: $now,
+            resourceType: self::AUDIT_RESOURCE_TYPE,
+            resourceId: (string) $agent->id(),
+            metadata: [
+                'after_state' => self::snapshot($agent),
+            ],
+        ));
+
         return $agent;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function snapshot(Agent $agent): array
+    {
+        $templateId = $agent->sourceTemplateId();
+
+        return [
+            'id' => (string) $agent->id(),
+            'organization_id' => (string) $agent->organizationId(),
+            'owner_user_id' => (string) $agent->ownerUserId(),
+            'source_template_id' => $templateId instanceof AgentTemplateId ? (string) $templateId : null,
+            'slug' => $agent->slug(),
+            'name' => $agent->name(),
+            'role' => $agent->role(),
+            'role_description' => $agent->roleDescription(),
+            'expertise' => $agent->expertise(),
+            'workflow' => $agent->workflow(),
+            'style' => $agent->style(),
+            'output_format' => $agent->outputFormat(),
+            'is_active' => $agent->isActive(),
+        ];
     }
 
     private function resolveSlug(OrganizationId $organizationId, ?string $provided, string $name): string
