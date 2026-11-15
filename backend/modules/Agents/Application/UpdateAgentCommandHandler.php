@@ -46,8 +46,24 @@ final readonly class UpdateAgentCommandHandler
             $agent->changeRole($command->role, $now);
         }
 
-        if ($command->instructions !== null) {
-            $agent->updateInstructions($command->instructions, $now);
+        if ($command->roleDescription !== null) {
+            $agent->updateRoleDescription($command->roleDescription, $now);
+        }
+
+        if ($command->expertise !== null) {
+            $agent->updateExpertise($command->expertise, $now);
+        }
+
+        if ($command->workflow !== null) {
+            $agent->updateWorkflow($command->workflow, $now);
+        }
+
+        if ($command->style !== null) {
+            $agent->updateStyle($command->style, $now);
+        }
+
+        if ($command->outputFormat !== null) {
+            $agent->updateOutputFormat($command->outputFormat, $now);
         }
 
         $this->agents->save($agent);

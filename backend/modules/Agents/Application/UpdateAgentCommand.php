@@ -14,7 +14,11 @@ final readonly class UpdateAgentCommand
         public AgentId $agentId,
         public ?string $name = null,
         public ?string $role = null,
-        public ?string $instructions = null,
+        public ?string $roleDescription = null,
+        public ?string $expertise = null,
+        public ?string $workflow = null,
+        public ?string $style = null,
+        public ?string $outputFormat = null,
     ) {
     }
 }

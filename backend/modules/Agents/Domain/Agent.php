@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use function mb_strlen;
 
 use Modules\Shared\Kernel\AgentId;
+use Modules\Shared\Kernel\AgentTemplateId;
 use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 
@@ -25,7 +26,9 @@ class Agent
 
     public const int ROLE_MAX = 120;
 
-    public const int INSTRUCTIONS_MAX = 8000;
+    public const int ROLE_DESCRIPTION_MAX = 500;
+
+    public const int SECTION_MAX = 2000;
 
     public const string SLUG_PATTERN = '/^[a-z0-9]+(-[a-z0-9]+)*$/';
 
@@ -33,11 +36,15 @@ class Agent
         private readonly AgentId $id,
         private readonly OrganizationId $organizationId,
         private readonly UserId $ownerUserId,
-        private readonly ?AgentId $sourceTemplateId,
+        private readonly ?AgentTemplateId $sourceTemplateId,
         private readonly string $slug,
         private string $name,
         private string $role,
-        private string $instructions,
+        private string $roleDescription,
+        private string $expertise,
+        private string $workflow,
+        private string $style,
+        private string $outputFormat,
         private bool $isActive,
         private readonly DateTimeImmutable $createdAt,
         private DateTimeImmutable $updatedAt,
@@ -46,7 +53,11 @@ class Agent
         $this->guardSlug($slug);
         $this->guardName($name);
         $this->guardRole($role);
-        $this->guardInstructions($instructions);
+        $this->guardRoleDescription($roleDescription);
+        $this->guardSection('expertise', $expertise);
+        $this->guardSection('workflow', $workflow);
+        $this->guardSection('style', $style);
+        $this->guardSection('output format', $outputFormat);
     }
 
     public static function create(
@@ -56,9 +67,13 @@ class Agent
         string $slug,
         string $name,
         string $role,
-        string $instructions,
+        string $roleDescription,
+        string $expertise,
+        string $workflow,
+        string $style,
+        string $outputFormat,
         DateTimeImmutable $now,
-        ?AgentId $sourceTemplateId = null,
+        ?AgentTemplateId $sourceTemplateId = null,
     ): self {
         return new self(
             $id,
@@ -68,7 +83,11 @@ class Agent
             $slug,
             $name,
             $role,
-            $instructions,
+            $roleDescription,
+            $expertise,
+            $workflow,
+            $style,
+            $outputFormat,
             true,
             $now,
             $now,
@@ -90,7 +109,7 @@ class Agent
         return $this->ownerUserId;
     }
 
-    public function sourceTemplateId(): ?AgentId
+    public function sourceTemplateId(): ?AgentTemplateId
     {
         return $this->sourceTemplateId;
     }
@@ -110,9 +129,29 @@ class Agent
         return $this->role;
     }
 
-    public function instructions(): string
+    public function roleDescription(): string
     {
-        return $this->instructions;
+        return $this->roleDescription;
+    }
+
+    public function expertise(): string
+    {
+        return $this->expertise;
+    }
+
+    public function workflow(): string
+    {
+        return $this->workflow;
+    }
+
+    public function style(): string
+    {
+        return $this->style;
+    }
+
+    public function outputFormat(): string
+    {
+        return $this->outputFormat;
     }
 
     public function isActive(): bool
@@ -140,6 +179,18 @@ class Agent
         return $this->deletedAt instanceof DateTimeImmutable;
     }
 
+    public function toSystemPrompt(): string
+    {
+        return sprintf(
+            "<role>\n%s\n</role>\n\n<expertise>\n%s\n</expertise>\n\n<workflow>\n%s\n</workflow>\n\n<style>\n%s\n</style>\n\n<output_format>\n%s\n</output_format>",
+            $this->roleDescription,
+            $this->expertise,
+            $this->workflow,
+            $this->style,
+            $this->outputFormat,
+        );
+    }
+
     public function rename(string $name, DateTimeImmutable $now): void
     {
         $this->guardName($name);
@@ -154,10 +205,38 @@ class Agent
         $this->updatedAt = $now;
     }
 
-    public function updateInstructions(string $instructions, DateTimeImmutable $now): void
+    public function updateRoleDescription(string $value, DateTimeImmutable $now): void
     {
-        $this->guardInstructions($instructions);
-        $this->instructions = $instructions;
+        $this->guardRoleDescription($value);
+        $this->roleDescription = $value;
+        $this->updatedAt = $now;
+    }
+
+    public function updateExpertise(string $value, DateTimeImmutable $now): void
+    {
+        $this->guardSection('expertise', $value);
+        $this->expertise = $value;
+        $this->updatedAt = $now;
+    }
+
+    public function updateWorkflow(string $value, DateTimeImmutable $now): void
+    {
+        $this->guardSection('workflow', $value);
+        $this->workflow = $value;
+        $this->updatedAt = $now;
+    }
+
+    public function updateStyle(string $value, DateTimeImmutable $now): void
+    {
+        $this->guardSection('style', $value);
+        $this->style = $value;
+        $this->updatedAt = $now;
+    }
+
+    public function updateOutputFormat(string $value, DateTimeImmutable $now): void
+    {
+        $this->guardSection('output format', $value);
+        $this->outputFormat = $value;
         $this->updatedAt = $now;
     }
 
@@ -240,16 +319,30 @@ class Agent
         }
     }
 
-    private function guardInstructions(string $instructions): void
+    private function guardRoleDescription(string $value): void
     {
-        $trimmed = trim($instructions);
+        $trimmed = trim($value);
         if ($trimmed === '') {
-            throw new InvalidArgumentException('Agent instructions cannot be empty.');
+            throw new InvalidArgumentException('Agent role description cannot be empty.');
         }
 
-        if (mb_strlen($instructions) > self::INSTRUCTIONS_MAX) {
+        if (mb_strlen($value) > self::ROLE_DESCRIPTION_MAX) {
             throw new InvalidArgumentException(
-                sprintf('Agent instructions cannot exceed %d characters.', self::INSTRUCTIONS_MAX),
+                sprintf('Agent role description cannot exceed %d characters.', self::ROLE_DESCRIPTION_MAX),
+            );
+        }
+    }
+
+    private function guardSection(string $label, string $value): void
+    {
+        $trimmed = trim($value);
+        if ($trimmed === '') {
+            throw new InvalidArgumentException(sprintf('Agent %s cannot be empty.', $label));
+        }
+
+        if (mb_strlen($value) > self::SECTION_MAX) {
+            throw new InvalidArgumentException(
+                sprintf('Agent %s cannot exceed %d characters.', $label, self::SECTION_MAX),
             );
         }
     }

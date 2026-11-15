@@ -7,6 +7,8 @@ namespace Modules\Agents\Infrastructure\Http;
 use DateTimeInterface;
 use Modules\Agents\Application\CreateAgentCommand;
 use Modules\Agents\Application\CreateAgentCommandHandler;
+use Modules\Agents\Application\CreateAgentFromTemplateCommand;
+use Modules\Agents\Application\CreateAgentFromTemplateCommandHandler;
 use Modules\Agents\Application\DeleteAgentCommand;
 use Modules\Agents\Application\DeleteAgentCommandHandler;
 use Modules\Agents\Application\Query\GetAgentQuery;
@@ -18,6 +20,7 @@ use Modules\Agents\Application\UpdateAgentCommandHandler;
 use Modules\Agents\Domain\Agent;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Shared\Kernel\AgentId;
+use Modules\Shared\Kernel\AgentTemplateId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +34,7 @@ final readonly class AgentsController
 
     public function __construct(
         private CreateAgentCommandHandler $create,
+        private CreateAgentFromTemplateCommandHandler $createFromTemplate,
         private ListAgentsQueryHandler $list,
         private GetAgentQueryHandler $get,
         private UpdateAgentCommandHandler $update,
@@ -60,7 +64,46 @@ final readonly class AgentsController
             actorId: $user->domainUser()->id(),
             name: $input->name,
             role: $input->role,
-            instructions: $input->instructions,
+            roleDescription: $input->roleDescription,
+            expertise: $input->expertise,
+            workflow: $input->workflow,
+            style: $input->style,
+            outputFormat: $input->outputFormat,
+            slug: $input->slug,
+        ));
+
+        return new JsonResponse($this->serialise($agent), Response::HTTP_CREATED);
+    }
+
+    #[Route('/api/agents/from-template', name: 'agents_create_from_template', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/agents/from-template',
+        summary: 'Create a new agent by deep-copying a predefined template, with optional per-field overrides.',
+        tags: ['agents'],
+        responses: [
+            new OA\Response(response: 201, description: 'Agent created from template'),
+            new OA\Response(response: 401, description: 'Missing or expired token'),
+            new OA\Response(response: 404, description: 'Template not found'),
+            new OA\Response(response: 409, description: 'Owner has no organization, agent limit reached, or slug already taken'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function createFromTemplate(
+        #[CurrentUser]
+        SecurityUser $user,
+        #[MapRequestPayload]
+        CreateAgentFromTemplateRequest $input,
+    ): JsonResponse {
+        $agent = ($this->createFromTemplate)(new CreateAgentFromTemplateCommand(
+            actorId: $user->domainUser()->id(),
+            templateSlug: $input->templateSlug,
+            name: $input->name,
+            role: $input->role,
+            roleDescription: $input->roleDescription,
+            expertise: $input->expertise,
+            workflow: $input->workflow,
+            style: $input->style,
+            outputFormat: $input->outputFormat,
             slug: $input->slug,
         ));
 
@@ -124,7 +167,7 @@ final readonly class AgentsController
     )]
     #[OA\Put(
         path: '/api/agents/{id}',
-        summary: 'Update an agent owned by the current user (partial: name/role/instructions).',
+        summary: 'Update an agent owned by the current user (partial: name/role/5 prompt sections).',
         tags: ['agents'],
         responses: [
             new OA\Response(response: 200, description: 'Agent updated'),
@@ -146,7 +189,11 @@ final readonly class AgentsController
             agentId: AgentId::fromString($id),
             name: $input->name,
             role: $input->role,
-            instructions: $input->instructions,
+            roleDescription: $input->roleDescription,
+            expertise: $input->expertise,
+            workflow: $input->workflow,
+            style: $input->style,
+            outputFormat: $input->outputFormat,
         ));
 
         return new JsonResponse($this->serialise($agent), Response::HTTP_OK);
@@ -183,7 +230,7 @@ final readonly class AgentsController
     }
 
     /**
-     * @return array{id: string, organizationId: string, ownerUserId: string, sourceTemplateId: ?string, slug: string, name: string, role: string, instructions: string, isActive: bool, createdAt: string, updatedAt: string}
+     * @return array{id: string, organizationId: string, ownerUserId: string, sourceTemplateId: ?string, slug: string, name: string, role: string, roleDescription: string, expertise: string, workflow: string, style: string, outputFormat: string, isActive: bool, createdAt: string, updatedAt: string}
      */
     private function serialise(Agent $agent): array
     {
@@ -191,11 +238,15 @@ final readonly class AgentsController
             'id' => (string) $agent->id(),
             'organizationId' => (string) $agent->organizationId(),
             'ownerUserId' => (string) $agent->ownerUserId(),
-            'sourceTemplateId' => $agent->sourceTemplateId() instanceof AgentId ? (string) $agent->sourceTemplateId() : null,
+            'sourceTemplateId' => $agent->sourceTemplateId() instanceof AgentTemplateId ? (string) $agent->sourceTemplateId() : null,
             'slug' => $agent->slug(),
             'name' => $agent->name(),
             'role' => $agent->role(),
-            'instructions' => $agent->instructions(),
+            'roleDescription' => $agent->roleDescription(),
+            'expertise' => $agent->expertise(),
+            'workflow' => $agent->workflow(),
+            'style' => $agent->style(),
+            'outputFormat' => $agent->outputFormat(),
             'isActive' => $agent->isActive(),
             'createdAt' => $agent->createdAt()->format(DateTimeInterface::ATOM),
             'updatedAt' => $agent->updatedAt()->format(DateTimeInterface::ATOM),

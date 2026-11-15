@@ -8,11 +8,14 @@ use DateTimeImmutable;
 use Modules\Agents\Domain\AgentMember;
 use Modules\Agents\Domain\AgentMemberRepository;
 use Modules\Agents\Domain\AgentRepository;
+use Modules\Agents\Domain\AgentTemplate;
+use Modules\Agents\Domain\AgentTemplateRepository;
 use Modules\Auth\Domain\User;
 use Modules\Auth\Domain\UserRepository;
 use Modules\Auth\Infrastructure\Security\HashablePlaintextUser;
 use Modules\Organizations\Api\OrganizationsApi;
 use Modules\Shared\Kernel\AgentId;
+use Modules\Shared\Kernel\AgentTemplateId;
 use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -64,12 +67,23 @@ final class AgentsEndpointTest extends WebTestCase
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
     }
 
-    public function testShouldReturn422WhenInstructionsMissing(): void
+    public function testShouldReturn422WhenRoleDescriptionMissing(): void
     {
         $token = $this->seedUserWithOrganization();
 
         $body = $this->validBody();
-        unset($body['instructions']);
+        unset($body['roleDescription']);
+        $this->postJson('/api/agents', $body, $token);
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn422WhenExpertiseMissing(): void
+    {
+        $token = $this->seedUserWithOrganization();
+
+        $body = $this->validBody();
+        unset($body['expertise']);
         $this->postJson('/api/agents', $body, $token);
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
@@ -384,14 +398,22 @@ final class AgentsEndpointTest extends WebTestCase
         $this->putJson('/api/agents/'.$agentId, [
             'name' => 'Viktor Architect',
             'role' => 'Architect',
-            'instructions' => 'You are Viktor.',
+            'roleDescription' => 'You are Viktor.',
+            'expertise' => '- Architecture.',
+            'workflow' => '- Diagrams first.',
+            'style' => '- Precise.',
+            'outputFormat' => '- One ADR per decision.',
         ], $token);
 
         self::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         $payload = $this->decode();
         self::assertSame('Viktor Architect', $payload['name']);
         self::assertSame('Architect', $payload['role']);
-        self::assertSame('You are Viktor.', $payload['instructions']);
+        self::assertSame('You are Viktor.', $payload['roleDescription']);
+        self::assertSame('- Architecture.', $payload['expertise']);
+        self::assertSame('- Diagrams first.', $payload['workflow']);
+        self::assertSame('- Precise.', $payload['style']);
+        self::assertSame('- One ADR per decision.', $payload['outputFormat']);
         self::assertSame('maja-pm', $payload['slug']);
     }
 
@@ -408,7 +430,8 @@ final class AgentsEndpointTest extends WebTestCase
         $payload = $this->decode();
         self::assertSame('Renamed Maja', $payload['name']);
         self::assertSame('Project Manager', $payload['role']);
-        self::assertSame('You are Maja, the PM.', $payload['instructions']);
+        self::assertSame('You are Maja, the PM.', $payload['roleDescription']);
+        self::assertSame('- Coordination.', $payload['expertise']);
     }
 
     public function testShouldReturn401OnDeleteWhenTokenMissing(): void
@@ -522,6 +545,157 @@ final class AgentsEndpointTest extends WebTestCase
         self::assertSame(Response::HTTP_NO_CONTENT, $this->client->getResponse()->getStatusCode());
     }
 
+    public function testShouldReturn401OnFromTemplateWhenTokenMissing(): void
+    {
+        $this->postJson('/api/agents/from-template', ['templateSlug' => 'maja'], null);
+
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn422OnFromTemplateWhenTemplateSlugMissing(): void
+    {
+        $token = $this->seedUserWithOrganization();
+
+        $this->postJson('/api/agents/from-template', [], $token);
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn404OnFromTemplateWhenTemplateUnknown(): void
+    {
+        $token = $this->seedUserWithOrganization();
+
+        $this->postJson('/api/agents/from-template', ['templateSlug' => 'ghost'], $token);
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testShouldReturn409OnFromTemplateWhenOwnerHasNoOrganization(): void
+    {
+        $this->seedAdmin(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
+        $token = $this->login(self::DEFAULT_EMAIL, self::DEFAULT_PASSWORD);
+        $this->seedTemplate('maja', 'Maja', 'Project Manager');
+
+        $this->postJson('/api/agents/from-template', ['templateSlug' => 'maja'], $token);
+
+        self::assertSame(Response::HTTP_CONFLICT, $this->client->getResponse()->getStatusCode());
+        self::assertSame('OWNER_HAS_NO_ORGANIZATION', $this->decode()['error']['code']);
+    }
+
+    public function testShouldReturn201OnFromTemplateDeepCopyingAllFields(): void
+    {
+        [, $token] = $this->seedUserWithOrganizationAndId();
+        $template = $this->seedTemplate('maja', 'Maja', 'Project Manager');
+
+        $this->postJson('/api/agents/from-template', ['templateSlug' => 'maja'], $token);
+
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('Maja', $payload['name']);
+        self::assertSame('Project Manager', $payload['role']);
+        self::assertSame('maja', $payload['slug']);
+        self::assertSame((string) $template->id(), $payload['sourceTemplateId']);
+        self::assertSame($template->roleDescription(), $payload['roleDescription']);
+        self::assertSame($template->expertise(), $payload['expertise']);
+        self::assertSame($template->workflow(), $payload['workflow']);
+        self::assertSame($template->style(), $payload['style']);
+        self::assertSame($template->outputFormat(), $payload['outputFormat']);
+    }
+
+    public function testShouldReturn201OnFromTemplateWithNameOverride(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->seedTemplate('maja', 'Maja', 'Project Manager');
+
+        $this->postJson('/api/agents/from-template', [
+            'templateSlug' => 'maja',
+            'name' => 'Custom Maja',
+        ], $token);
+
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('Custom Maja', $payload['name']);
+        self::assertSame('custom-maja', $payload['slug']);
+    }
+
+    public function testShouldReturn201OnFromTemplateWithSectionOverrides(): void
+    {
+        $token = $this->seedUserWithOrganization();
+        $this->seedTemplate('maja', 'Maja', 'Project Manager');
+
+        $this->postJson('/api/agents/from-template', [
+            'templateSlug' => 'maja',
+            'roleDescription' => 'Custom role description.',
+            'workflow' => '- Custom workflow bullet.',
+        ], $token);
+
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $payload = $this->decode();
+        self::assertSame('Custom role description.', $payload['roleDescription']);
+        self::assertSame('- Custom workflow bullet.', $payload['workflow']);
+        self::assertSame('- Expertise bullet.', $payload['expertise']);
+    }
+
+    public function testShouldReturn409OnFromTemplateWhenAgentLimitReached(): void
+    {
+        [$userId, $token] = $this->seedUserWithOrganizationAndId();
+        $this->seedTemplate('maja', 'Maja', 'Project Manager');
+        $max = (int) $_ENV['AGENTS_MAX_PER_ORGANIZATION'];
+        for ($i = 0; $i < $max; ++$i) {
+            $this->postJson('/api/agents/from-template', [
+                'templateSlug' => 'maja',
+                'name' => 'Agent '.$i,
+                'slug' => 'agent-'.$i,
+            ], $token);
+            self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        }
+
+        $this->postJson('/api/agents/from-template', [
+            'templateSlug' => 'maja',
+            'slug' => 'overflow',
+        ], $token);
+
+        self::assertSame(Response::HTTP_CONFLICT, $this->client->getResponse()->getStatusCode());
+        self::assertSame('AGENT_LIMIT_REACHED', $this->decode()['error']['code']);
+        self::assertSame($max, $this->agents()->countActiveFor(
+            $this->organizationIdFor($userId),
+        ));
+    }
+
+    public function testShouldGrantOwnerAgentMembershipOnFromTemplate(): void
+    {
+        [$userId, $token] = $this->seedUserWithOrganizationAndId();
+        $this->seedTemplate('maja', 'Maja', 'Project Manager');
+
+        $this->postJson('/api/agents/from-template', ['templateSlug' => 'maja'], $token);
+        self::assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
+        $agentId = AgentId::fromString((string) $this->decode()['id']);
+
+        self::assertTrue($this->agentMembers()->exists($agentId, $userId));
+    }
+
+    private function seedTemplate(string $slug, string $name, string $role): AgentTemplate
+    {
+        $template = AgentTemplate::create(
+            id: AgentTemplateId::generate(),
+            slug: $slug,
+            name: $name,
+            role: $role,
+            roleDescription: 'You are '.$name.'.',
+            expertise: '- Expertise bullet.',
+            workflow: '- Workflow bullet.',
+            style: '- Style bullet.',
+            outputFormat: '- Output format bullet.',
+            now: new DateTimeImmutable('2026-11-15T00:00:00+00:00'),
+        );
+
+        /** @var AgentTemplateRepository $repository */
+        $repository = self::getContainer()->get(AgentTemplateRepository::class);
+        $repository->save($template);
+
+        return $template;
+    }
+
     /**
      * @param array<string, mixed> $overrides
      *
@@ -532,7 +706,11 @@ final class AgentsEndpointTest extends WebTestCase
         return array_merge([
             'name' => 'Maja PM',
             'role' => 'Project Manager',
-            'instructions' => 'You are Maja, the PM.',
+            'roleDescription' => 'You are Maja, the PM.',
+            'expertise' => '- Coordination.',
+            'workflow' => '- Open with briefing.',
+            'style' => '- Terse and direct.',
+            'outputFormat' => '- One-line confirmations.',
         ], $overrides);
     }
 

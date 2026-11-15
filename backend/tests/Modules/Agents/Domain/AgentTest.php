@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Modules\Agents\Domain\Agent;
 use Modules\Shared\Kernel\AgentId;
+use Modules\Shared\Kernel\AgentTemplateId;
 use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +23,20 @@ final class AgentTest extends TestCase
         $ownerId = new UserId(Uuid::v7());
         $now = new DateTimeImmutable('2026-11-13T15:00:00+00:00');
 
-        $sut = Agent::create($id, $organizationId, $ownerId, 'maja', 'Maja', 'Project Manager', 'You are Maja, the PM.', $now);
+        $sut = Agent::create(
+            $id,
+            $organizationId,
+            $ownerId,
+            'maja',
+            'Maja',
+            'Project Manager',
+            'You are Maja, the PM.',
+            '- Coordination.',
+            '- Open with briefing.',
+            '- Terse and direct.',
+            '- One-line confirmations.',
+            $now,
+        );
 
         self::assertTrue($sut->id()->equals($id));
         self::assertTrue($sut->organizationId()->equals($organizationId));
@@ -31,7 +45,11 @@ final class AgentTest extends TestCase
         self::assertSame('maja', $sut->slug());
         self::assertSame('Maja', $sut->name());
         self::assertSame('Project Manager', $sut->role());
-        self::assertSame('You are Maja, the PM.', $sut->instructions());
+        self::assertSame('You are Maja, the PM.', $sut->roleDescription());
+        self::assertSame('- Coordination.', $sut->expertise());
+        self::assertSame('- Open with briefing.', $sut->workflow());
+        self::assertSame('- Terse and direct.', $sut->style());
+        self::assertSame('- One-line confirmations.', $sut->outputFormat());
         self::assertTrue($sut->isActive());
         self::assertEquals($now, $sut->createdAt());
         self::assertEquals($now, $sut->updatedAt());
@@ -40,7 +58,7 @@ final class AgentTest extends TestCase
 
     public function testShouldCarrySourceTemplateIdWhenClonedFromTemplate(): void
     {
-        $templateId = AgentId::generate();
+        $templateId = AgentTemplateId::generate();
         $sut = $this->makeAgent(sourceTemplateId: $templateId);
 
         self::assertNotNull($sut->sourceTemplateId());
@@ -71,16 +89,28 @@ final class AgentTest extends TestCase
         $this->makeAgent(role: '   ');
     }
 
-    public function testShouldRejectBlankInstructionsWhenCreated(): void
+    public function testShouldRejectBlankRoleDescriptionWhenCreated(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->makeAgent(instructions: '   ');
+        $this->makeAgent(roleDescription: '   ');
     }
 
-    public function testShouldRejectInstructionsExceedingLimitWhenCreated(): void
+    public function testShouldRejectRoleDescriptionExceedingLimitWhenCreated(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->makeAgent(instructions: str_repeat('x', Agent::INSTRUCTIONS_MAX + 1));
+        $this->makeAgent(roleDescription: str_repeat('x', Agent::ROLE_DESCRIPTION_MAX + 1));
+    }
+
+    public function testShouldRejectBlankExpertiseWhenCreated(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->makeAgent(expertise: '   ');
+    }
+
+    public function testShouldRejectExpertiseExceedingLimitWhenCreated(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->makeAgent(expertise: str_repeat('x', Agent::SECTION_MAX + 1));
     }
 
     public function testShouldRenameAndBumpUpdatedAtWhenRenamed(): void
@@ -105,15 +135,74 @@ final class AgentTest extends TestCase
         self::assertEquals($later, $sut->updatedAt());
     }
 
-    public function testShouldUpdateInstructionsAndBumpUpdatedAtWhenInstructionsUpdated(): void
+    public function testShouldUpdateRoleDescriptionAndBumpUpdatedAtWhenUpdated(): void
     {
         $sut = $this->makeAgent();
         $later = new DateTimeImmutable('2026-11-13T16:00:00+00:00');
 
-        $sut->updateInstructions('New instructions.', $later);
+        $sut->updateRoleDescription('You are the renewed Maja.', $later);
 
-        self::assertSame('New instructions.', $sut->instructions());
+        self::assertSame('You are the renewed Maja.', $sut->roleDescription());
         self::assertEquals($later, $sut->updatedAt());
+    }
+
+    public function testShouldUpdateExpertiseAndBumpUpdatedAtWhenUpdated(): void
+    {
+        $sut = $this->makeAgent();
+        $later = new DateTimeImmutable('2026-11-13T16:00:00+00:00');
+
+        $sut->updateExpertise('- Renewed expertise.', $later);
+
+        self::assertSame('- Renewed expertise.', $sut->expertise());
+        self::assertEquals($later, $sut->updatedAt());
+    }
+
+    public function testShouldUpdateWorkflowAndBumpUpdatedAtWhenUpdated(): void
+    {
+        $sut = $this->makeAgent();
+        $later = new DateTimeImmutable('2026-11-13T16:00:00+00:00');
+
+        $sut->updateWorkflow('- Renewed workflow.', $later);
+
+        self::assertSame('- Renewed workflow.', $sut->workflow());
+        self::assertEquals($later, $sut->updatedAt());
+    }
+
+    public function testShouldUpdateStyleAndBumpUpdatedAtWhenUpdated(): void
+    {
+        $sut = $this->makeAgent();
+        $later = new DateTimeImmutable('2026-11-13T16:00:00+00:00');
+
+        $sut->updateStyle('- Renewed style.', $later);
+
+        self::assertSame('- Renewed style.', $sut->style());
+        self::assertEquals($later, $sut->updatedAt());
+    }
+
+    public function testShouldUpdateOutputFormatAndBumpUpdatedAtWhenUpdated(): void
+    {
+        $sut = $this->makeAgent();
+        $later = new DateTimeImmutable('2026-11-13T16:00:00+00:00');
+
+        $sut->updateOutputFormat('- Renewed output.', $later);
+
+        self::assertSame('- Renewed output.', $sut->outputFormat());
+        self::assertEquals($later, $sut->updatedAt());
+    }
+
+    public function testShouldComposeSystemPromptFromFiveSections(): void
+    {
+        $sut = $this->makeAgent();
+
+        $prompt = $sut->toSystemPrompt();
+
+        self::assertStringContainsString('<role>', $prompt);
+        self::assertStringContainsString('</role>', $prompt);
+        self::assertStringContainsString('<expertise>', $prompt);
+        self::assertStringContainsString('<workflow>', $prompt);
+        self::assertStringContainsString('<style>', $prompt);
+        self::assertStringContainsString('<output_format>', $prompt);
+        self::assertStringContainsString('You are Maja, the PM.', $prompt);
     }
 
     public function testShouldDeactivateAndReactivateWhenToggled(): void
@@ -173,9 +262,13 @@ final class AgentTest extends TestCase
         ?string $slug = null,
         ?string $name = null,
         ?string $role = null,
-        ?string $instructions = null,
+        ?string $roleDescription = null,
+        ?string $expertise = null,
+        ?string $workflow = null,
+        ?string $style = null,
+        ?string $outputFormat = null,
         ?DateTimeImmutable $now = null,
-        ?AgentId $sourceTemplateId = null,
+        ?AgentTemplateId $sourceTemplateId = null,
     ): Agent {
         return Agent::create(
             AgentId::generate(),
@@ -184,7 +277,11 @@ final class AgentTest extends TestCase
             $slug ?? 'maja',
             $name ?? 'Maja',
             $role ?? 'Project Manager',
-            $instructions ?? 'You are Maja.',
+            $roleDescription ?? 'You are Maja, the PM.',
+            $expertise ?? '- Coordination.',
+            $workflow ?? '- Open with briefing.',
+            $style ?? '- Terse and direct.',
+            $outputFormat ?? '- One-line confirmations.',
             $now ?? new DateTimeImmutable('2026-11-13T15:00:00+00:00'),
             $sourceTemplateId,
         );
