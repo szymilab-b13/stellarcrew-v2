@@ -23,6 +23,7 @@
         <field name="outputFormat" type="text" column="output_format" nullable="false"/>
         <field name="isActive" type="boolean" column="is_active" nullable="false"/>
         <field name="color" type="string" column="color" length="7" nullable="true"/>
+        <field name="defaultWorkerId" type="worker_id_vo" column="default_worker_id" nullable="true"/>
         <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
         <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
         <field name="deletedAt" type="datetimetz_immutable" column="deleted_at" nullable="true"/>

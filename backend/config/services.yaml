@@ -111,6 +111,9 @@ services:
     Modules\Chat\Domain\ChatMessageRepository:
         alias: Modules\Chat\Infrastructure\Doctrine\Repository\DoctrineChatMessageRepository
 
+    Modules\Chat\Domain\ChatThreadWorkerSessionRepository:
+        alias: Modules\Chat\Infrastructure\Doctrine\Repository\DoctrineChatThreadWorkerSessionRepository
+
     # Workers module bindings (ADR-BE-007)
     Modules\Workers\Domain\WorkerRepository:
         alias: Modules\Workers\Infrastructure\Doctrine\Repository\DoctrineWorkerRepository

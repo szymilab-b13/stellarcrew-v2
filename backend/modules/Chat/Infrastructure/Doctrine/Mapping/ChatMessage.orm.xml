@@ -26,6 +26,7 @@
         <field name="engineType" type="string" column="engine_type" length="30" nullable="false" enum-type="Modules\Chat\Domain\EngineType"/>
         <field name="classifiedBy" type="string" column="classified_by" length="20" nullable="false" enum-type="Modules\Chat\Domain\ClassifiedBy"/>
         <field name="classificationConfidence" type="float" column="classification_confidence" nullable="true"/>
+        <field name="handledByWorkerId" type="worker_id_vo" column="handled_by_worker_id" nullable="true"/>
         <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
 
         <indexes>
@@ -35,6 +36,7 @@
             <index name="idx_chat_chat_messages_recipient" columns="recipient_type,recipient_id"/>
             <index name="idx_chat_chat_messages_engine" columns="engine_type,engine_id"/>
             <index name="idx_chat_chat_messages_reply_to" columns="reply_to_message_id"/>
+            <index name="idx_chat_chat_messages_handled_by_worker_id" columns="handled_by_worker_id"/>
         </indexes>
 
     </entity>
