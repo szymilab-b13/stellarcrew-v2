@@ -32,6 +32,8 @@ class Agent
 
     public const string SLUG_PATTERN = '/^[a-z0-9]+(-[a-z0-9]+)*$/';
 
+    public const string COLOR_PATTERN = '/^#[0-9a-fA-F]{6}$/';
+
     public function __construct(
         private readonly AgentId $id,
         private readonly OrganizationId $organizationId,
@@ -49,6 +51,7 @@ class Agent
         private readonly DateTimeImmutable $createdAt,
         private DateTimeImmutable $updatedAt,
         private ?DateTimeImmutable $deletedAt = null,
+        private ?string $color = null,
     ) {
         $this->guardSlug($slug);
         $this->guardName($name);
@@ -58,6 +61,7 @@ class Agent
         $this->guardSection('workflow', $workflow);
         $this->guardSection('style', $style);
         $this->guardSection('output format', $outputFormat);
+        $this->guardColor($color);
     }
 
     public static function create(
@@ -157,6 +161,22 @@ class Agent
     public function isActive(): bool
     {
         return $this->isActive;
+    }
+
+    public function color(): ?string
+    {
+        return $this->color;
+    }
+
+    public function assignColor(?string $color, DateTimeImmutable $now): void
+    {
+        $this->guardColor($color);
+        if ($this->color === $color) {
+            return;
+        }
+
+        $this->color = $color;
+        $this->updatedAt = $now;
     }
 
     public function createdAt(): DateTimeImmutable
@@ -344,6 +364,17 @@ class Agent
             throw new InvalidArgumentException(
                 sprintf('Agent %s cannot exceed %d characters.', $label, self::SECTION_MAX),
             );
+        }
+    }
+
+    private function guardColor(?string $color): void
+    {
+        if ($color === null) {
+            return;
+        }
+
+        if (preg_match(self::COLOR_PATTERN, $color) !== 1) {
+            throw new InvalidArgumentException(sprintf('Agent color must be #RRGGBB hex: "%s".', $color));
         }
     }
 }

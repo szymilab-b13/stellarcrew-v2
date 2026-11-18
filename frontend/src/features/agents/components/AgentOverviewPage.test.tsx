@@ -45,6 +45,7 @@ const agentFromTemplate: Agent = {
   style: 'Calm and direct, no filler.',
   outputFormat: 'TL;DR first, numbered bullets after.',
   isActive: true,
+  color: '#6366f1',
   createdAt: '2026-11-15T15:00:00+00:00',
   updatedAt: '2026-11-15T15:30:00+00:00',
 };

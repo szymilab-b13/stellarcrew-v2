@@ -12,6 +12,7 @@ export interface Agent {
   style: string;
   outputFormat: string;
   isActive: boolean;
+  color: string;
   createdAt: string;
   updatedAt: string;
 }

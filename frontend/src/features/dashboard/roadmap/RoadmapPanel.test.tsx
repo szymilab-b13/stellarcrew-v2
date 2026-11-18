@@ -244,14 +244,25 @@ describe('RoadmapPanel', () => {
     expect(screen.queryByRole('link', { name: /BL-AUTH-00[45]/i })).not.toBeInTheDocument();
   });
 
-  it('should render the CHAT milestone as tbd with a dependency note and no tasks', async () => {
+  it('should render the CHAT milestone as done with BL-CHAT backend and frontend tasks and commit links', async () => {
     render(<RoadmapPanel />);
 
     const header = screen.getByText(/CHAT — conversations between user and agents/i);
     await userEvent.click(header);
 
-    expect(screen.getByText(/Depends on AGENTS and WORKSPACES/i)).toBeInTheDocument();
-    expect(screen.queryByText(/BL-CHAT-/i)).not.toBeInTheDocument();
+    expect(screen.getByText('BL-CHAT-001')).toBeInTheDocument();
+    expect(screen.getByText('BL-CHAT-004')).toBeInTheDocument();
+    expect(screen.getByText('BL-CHAT-F01')).toBeInTheDocument();
+    expect(screen.getByText('BL-CHAT-F04')).toBeInTheDocument();
+
+    const commitLink = screen.getByRole('link', { name: /cb55714/ });
+    expect(commitLink).toHaveAttribute(
+      'href',
+      'https://github.com/Nessandro/stellarcrew-v2-private/commit/cb55714',
+    );
+
+    const story = screen.getByText(/MessageComposer form/i);
+    expect(story).toHaveClass('line-through');
   });
 
   it('should render non-milestone threads as planned with BL-DX and BL-DOC tasks', async () => {

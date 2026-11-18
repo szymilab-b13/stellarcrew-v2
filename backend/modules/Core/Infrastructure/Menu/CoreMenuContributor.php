@@ -32,7 +32,6 @@ final readonly class CoreMenuContributor implements MenuContributor
                         icon: 'MessageSquare',
                         path: '/chat',
                         order: 30,
-                        disabledMilestoneKey: 'menu.workspaceContext.milestones.chat',
                     ),
                     new MenuItem(
                         id: 'agents',

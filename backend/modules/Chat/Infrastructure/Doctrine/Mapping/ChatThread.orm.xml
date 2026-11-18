@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Chat\Domain\ChatThread" table="chat_threads" schema="chat">
+
+        <id name="id" type="chat_thread_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="sessionId" type="chat_session_id_vo" column="session_id" nullable="false"/>
+        <field name="subject" type="string" column="subject" length="120" nullable="false"/>
+        <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+        <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
+        <field name="parentThreadId" type="chat_thread_id_vo" column="parent_thread_id" nullable="true"/>
+
+        <indexes>
+            <index name="idx_chat_chat_threads_session_id" columns="session_id"/>
+            <index name="idx_chat_chat_threads_session_created" columns="session_id,created_at"/>
+            <index name="idx_chat_chat_threads_parent_thread_id" columns="parent_thread_id"/>
+        </indexes>
+
+    </entity>
+
+</doctrine-mapping>

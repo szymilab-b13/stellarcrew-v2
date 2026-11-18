@@ -22,6 +22,7 @@ const agent: Agent = {
   style: 'Curious and precise.',
   outputFormat: 'TL;DR + highlights + raw notes.',
   isActive: true,
+  color: '#6366f1',
   createdAt: '2026-11-15T15:30:00+00:00',
   updatedAt: '2026-11-15T15:30:00+00:00',
 };

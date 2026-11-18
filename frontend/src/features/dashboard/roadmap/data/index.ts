@@ -9,6 +9,7 @@ import { AUDIT_MILESTONE } from './audit';
 import { AUTH_MILESTONE } from './auth';
 import { AUTH_REFRESH_MILESTONE } from './authRefresh';
 import { CHAT_MILESTONE } from './chat';
+import { CHAT_AGENT_UX_MILESTONE } from './chatAgentUx';
 import { CORE_MILESTONE } from './core';
 import { FLOWS_MILESTONE } from './flows';
 import { INTEGRATION_TESTS_MILESTONE } from './integrationTests';
@@ -56,6 +57,7 @@ export const ROADMAP: RoadmapMilestone[] = [
   PROJECT_DASHBOARDS_MILESTONE,
   AUTH_REFRESH_MILESTONE,
   CHAT_MILESTONE,
+  CHAT_AGENT_UX_MILESTONE,
   THREADS_MILESTONE,
   PLANS_USAGE_MILESTONE,
   AGENTS_ORCHESTRATION_MILESTONE,

@@ -21,6 +21,7 @@ const agent: Agent = {
   style: 'Terse',
   outputFormat: 'Markdown',
   isActive: true,
+  color: '#6366f1',
   createdAt: '2026-11-15T10:00:00+00:00',
   updatedAt: '2026-11-15T10:00:00+00:00',
 };

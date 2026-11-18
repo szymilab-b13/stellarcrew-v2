@@ -46,6 +46,7 @@ const createdAgent: Agent = {
   style: majaTemplate.style,
   outputFormat: majaTemplate.outputFormat,
   isActive: true,
+  color: '#6366f1',
   createdAt: '2026-11-15T15:00:00+00:00',
   updatedAt: '2026-11-15T15:00:00+00:00',
 };

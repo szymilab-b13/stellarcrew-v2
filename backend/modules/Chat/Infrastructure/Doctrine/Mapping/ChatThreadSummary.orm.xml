@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Chat\Domain\ChatThreadSummary" table="chat_thread_summaries" schema="chat">
+
+        <id name="threadId" type="chat_thread_id_vo" column="thread_id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="shortDescription" type="text" column="short_description" nullable="true"/>
+        <field name="summaryJson" type="json" column="summary_json" nullable="true"/>
+        <field name="messagesCoveredUntilId" type="chat_message_id_vo" column="messages_covered_until_id" nullable="true"/>
+        <field name="lastGeneratedAt" type="datetimetz_immutable" column="last_generated_at" nullable="true"/>
+        <field name="generatorVersion" type="string" column="generator_version" length="50" nullable="true"/>
+
+        <indexes>
+            <index name="idx_chat_chat_thread_summaries_messages_covered_until_id" columns="messages_covered_until_id"/>
+        </indexes>
+
+    </entity>
+
+</doctrine-mapping>

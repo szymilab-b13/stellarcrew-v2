@@ -98,6 +98,19 @@ services:
     Modules\Agents\Domain\AgentTemplateRepository:
         alias: Modules\Agents\Infrastructure\Doctrine\Repository\DoctrineAgentTemplateRepository
 
+    Modules\Agents\Api\AgentsApi:
+        alias: Modules\Agents\Infrastructure\Api\DefaultAgentsApi
+
+    # Chat module bindings
+    Modules\Chat\Domain\ChatSessionRepository:
+        alias: Modules\Chat\Infrastructure\Doctrine\Repository\DoctrineChatSessionRepository
+
+    Modules\Chat\Domain\ChatThreadRepository:
+        alias: Modules\Chat\Infrastructure\Doctrine\Repository\DoctrineChatThreadRepository
+
+    Modules\Chat\Domain\ChatMessageRepository:
+        alias: Modules\Chat\Infrastructure\Doctrine\Repository\DoctrineChatMessageRepository
+
     # Plan limits (cross-cutting usage gate per ADR-BE-006)
     Modules\Shared\Api\PlanLimitsService:
         alias: Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService

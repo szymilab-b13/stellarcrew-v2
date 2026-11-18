@@ -65,7 +65,7 @@ final class MenuEndpointTest extends WebTestCase
         self::assertSame('chat', $general['items'][2]['id']);
         self::assertSame('/chat', $general['items'][2]['path']);
         self::assertSame('MessageSquare', $general['items'][2]['icon']);
-        self::assertSame('menu.workspaceContext.milestones.chat', $general['items'][2]['disabledMilestoneKey']);
+        self::assertNull($general['items'][2]['disabledMilestoneKey']);
 
         self::assertSame('agents', $general['items'][3]['id']);
         self::assertSame('/agents', $general['items'][3]['path']);

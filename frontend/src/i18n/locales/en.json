@@ -533,6 +533,139 @@
       }
     }
   },
+  "chat": {
+    "breadcrumb": "Chat",
+    "title": "Chat",
+    "subtitle": "Conversations with your agents.",
+    "sessionLoading": "Loading your chat session…",
+    "sessionError": "Could not load your chat session.",
+    "sessionMissingOrg": "Create an organization to start chatting.",
+    "threads": {
+      "ariaLabel": "Chat threads",
+      "loading": "Loading threads…",
+      "loadError": "Could not load threads.",
+      "emptyTitle": "No threads yet",
+      "emptyBody": "Start a conversation to create the first thread."
+    },
+    "sidebar": {
+      "ariaLabel": "Agents list",
+      "loading": "Loading agents…",
+      "loadError": "Could not load agents.",
+      "emptyTitle": "No agents yet",
+      "emptyBody": "Create an agent to start a conversation.",
+      "emptyCta": "Create agent",
+      "badgeNew": "New",
+      "dmHeading": "Direct Messages",
+      "addConversation": "Add conversation",
+      "emptyDmTitle": "No conversations yet",
+      "emptyDmBody": "Click + to start a conversation with an agent.",
+      "searchPlaceholder": "Search conversations…",
+      "searchAria": "Search conversations",
+      "emptySearchTitle": "No matches",
+      "emptySearchBody": "No conversation matches your search."
+    },
+    "header": {
+      "openSettings": "Open settings"
+    },
+    "settings": {
+      "title": "Chat settings",
+      "titleWithAgent": "Settings — {{agentName}}",
+      "close": "Close",
+      "priority": "Priority",
+      "engineType": "Engine type",
+      "engineId": "Engine ID",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "addConversation": {
+      "title": "Start a conversation",
+      "close": "Close",
+      "searchPlaceholder": "Search agents by name or role…",
+      "loading": "Loading agents…",
+      "loadError": "Could not load agents.",
+      "createError": "Could not start the conversation. Try again.",
+      "emptyAgents": "You don't have any agents yet.",
+      "emptyFiltered": "No agents match your search.",
+      "defaultSubject": "Chat with {{agentName}}"
+    },
+    "threadTabs": {
+      "ariaLabel": "Conversation threads",
+      "allLabel": "All",
+      "loading": "Loading threads…",
+      "loadError": "Could not load threads."
+    },
+    "feed": {
+      "loadingThreads": "Loading threads…",
+      "threadsLoadError": "Could not load threads.",
+      "loadingMessages": "Loading messages…",
+      "loadError": "Could not load the conversation.",
+      "emptyTitle": "No conversations yet",
+      "emptyBody": "Send the first message to start a thread."
+    },
+    "panel": {
+      "selectAgentTitle": "Select an agent",
+      "selectAgentBody": "Pick an agent on the left to see your conversation.",
+      "comingSoonTitle": "Conversation feed coming soon",
+      "comingSoonBody": "Agent selected. The message feed arrives in the next build (BL-CAGU-009)."
+    },
+    "messages": {
+      "loading": "Loading messages…",
+      "loadError": "Could not load messages.",
+      "emptyTitle": "No messages yet",
+      "emptyBody": "Send the first message to start this thread.",
+      "listAria": "Messages in thread"
+    },
+    "sender": {
+      "user": "You",
+      "agent": "Agent",
+      "system": "System",
+      "supervisor": "Supervisor"
+    },
+    "priority": {
+      "P0": "P0 critical",
+      "P1": "P1 high",
+      "P2": "P2 normal",
+      "P3": "P3 low"
+    },
+    "bubble": {
+      "aria": "Message from {{sender}}: {{subject}}"
+    },
+    "composer": {
+      "subject": "Subject",
+      "content": "Content",
+      "priority": "Priority",
+      "engineId": "Engine ID",
+      "engineType": "Engine type",
+      "send": "Send",
+      "sending": "Sending…",
+      "ariaLabel": "Message composer",
+      "placeholder": "Write a message…",
+      "advancedToggle": "Advanced options",
+      "newTopic": "Start a new topic",
+      "subjectLabel": "Subject",
+      "priorityLabel": "Priority",
+      "engineTypeLabel": "Engine type",
+      "engineIdLabel": "Engine ID",
+      "defaultSubject": "Chat with {{agentName}}",
+      "sendError": "Could not send the message. Try again.",
+      "toolbar": "More actions",
+      "attach": "Attach file",
+      "engineTypes": {
+        "cli_terminal": "CLI terminal",
+        "webhook": "Webhook",
+        "batch": "Batch"
+      },
+      "errors": {
+        "subject.required": "Subject is required.",
+        "subject.tooLong": "Subject is too long (max 120).",
+        "content.required": "Content is required.",
+        "engineId.invalid": "Engine ID must be a UUID.",
+        "server": {
+          "generic": "Could not send the message. Please try again."
+        }
+      }
+    }
+  },
   "projects": {
     "loading": "Loading projects…",
     "loadError": "Could not load projects.",
@@ -991,6 +1124,9 @@
       },
       "chat": {
         "title": "CHAT — conversations between user and agents"
+      },
+      "chatAgentUx": {
+        "title": "CHAT AGENT UX — agent-centric redesign (sidebar of agents, flat conversation feed)"
       },
       "threads": {
         "title": "Non-milestone threads — DX and documentation"
@@ -1471,6 +1607,81 @@
       },
       "BL-AUTH-005": {
         "story": "JTI denylist in Redis — forced revocation (logout-all, password change) invalidates sessions right away."
+      },
+      "BL-CHAT-001": {
+        "story": "ChatSession aggregate + owner_user_id ACL + table chat.chat_sessions."
+      },
+      "BL-CHAT-002": {
+        "story": "ChatThread aggregate (session FK + subject) + table chat.chat_threads."
+      },
+      "BL-CHAT-003": {
+        "story": "ChatMessage aggregate with full envelope (17 fields, 6 enums) + table chat.chat_messages."
+      },
+      "BL-CHAT-004": {
+        "story": "POST /api/chat/messages — SendMessageCommand + handler + envelope validation."
+      },
+      "BL-CHAT-005": {
+        "story": "GET /api/chat/sessions/current — auto-create a session on first access."
+      },
+      "BL-CHAT-006": {
+        "story": "GET /api/chat/sessions/{id}/threads — list threads owned by the actor."
+      },
+      "BL-CHAT-007": {
+        "story": "GET /api/chat/threads/{id}/messages — paginated message history (limit/offset)."
+      },
+      "BL-CHAT-F01": {
+        "story": "Frontend API layer — chat envelope types + four react-query hooks (session/threads/messages + sendMessage)."
+      },
+      "BL-CHAT-F02": {
+        "story": "/chat route + ChatPage shell: sidebar thread list + placeholder main panel."
+      },
+      "BL-CHAT-F03": {
+        "story": "MessageList + MessageBubble — sender variants, priority badges, Intl timestamps."
+      },
+      "BL-CHAT-F04": {
+        "story": "MessageComposer form (subject / priority / content / engine ID / engine type) submits via useSendMessage and resets on success."
+      },
+      "BL-CAGU-001": {
+        "story": "chat_threads.parent_thread_id column + ChatThread attach/detach domain methods + repository findChildrenOf."
+      },
+      "BL-CAGU-002": {
+        "story": "Stub table chat_thread_summaries with short_description + summary_json JSONB (filled later by CHAT-BRAIN)."
+      },
+      "BL-CAGU-003": {
+        "story": "GET /api/chat/agents/{id}/threads — list threads of one agent with aggregates (count, last message at)."
+      },
+      "BL-CAGU-004": {
+        "story": "POST /api/chat/threads — explicit thread creation with optional parentThreadId (same session)."
+      },
+      "BL-CAGU-005": {
+        "story": "POST /api/chat/threads/{id}/attach — attach a thread to a parent with cycle and cross-session guards."
+      },
+      "BL-CAGU-006": {
+        "story": "POST /api/chat/threads/{id}/detach — detach a thread from its parent (no-op when already root)."
+      },
+      "BL-CAGU-006b": {
+        "story": "GET /api/chat/conversations — list user's agents with last-message preview and thread count (empty agents marked isNew)."
+      },
+      "BL-CAGU-007": {
+        "story": "Frontend API layer for agent-centric chat — types + four react-query hooks (useAgentConversations / useAgentThreads / useCreateThread / useAttachThread)."
+      },
+      "BL-CAGU-008": {
+        "story": "AgentsSidebar — left column lists agents with initials avatar, last message preview and a \"new\" badge for agents without history."
+      },
+      "BL-CAGU-009a": {
+        "story": "Backend agents.agents.color field (nullable hex) + AgentColorPalette crc32 slug fallback — surfaced on AgentView, GET /api/agents and GET /api/chat/conversations."
+      },
+      "BL-CAGU-009b": {
+        "story": "AgentsSidebar filtered to direct messages with a Direct Messages header, Add conversation button and per-agent avatar color."
+      },
+      "BL-CAGU-009c": {
+        "story": "Add conversation modal with searchable agents table — clicking an agent creates a thread via useCreateThread and selects the agent."
+      },
+      "BL-CAGU-010": {
+        "story": "ConversationFeed + ChatHeader + ThreadTabs — flat message feed per agent with an \"All\" chip, chapter dividers per thread and chips to filter to a single thread."
+      },
+      "BL-CAGU-011": {
+        "story": "ThreadComposer — content textarea + Send + gear popover (engine type / engine id / priority / new-topic toggle with inline subject)."
       },
       "BL-DX-001": {
         "story": "CI uses a ci/services block (postgres, redis, rabbit) instead of ad-hoc fakes — once tests move beyond the API surface."

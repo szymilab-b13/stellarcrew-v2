@@ -16,4 +16,5 @@ return [
     Modules\Projects\Infrastructure\Bundle\ProjectsBundle::class => ['all' => true],
     Modules\Organizations\Infrastructure\Bundle\OrganizationsBundle::class => ['all' => true],
     Modules\Agents\Infrastructure\Bundle\AgentsBundle::class => ['all' => true],
+    Modules\Chat\Infrastructure\Bundle\ChatBundle::class => ['all' => true],
 ];

@@ -113,6 +113,63 @@ final class AgentTest extends TestCase
         $this->makeAgent(expertise: str_repeat('x', Agent::SECTION_MAX + 1));
     }
 
+    public function testShouldReturnNullColorWhenCreated(): void
+    {
+        $sut = $this->makeAgent();
+
+        self::assertNull($sut->color());
+    }
+
+    public function testShouldAssignColorAndBumpUpdatedAtWhenValidHex(): void
+    {
+        $sut = $this->makeAgent();
+        $later = new DateTimeImmutable('2026-11-13T16:00:00+00:00');
+
+        $sut->assignColor('#6366f1', $later);
+
+        self::assertSame('#6366f1', $sut->color());
+        self::assertEquals($later, $sut->updatedAt());
+    }
+
+    public function testShouldClearColorWhenAssigningNull(): void
+    {
+        $sut = $this->makeAgent();
+        $later = new DateTimeImmutable('2026-11-13T16:00:00+00:00');
+        $sut->assignColor('#6366f1', $later);
+
+        $sut->assignColor(null, new DateTimeImmutable('2026-11-13T17:00:00+00:00'));
+
+        self::assertNull($sut->color());
+    }
+
+    public function testShouldRejectInvalidColorWhenAssigning(): void
+    {
+        $sut = $this->makeAgent();
+
+        $this->expectException(InvalidArgumentException::class);
+        $sut->assignColor('red', new DateTimeImmutable('2026-11-13T16:00:00+00:00'));
+    }
+
+    public function testShouldRejectShortHexColorWhenAssigning(): void
+    {
+        $sut = $this->makeAgent();
+
+        $this->expectException(InvalidArgumentException::class);
+        $sut->assignColor('#fff', new DateTimeImmutable('2026-11-13T16:00:00+00:00'));
+    }
+
+    public function testShouldLeaveUpdatedAtUnchangedWhenAssigningSameColor(): void
+    {
+        $sut = $this->makeAgent();
+        $first = new DateTimeImmutable('2026-11-13T16:00:00+00:00');
+        $sut->assignColor('#6366f1', $first);
+        $later = new DateTimeImmutable('2026-11-13T17:00:00+00:00');
+
+        $sut->assignColor('#6366f1', $later);
+
+        self::assertEquals($first, $sut->updatedAt());
+    }
+
     public function testShouldRenameAndBumpUpdatedAtWhenRenamed(): void
     {
         $sut = $this->makeAgent();

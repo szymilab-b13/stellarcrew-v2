@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Chat\Domain\ChatSession" table="chat_sessions" schema="chat">
+
+        <id name="id" type="chat_session_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="organizationId" type="organization_id_vo" column="organization_id" nullable="false"/>
+        <field name="ownerUserId" type="user_id_vo" column="owner_user_id" nullable="false"/>
+        <field name="label" type="string" column="label" length="120" nullable="false"/>
+        <field name="startedAt" type="datetimetz_immutable" column="started_at" nullable="false"/>
+        <field name="endedAt" type="datetimetz_immutable" column="ended_at" nullable="true"/>
+        <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+        <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
+
+        <indexes>
+            <index name="idx_chat_chat_sessions_organization_id" columns="organization_id"/>
+            <index name="idx_chat_chat_sessions_owner_user_id" columns="owner_user_id"/>
+            <index name="idx_chat_chat_sessions_org_started" columns="organization_id,started_at"/>
+        </indexes>
+
+    </entity>
+
+</doctrine-mapping>

@@ -28,6 +28,7 @@ final readonly class AgentView
         public bool $isActive,
         public DateTimeImmutable $createdAt,
         public DateTimeImmutable $updatedAt,
+        public ?string $color = null,
     ) {
     }
 }

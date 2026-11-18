@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Agents\Infrastructure\Http;
 
 use DateTimeInterface;
+use Modules\Agents\Api\AgentColorPalette;
 use Modules\Agents\Application\CreateAgentCommand;
 use Modules\Agents\Application\CreateAgentCommandHandler;
 use Modules\Agents\Application\CreateAgentFromTemplateCommand;
@@ -230,7 +231,7 @@ final readonly class AgentsController
     }
 
     /**
-     * @return array{id: string, organizationId: string, ownerUserId: string, sourceTemplateId: ?string, slug: string, name: string, role: string, roleDescription: string, expertise: string, workflow: string, style: string, outputFormat: string, isActive: bool, createdAt: string, updatedAt: string}
+     * @return array{id: string, organizationId: string, ownerUserId: string, sourceTemplateId: ?string, slug: string, name: string, role: string, roleDescription: string, expertise: string, workflow: string, style: string, outputFormat: string, isActive: bool, color: string, createdAt: string, updatedAt: string}
      */
     private function serialise(Agent $agent): array
     {
@@ -248,6 +249,7 @@ final readonly class AgentsController
             'style' => $agent->style(),
             'outputFormat' => $agent->outputFormat(),
             'isActive' => $agent->isActive(),
+            'color' => $agent->color() ?? AgentColorPalette::deriveFromSlug($agent->slug()),
             'createdAt' => $agent->createdAt()->format(DateTimeInterface::ATOM),
             'updatedAt' => $agent->updatedAt()->format(DateTimeInterface::ATOM),
         ];

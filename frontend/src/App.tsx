@@ -12,6 +12,7 @@ import {
 } from './features/agents';
 import { LoginPage } from './features/auth';
 import { AdminAuditPage } from './features/audit';
+import { ChatPage } from './features/chat';
 import { AdminUserDetailPage, AdminUsersPage } from './features/user-management';
 import { CurrentWorkspaceGuard } from './features/workspaces/components/CurrentWorkspaceGuard';
 import { WorkspaceOverviewPage } from './features/workspaces/components/WorkspaceOverviewPage';
@@ -56,6 +57,7 @@ export function App() {
             <Route element={<CurrentWorkspaceGuard />}>
               <Route path="/dashboard" element={<DashboardPage />} />
             </Route>
+            <Route path="/chat" element={<ChatPage />} />
             <Route path="/agents" element={<AgentsListPage />} />
             <Route path="/agents/new" element={<AgentsListPage />} />
             <Route path="/agents/new/template" element={<AgentTemplatePickerPage />} />

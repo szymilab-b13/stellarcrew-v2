@@ -533,6 +533,139 @@
       }
     }
   },
+  "chat": {
+    "breadcrumb": "Chat",
+    "title": "Chat",
+    "subtitle": "Rozmowy z Twoimi agentami.",
+    "sessionLoading": "Ładuję sesję chatu…",
+    "sessionError": "Nie udało się załadować sesji chatu.",
+    "sessionMissingOrg": "Utwórz organizację, żeby zacząć rozmowę.",
+    "threads": {
+      "ariaLabel": "Wątki chatu",
+      "loading": "Ładuję wątki…",
+      "loadError": "Nie udało się załadować wątków.",
+      "emptyTitle": "Brak wątków",
+      "emptyBody": "Rozpocznij rozmowę, żeby założyć pierwszy wątek."
+    },
+    "sidebar": {
+      "ariaLabel": "Lista agentów",
+      "loading": "Ładuję agentów…",
+      "loadError": "Nie udało się załadować agentów.",
+      "emptyTitle": "Brak agentów",
+      "emptyBody": "Utwórz agenta, żeby zacząć rozmowę.",
+      "emptyCta": "Utwórz agenta",
+      "badgeNew": "Nowy",
+      "dmHeading": "Rozmowy",
+      "addConversation": "Dodaj rozmowę",
+      "emptyDmTitle": "Brak rozmów",
+      "emptyDmBody": "Kliknij +, żeby zacząć rozmowę z agentem.",
+      "searchPlaceholder": "Szukaj rozmów…",
+      "searchAria": "Szukaj rozmów",
+      "emptySearchTitle": "Brak wyników",
+      "emptySearchBody": "Żadna rozmowa nie pasuje do wyszukiwania."
+    },
+    "header": {
+      "openSettings": "Otwórz ustawienia"
+    },
+    "settings": {
+      "title": "Ustawienia rozmowy",
+      "titleWithAgent": "Ustawienia — {{agentName}}",
+      "close": "Zamknij",
+      "priority": "Priorytet",
+      "engineType": "Typ silnika",
+      "engineId": "Engine ID",
+      "cancel": "Anuluj",
+      "save": "Zapisz"
+    },
+    "addConversation": {
+      "title": "Zacznij rozmowę",
+      "close": "Zamknij",
+      "searchPlaceholder": "Szukaj agentów po nazwie lub roli…",
+      "loading": "Ładuję agentów…",
+      "loadError": "Nie udało się załadować agentów.",
+      "createError": "Nie udało się utworzyć rozmowy. Spróbuj ponownie.",
+      "emptyAgents": "Nie masz jeszcze żadnego agenta.",
+      "emptyFiltered": "Brak agentów pasujących do wyszukiwania.",
+      "defaultSubject": "Rozmowa z {{agentName}}"
+    },
+    "threadTabs": {
+      "ariaLabel": "Wątki rozmowy",
+      "allLabel": "Wszystkie",
+      "loading": "Ładuję wątki…",
+      "loadError": "Nie udało się załadować wątków."
+    },
+    "feed": {
+      "loadingThreads": "Ładuję wątki…",
+      "threadsLoadError": "Nie udało się załadować wątków.",
+      "loadingMessages": "Ładuję wiadomości…",
+      "loadError": "Nie udało się załadować rozmowy.",
+      "emptyTitle": "Brak rozmów",
+      "emptyBody": "Wyślij pierwszą wiadomość, żeby zacząć wątek."
+    },
+    "panel": {
+      "selectAgentTitle": "Wybierz agenta",
+      "selectAgentBody": "Wskaż agenta po lewej, żeby zobaczyć swoją rozmowę.",
+      "comingSoonTitle": "Feed rozmowy już wkrótce",
+      "comingSoonBody": "Agent wybrany. Feed wiadomości dojdzie w kolejnej iteracji (BL-CAGU-009)."
+    },
+    "messages": {
+      "loading": "Ładuję wiadomości…",
+      "loadError": "Nie udało się załadować wiadomości.",
+      "emptyTitle": "Brak wiadomości",
+      "emptyBody": "Wyślij pierwszą wiadomość, żeby rozpocząć ten wątek.",
+      "listAria": "Wiadomości w wątku"
+    },
+    "sender": {
+      "user": "Ty",
+      "agent": "Agent",
+      "system": "System",
+      "supervisor": "Superwizor"
+    },
+    "priority": {
+      "P0": "P0 krytyczny",
+      "P1": "P1 wysoki",
+      "P2": "P2 normalny",
+      "P3": "P3 niski"
+    },
+    "bubble": {
+      "aria": "Wiadomość od {{sender}}: {{subject}}"
+    },
+    "composer": {
+      "subject": "Temat",
+      "content": "Treść",
+      "priority": "Priorytet",
+      "engineId": "Engine ID",
+      "engineType": "Typ silnika",
+      "send": "Wyślij",
+      "sending": "Wysyłam…",
+      "ariaLabel": "Pole wiadomości",
+      "placeholder": "Napisz wiadomość…",
+      "advancedToggle": "Opcje zaawansowane",
+      "newTopic": "Zacznij nowy temat",
+      "subjectLabel": "Temat",
+      "priorityLabel": "Priorytet",
+      "engineTypeLabel": "Typ silnika",
+      "engineIdLabel": "Engine ID",
+      "defaultSubject": "Rozmowa z {{agentName}}",
+      "sendError": "Nie udało się wysłać wiadomości. Spróbuj ponownie.",
+      "toolbar": "Więcej akcji",
+      "attach": "Dołącz plik",
+      "engineTypes": {
+        "cli_terminal": "Terminal CLI",
+        "webhook": "Webhook",
+        "batch": "Batch"
+      },
+      "errors": {
+        "subject.required": "Temat jest wymagany.",
+        "subject.tooLong": "Temat jest za długi (maks. 120).",
+        "content.required": "Treść jest wymagana.",
+        "engineId.invalid": "Engine ID musi być UUID.",
+        "server": {
+          "generic": "Nie udało się wysłać wiadomości. Spróbuj ponownie."
+        }
+      }
+    }
+  },
   "projects": {
     "loading": "Ładuję projekty…",
     "loadError": "Nie udało się załadować projektów.",
@@ -991,6 +1124,9 @@
       },
       "chat": {
         "title": "CHAT — rozmowy użytkownika z agentami"
+      },
+      "chatAgentUx": {
+        "title": "CHAT AGENT UX — redesign agent-centric (lista agentów po lewej, płaski feed rozmowy)"
       },
       "threads": {
         "title": "Wątki pozamilestone’owe — DX i dokumentacja"
@@ -1471,6 +1607,81 @@
       },
       "BL-AUTH-005": {
         "story": "Lista unieważnionych tokenów w Redisie — wylogowanie zewsząd lub zmiana hasła natychmiast unieważnia sesje."
+      },
+      "BL-CHAT-001": {
+        "story": "Agregat ChatSession + ACL po owner_user_id + tabela chat.chat_sessions."
+      },
+      "BL-CHAT-002": {
+        "story": "Agregat ChatThread (FK do sesji + temat) + tabela chat.chat_threads."
+      },
+      "BL-CHAT-003": {
+        "story": "Agregat ChatMessage z pełną kopertą (17 pól, 6 enumów) + tabela chat.chat_messages."
+      },
+      "BL-CHAT-004": {
+        "story": "POST /api/chat/messages — SendMessageCommand + handler + walidacja koperty."
+      },
+      "BL-CHAT-005": {
+        "story": "GET /api/chat/sessions/current — auto-tworzenie sesji przy pierwszym wejściu."
+      },
+      "BL-CHAT-006": {
+        "story": "GET /api/chat/sessions/{id}/threads — lista wątków właściciela."
+      },
+      "BL-CHAT-007": {
+        "story": "GET /api/chat/threads/{id}/messages — paginowana historia wiadomości (limit/offset)."
+      },
+      "BL-CHAT-F01": {
+        "story": "Frontendowa warstwa API — typy koperty czatu + cztery react-query hooki (sesja/wątki/wiadomości + wyślij)."
+      },
+      "BL-CHAT-F02": {
+        "story": "Trasa /chat + szkielet ChatPage: lista wątków po lewej + placeholder głównego panelu."
+      },
+      "BL-CHAT-F03": {
+        "story": "MessageList + MessageBubble — warianty nadawców, odznaki priorytetu, timestampy Intl."
+      },
+      "BL-CHAT-F04": {
+        "story": "Formularz MessageComposer (temat / priorytet / treść / engine ID / typ silnika) wysyła przez useSendMessage i resetuje się po sukcesie."
+      },
+      "BL-CAGU-001": {
+        "story": "Kolumna chat_threads.parent_thread_id + metody attach/detach w domenie ChatThread + repo findChildrenOf."
+      },
+      "BL-CAGU-002": {
+        "story": "Stub tabela chat_thread_summaries z short_description + summary_json JSONB (wypełniane później przez CHAT-BRAIN)."
+      },
+      "BL-CAGU-003": {
+        "story": "GET /api/chat/agents/{id}/threads — lista wątków jednego agenta z agregatami (count, last message at)."
+      },
+      "BL-CAGU-004": {
+        "story": "POST /api/chat/threads — explicit tworzenie wątku z opcjonalnym parentThreadId (ta sama sesja)."
+      },
+      "BL-CAGU-005": {
+        "story": "POST /api/chat/threads/{id}/attach — dopięcie wątku do rodzica z guardami cyklu i tej samej sesji."
+      },
+      "BL-CAGU-006": {
+        "story": "POST /api/chat/threads/{id}/detach — odpięcie wątku od rodzica (no-op gdy już root)."
+      },
+      "BL-CAGU-006b": {
+        "story": "GET /api/chat/conversations — lista agentów usera z podglądem ostatniej wiadomości i liczbą wątków (puste agenty z flagą isNew)."
+      },
+      "BL-CAGU-007": {
+        "story": "Frontend API layer dla agent-centric chat — typy + cztery hooki react-query (useAgentConversations / useAgentThreads / useCreateThread / useAttachThread)."
+      },
+      "BL-CAGU-008": {
+        "story": "AgentsSidebar — lewa kolumna listy agentów z avatarem z inicjałów, podglądem ostatniej wiadomości i odznaką \"nowy\" dla agentów bez historii."
+      },
+      "BL-CAGU-009a": {
+        "story": "Backend pole agents.agents.color (nullable hex) + AgentColorPalette fallback (crc32 slug) — propagowany na AgentView, GET /api/agents i GET /api/chat/conversations."
+      },
+      "BL-CAGU-009b": {
+        "story": "AgentsSidebar przefiltrowany do rozmów (Direct Messages) z nagłówkiem, przyciskiem Dodaj rozmowę i awatarem w kolorze per-agent."
+      },
+      "BL-CAGU-009c": {
+        "story": "Modal Dodaj rozmowę z search i tabelą agentów — kliknięcie wiersza tworzy wątek przez useCreateThread i zaznacza agenta."
+      },
+      "BL-CAGU-010": {
+        "story": "ConversationFeed + ChatHeader + ThreadTabs — płaski feed wiadomości per agent z chipem \"Wszystkie\", separatorami rozdziałów per wątek i chipami filtrującymi po pojedynczym wątku."
+      },
+      "BL-CAGU-011": {
+        "story": "ThreadComposer — textarea treści + Send + popover zębatki (typ silnika / engineId / priorytet / toggle nowego tematu z inline tematem)."
       },
       "BL-DX-001": {
         "story": "CI korzysta z usług ci/services (postgres, redis, rabbit) zamiast zaślepek — gdy testy wyjdą poza warstwę API."

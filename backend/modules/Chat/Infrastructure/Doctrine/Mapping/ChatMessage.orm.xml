@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Chat\Domain\ChatMessage" table="chat_messages" schema="chat">
+
+        <id name="id" type="chat_message_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="sessionId" type="chat_session_id_vo" column="session_id" nullable="false"/>
+        <field name="threadId" type="chat_thread_id_vo" column="thread_id" nullable="false"/>
+        <field name="senderType" type="string" column="sender_type" length="20" nullable="false" enum-type="Modules\Chat\Domain\ParticipantType"/>
+        <field name="senderId" type="uuid" column="sender_id" nullable="false"/>
+        <field name="recipientType" type="string" column="recipient_type" length="20" nullable="false" enum-type="Modules\Chat\Domain\ParticipantType"/>
+        <field name="recipientId" type="uuid" column="recipient_id" nullable="false"/>
+        <field name="subject" type="string" column="subject" length="120" nullable="false"/>
+        <field name="priority" type="string" column="priority" length="4" nullable="false" enum-type="Modules\Chat\Domain\Priority"/>
+        <field name="content" type="text" column="content" nullable="false"/>
+        <field name="contentType" type="string" column="content_type" length="30" nullable="false" enum-type="Modules\Chat\Domain\ContentType"/>
+        <field name="metadata" type="json" column="metadata" nullable="false"/>
+        <field name="replyToMessageId" type="chat_message_id_vo" column="reply_to_message_id" nullable="true"/>
+        <field name="engineId" type="uuid" column="engine_id" nullable="false"/>
+        <field name="engineType" type="string" column="engine_type" length="30" nullable="false" enum-type="Modules\Chat\Domain\EngineType"/>
+        <field name="classifiedBy" type="string" column="classified_by" length="20" nullable="false" enum-type="Modules\Chat\Domain\ClassifiedBy"/>
+        <field name="classificationConfidence" type="float" column="classification_confidence" nullable="true"/>
+        <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+
+        <indexes>
+            <index name="idx_chat_chat_messages_session_id" columns="session_id"/>
+            <index name="idx_chat_chat_messages_thread_id" columns="thread_id"/>
+            <index name="idx_chat_chat_messages_thread_created" columns="thread_id,created_at"/>
+            <index name="idx_chat_chat_messages_recipient" columns="recipient_type,recipient_id"/>
+            <index name="idx_chat_chat_messages_engine" columns="engine_type,engine_id"/>
+            <index name="idx_chat_chat_messages_reply_to" columns="reply_to_message_id"/>
+        </indexes>
+
+    </entity>
+
+</doctrine-mapping>
