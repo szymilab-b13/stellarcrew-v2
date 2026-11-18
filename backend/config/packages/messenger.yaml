@@ -1,22 +1,27 @@
 framework:
     messenger:
-        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
-        # failure_transport: failed
-
         transports:
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
-            # failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
 
-        routing:
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            # Agent reply fan-out to Node workers.
+            # Workers bind their own queue to this direct exchange with
+            # routing_key = worker_id when they start, so Symfony only
+            # publishes here and does not auto-declare queues itself.
+            chat_agent_replies:
+                dsn: '%env(AGENT_REPLIES_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: 'chat.agent_replies'
+                        type: direct
+                        default_publish_routing_key: ''
+                    queues: {}
+                    auto_setup: true
 
-# when@test:
-#    framework:
-#        messenger:
-#            transports:
-#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
-#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
-#                async: 'in-memory://'
+        routing:
+            'Modules\Chat\Application\AgentReplyRequested': chat_agent_replies
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                chat_agent_replies: 'in-memory://'
