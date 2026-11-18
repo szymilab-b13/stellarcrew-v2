@@ -111,6 +111,10 @@ services:
     Modules\Chat\Domain\ChatMessageRepository:
         alias: Modules\Chat\Infrastructure\Doctrine\Repository\DoctrineChatMessageRepository
 
+    # Workers module bindings (ADR-BE-007)
+    Modules\Workers\Domain\WorkerRepository:
+        alias: Modules\Workers\Infrastructure\Doctrine\Repository\DoctrineWorkerRepository
+
     # Plan limits (cross-cutting usage gate per ADR-BE-006)
     Modules\Shared\Api\PlanLimitsService:
         alias: Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService
