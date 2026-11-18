@@ -15,4 +15,6 @@ interface ChatThreadWorkerSessionRepository
     public function findByThreadAndWorker(ChatThreadId $threadId, WorkerId $workerId): ?ChatThreadWorkerSession;
 
     public function findByClaudeSessionId(Uuid $claudeSessionId): ?ChatThreadWorkerSession;
+
+    public function deleteByWorker(WorkerId $workerId): void;
 }

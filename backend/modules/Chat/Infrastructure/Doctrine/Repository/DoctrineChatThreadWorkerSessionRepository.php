@@ -37,4 +37,14 @@ final readonly class DoctrineChatThreadWorkerSessionRepository implements ChatTh
             'claudeSessionId' => $claudeSessionId,
         ]);
     }
+
+    public function deleteByWorker(WorkerId $workerId): void
+    {
+        $this->em->createQueryBuilder()
+            ->delete(ChatThreadWorkerSession::class, 's')
+            ->where('s.workerId = :workerId')
+            ->setParameter('workerId', $workerId)
+            ->getQuery()
+            ->execute();
+    }
 }

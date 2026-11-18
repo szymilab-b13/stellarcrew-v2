@@ -17,11 +17,17 @@ use Modules\Workers\Application\ListUserWorkersQuery;
 use Modules\Workers\Application\ListUserWorkersQueryHandler;
 use Modules\Workers\Application\RecordHeartbeatCommand;
 use Modules\Workers\Application\RecordHeartbeatCommandHandler;
+use Modules\Workers\Application\RevokeAllOwnerWorkersCommand;
+use Modules\Workers\Application\RevokeAllOwnerWorkersCommandHandler;
+use Modules\Workers\Application\RevokeWorkerCommand;
+use Modules\Workers\Application\RevokeWorkerCommandHandler;
 use Modules\Workers\Application\WorkerView;
+use Modules\Workers\Domain\WorkerNotFoundException;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
@@ -32,6 +38,8 @@ final readonly class WorkersController
         private ClaimPairingCodeCommandHandler $claimPairingCode,
         private RecordHeartbeatCommandHandler $recordHeartbeat,
         private ListUserWorkersQueryHandler $listUserWorkers,
+        private RevokeWorkerCommandHandler $revokeWorker,
+        private RevokeAllOwnerWorkersCommandHandler $revokeAllOwnerWorkers,
     ) {
     }
 
@@ -128,6 +136,56 @@ final readonly class WorkersController
         return new JsonResponse([
             'workers' => array_map($this->serialiseWorker(...), $views),
         ]);
+    }
+
+    #[Route(
+        '/api/workers/{id}',
+        name: 'workers_revoke',
+        requirements: ['id' => '[0-9a-fA-F-]{36}'],
+        methods: ['DELETE'],
+    )]
+    #[OA\Delete(
+        path: '/api/workers/{id}',
+        summary: 'Revoke a worker and clear its references across agents, threads, and sessions',
+        tags: ['workers'],
+        responses: [
+            new OA\Response(response: 204, description: 'Worker revoked'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Not the worker owner'),
+            new OA\Response(response: 404, description: 'Worker not found'),
+        ],
+    )]
+    public function revoke(string $id, #[CurrentUser] SecurityUser $user): JsonResponse
+    {
+        try {
+            ($this->revokeWorker)(new RevokeWorkerCommand(
+                workerId: WorkerId::fromString($id),
+                actorUserId: $user->domainUser()->id(),
+            ));
+        } catch (WorkerNotFoundException $workerNotFoundException) {
+            throw new NotFoundHttpException($workerNotFoundException->getMessage(), $workerNotFoundException);
+        }
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/api/workers', name: 'workers_revoke_all', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/api/workers',
+        summary: 'Revoke all workers owned by the current user',
+        tags: ['workers'],
+        responses: [
+            new OA\Response(response: 200, description: 'Returns the count of revoked workers'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ],
+    )]
+    public function revokeAll(#[CurrentUser] SecurityUser $user): JsonResponse
+    {
+        $count = ($this->revokeAllOwnerWorkers)(new RevokeAllOwnerWorkersCommand(
+            ownerUserId: $user->domainUser()->id(),
+        ));
+
+        return new JsonResponse(['revoked' => $count]);
     }
 
     /**

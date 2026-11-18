@@ -10,6 +10,7 @@ use Modules\Chat\Domain\ChatThread;
 use Modules\Chat\Domain\ChatThreadRepository;
 use Modules\Shared\Kernel\ChatSessionId;
 use Modules\Shared\Kernel\ChatThreadId;
+use Modules\Shared\Kernel\WorkerId;
 
 final class InMemoryChatThreadRepository implements ChatThreadRepository
 {
@@ -72,6 +73,19 @@ final class InMemoryChatThreadRepository implements ChatThreadRepository
             }
 
             $result[] = $thread;
+        }
+
+        return $result;
+    }
+
+    public function findByCurrentWorker(WorkerId $workerId): array
+    {
+        $result = [];
+        foreach ($this->threads as $thread) {
+            $current = $thread->currentWorkerId();
+            if ($current instanceof WorkerId && $current->equals($workerId)) {
+                $result[] = $thread;
+            }
         }
 
         return $result;

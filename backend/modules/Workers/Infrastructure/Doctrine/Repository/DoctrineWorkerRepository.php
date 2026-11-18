@@ -22,6 +22,12 @@ final readonly class DoctrineWorkerRepository implements WorkerRepository
         $this->em->flush();
     }
 
+    public function delete(Worker $worker): void
+    {
+        $this->em->remove($worker);
+        $this->em->flush();
+    }
+
     public function findById(WorkerId $id): ?Worker
     {
         return $this->em->getRepository(Worker::class)->findOneBy(['id' => $id]);

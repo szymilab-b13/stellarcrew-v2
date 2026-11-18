@@ -9,6 +9,7 @@ use Modules\Agents\Domain\Agent;
 use Modules\Agents\Domain\AgentRepository;
 use Modules\Shared\Kernel\AgentId;
 use Modules\Shared\Kernel\OrganizationId;
+use Modules\Shared\Kernel\WorkerId;
 
 final readonly class DoctrineAgentRepository implements AgentRepository
 {
@@ -86,6 +87,20 @@ final readonly class DoctrineAgentRepository implements AgentRepository
             ->andWhere('a.deletedAt IS NULL')
             ->orderBy('a.name', 'ASC')
             ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+
+        /** @var list<Agent> $rows */
+        return $rows;
+    }
+
+    public function findByDefaultWorker(WorkerId $workerId): array
+    {
+        $rows = $this->em->createQueryBuilder()
+            ->select('a')
+            ->from(Agent::class, 'a')
+            ->where('a.defaultWorkerId = :workerId')
+            ->setParameter('workerId', $workerId)
             ->getQuery()
             ->getResult();
 

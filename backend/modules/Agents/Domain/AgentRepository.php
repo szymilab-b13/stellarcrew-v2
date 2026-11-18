@@ -6,6 +6,7 @@ namespace Modules\Agents\Domain;
 
 use Modules\Shared\Kernel\AgentId;
 use Modules\Shared\Kernel\OrganizationId;
+use Modules\Shared\Kernel\WorkerId;
 
 interface AgentRepository
 {
@@ -25,4 +26,9 @@ interface AgentRepository
      * @return list<Agent>
      */
     public function findActiveByIds(array $ids): array;
+
+    /**
+     * @return list<Agent>
+     */
+    public function findByDefaultWorker(WorkerId $workerId): array;
 }

@@ -6,6 +6,7 @@ namespace Modules\Chat\Domain;
 
 use Modules\Shared\Kernel\ChatSessionId;
 use Modules\Shared\Kernel\ChatThreadId;
+use Modules\Shared\Kernel\WorkerId;
 
 interface ChatThreadRepository
 {
@@ -27,4 +28,9 @@ interface ChatThreadRepository
      * @return list<ChatThread>
      */
     public function findRootsBySession(ChatSessionId $sessionId): array;
+
+    /**
+     * @return list<ChatThread>
+     */
+    public function findByCurrentWorker(WorkerId $workerId): array;
 }

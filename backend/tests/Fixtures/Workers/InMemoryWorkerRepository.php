@@ -21,6 +21,11 @@ final class InMemoryWorkerRepository implements WorkerRepository
         $this->workers[(string) $worker->id()] = $worker;
     }
 
+    public function delete(Worker $worker): void
+    {
+        unset($this->workers[(string) $worker->id()]);
+    }
+
     public function findById(WorkerId $id): ?Worker
     {
         return $this->workers[(string) $id] ?? null;

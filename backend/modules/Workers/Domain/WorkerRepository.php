@@ -11,6 +11,8 @@ interface WorkerRepository
 {
     public function save(Worker $worker): void;
 
+    public function delete(Worker $worker): void;
+
     public function findById(WorkerId $id): ?Worker;
 
     public function findByRabbitmqUser(string $rabbitmqUser): ?Worker;
