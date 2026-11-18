@@ -86,11 +86,11 @@ class ChatThread
 
     public function assignCurrentWorker(?WorkerId $workerId, DateTimeImmutable $now): void
     {
-        if ($this->currentWorkerId === null && $workerId === null) {
+        if (!$this->currentWorkerId instanceof WorkerId && !$workerId instanceof WorkerId) {
             return;
         }
 
-        if ($this->currentWorkerId !== null && $workerId !== null && $this->currentWorkerId->equals($workerId)) {
+        if ($this->currentWorkerId instanceof WorkerId && $workerId instanceof WorkerId && $this->currentWorkerId->equals($workerId)) {
             return;
         }
 

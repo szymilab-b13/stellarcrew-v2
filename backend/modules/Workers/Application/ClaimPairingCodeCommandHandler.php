@@ -7,9 +7,10 @@ namespace Modules\Workers\Application;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\WorkerId;
 use Modules\Workers\Domain\Worker;
+use Modules\Workers\Domain\WorkerPairingCode;
 use Modules\Workers\Domain\WorkerPairingCodeRepository;
 use Modules\Workers\Domain\WorkerRepository;
-use Modules\Workers\Infrastructure\Support\WorkerSecretTokenHasher;
+use Modules\Workers\Domain\WorkerSecretTokenHasher;
 
 use function sprintf;
 use function str_replace;
@@ -29,7 +30,7 @@ final readonly class ClaimPairingCodeCommandHandler
     public function __invoke(ClaimPairingCodeCommand $command): ClaimedPairingResult
     {
         $code = $this->codes->findByCode($command->code);
-        if ($code === null) {
+        if (!$code instanceof WorkerPairingCode) {
             throw new NotFoundHttpException(sprintf('Pairing code "%s" not found.', $command->code));
         }
 

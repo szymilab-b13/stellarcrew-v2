@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Modules\Workers\Infrastructure\Support;
 
+use Modules\Workers\Domain\PairingCodeGenerator;
+
 use function random_int;
 use function sprintf;
 use function strlen;
 
-final class PairingCodeGenerator
+final class RandomPairingCodeGenerator implements PairingCodeGenerator
 {
     private const string ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 32 chars, no 0/O/1/I/L
 

@@ -11,6 +11,7 @@ use function is_string;
 use Modules\Shared\Kernel\WorkerId;
 use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerRepository;
+use Modules\Workers\Domain\WorkerSecretTokenHasher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -38,7 +39,7 @@ final readonly class WorkerAuthenticator
         }
 
         $worker = $this->workers->findById($workerId);
-        if ($worker === null) {
+        if (!$worker instanceof Worker) {
             throw new AccessDeniedHttpException('Unknown worker.');
         }
 

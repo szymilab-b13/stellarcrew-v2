@@ -33,6 +33,7 @@ final class ListUserWorkersQueryHandlerTest extends TestCase
 
         $onlineWorker = Worker::create(WorkerId::generate(), $owner, 'Online', 'worker-online', 'hash', $createdAt);
         $onlineWorker->recordHeartbeat(new DateTimeImmutable('2026-11-18T15:04:00+00:00'));
+
         $workers->save($onlineWorker);
 
         $offlineWorker = Worker::create(WorkerId::generate(), $owner, 'Offline', 'worker-offline', 'hash', $createdAt);

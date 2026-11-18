@@ -13,7 +13,7 @@ use Modules\Shared\Kernel\UserId;
 use Modules\Workers\Application\ClaimPairingCodeCommand;
 use Modules\Workers\Application\ClaimPairingCodeCommandHandler;
 use Modules\Workers\Domain\WorkerPairingCode;
-use Modules\Workers\Infrastructure\Support\WorkerSecretTokenHasher;
+use Modules\Workers\Infrastructure\Support\BcryptWorkerSecretTokenHasher;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Uuid;
@@ -24,7 +24,7 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
     {
         $codes = new InMemoryWorkerPairingCodeRepository();
         $workers = new InMemoryWorkerRepository();
-        $hasher = new WorkerSecretTokenHasher();
+        $hasher = new BcryptWorkerSecretTokenHasher();
         $owner = new UserId(Uuid::v7());
         $issuedAt = new DateTimeImmutable('2026-11-18T15:00:00+00:00');
         $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, $issuedAt));
@@ -53,7 +53,7 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         $sut = new ClaimPairingCodeCommandHandler(
             new InMemoryWorkerPairingCodeRepository(),
             new InMemoryWorkerRepository(),
-            new WorkerSecretTokenHasher(),
+            new BcryptWorkerSecretTokenHasher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-18T15:00:00+00:00')),
         );
 
@@ -67,7 +67,7 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         $owner = new UserId(Uuid::v7());
         $issuedAt = new DateTimeImmutable('2026-11-18T15:00:00+00:00');
         $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, $issuedAt));
-        $hasher = new WorkerSecretTokenHasher();
+        $hasher = new BcryptWorkerSecretTokenHasher();
         $sut = new ClaimPairingCodeCommandHandler(
             $codes,
             new InMemoryWorkerRepository(),
@@ -89,7 +89,7 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         $sut = new ClaimPairingCodeCommandHandler(
             $codes,
             new InMemoryWorkerRepository(),
-            new WorkerSecretTokenHasher(),
+            new BcryptWorkerSecretTokenHasher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-18T15:20:00+00:00')),
         );
 

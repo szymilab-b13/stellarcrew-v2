@@ -6,8 +6,11 @@ namespace Modules\Chat\Application;
 
 use Modules\Chat\Domain\ChatMessage;
 use Modules\Chat\Domain\ChatMessageRepository;
+use Modules\Chat\Domain\ChatSession;
 use Modules\Chat\Domain\ChatSessionRepository;
+use Modules\Chat\Domain\ChatThread;
 use Modules\Chat\Domain\ChatThreadRepository;
+use Modules\Chat\Domain\ChatThreadWorkerSession;
 use Modules\Chat\Domain\ChatThreadWorkerSessionRepository;
 use Modules\Chat\Domain\ClassifiedBy;
 use Modules\Chat\Domain\ContentType;
@@ -35,12 +38,12 @@ final readonly class RecordAgentReplyCommandHandler
     public function __invoke(RecordAgentReplyCommand $command): ChatMessage
     {
         $thread = $this->threads->findById($command->threadId);
-        if ($thread === null) {
+        if (!$thread instanceof ChatThread) {
             throw new NotFoundHttpException(sprintf('Chat thread "%s" not found.', $command->threadId));
         }
 
         $chatSession = $this->chatSessions->findById($thread->sessionId());
-        if ($chatSession === null) {
+        if (!$chatSession instanceof ChatSession) {
             throw new NotFoundHttpException(sprintf('Chat session "%s" not found.', $thread->sessionId()));
         }
 
@@ -69,7 +72,7 @@ final readonly class RecordAgentReplyCommandHandler
         $this->messages->save($message);
 
         $session = $this->sessions->findByThreadAndWorker($command->threadId, $command->workerId);
-        if ($session !== null) {
+        if ($session instanceof ChatThreadWorkerSession) {
             $session->recordMessageAt($now);
             $this->sessions->save($session);
         }

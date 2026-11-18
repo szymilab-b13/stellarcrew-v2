@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Chat\Application;
 
+use Modules\Chat\Domain\ChatThread;
 use Modules\Chat\Domain\ChatThreadRepository;
 use Modules\Chat\Domain\ChatThreadWorkerSession;
 use Modules\Chat\Domain\ChatThreadWorkerSessionRepository;
@@ -26,12 +27,12 @@ final readonly class GetOrCreateThreadWorkerSessionCommandHandler
     public function __invoke(GetOrCreateThreadWorkerSessionCommand $command): ChatThreadWorkerSession
     {
         $existing = $this->sessions->findByThreadAndWorker($command->threadId, $command->workerId);
-        if ($existing !== null) {
+        if ($existing instanceof ChatThreadWorkerSession) {
             return $existing;
         }
 
         $thread = $this->threads->findById($command->threadId);
-        if ($thread === null) {
+        if (!$thread instanceof ChatThread) {
             throw new NotFoundHttpException(sprintf('Chat thread "%s" not found.', $command->threadId));
         }
 

@@ -12,7 +12,7 @@ use Modules\Shared\Kernel\WorkerId;
 use Modules\Workers\Application\RecordHeartbeatCommand;
 use Modules\Workers\Application\RecordHeartbeatCommandHandler;
 use Modules\Workers\Domain\Worker;
-use Modules\Workers\Infrastructure\Support\WorkerSecretTokenHasher;
+use Modules\Workers\Infrastructure\Support\BcryptWorkerSecretTokenHasher;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
@@ -23,7 +23,7 @@ final class RecordHeartbeatCommandHandlerTest extends TestCase
     public function testShouldUpdateLastHeartbeatWhenCredentialsValid(): void
     {
         $workers = new InMemoryWorkerRepository();
-        $hasher = new WorkerSecretTokenHasher();
+        $hasher = new BcryptWorkerSecretTokenHasher();
         $workerId = WorkerId::generate();
         $plaintext = 'test-secret-xyz';
         $now = new DateTimeImmutable('2026-11-18T15:00:00+00:00');
@@ -41,7 +41,7 @@ final class RecordHeartbeatCommandHandlerTest extends TestCase
     {
         $sut = new RecordHeartbeatCommandHandler(
             new InMemoryWorkerRepository(),
-            new WorkerSecretTokenHasher(),
+            new BcryptWorkerSecretTokenHasher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-18T15:00:00+00:00')),
         );
 
@@ -52,7 +52,7 @@ final class RecordHeartbeatCommandHandlerTest extends TestCase
     public function testShouldThrowWhenSecretInvalid(): void
     {
         $workers = new InMemoryWorkerRepository();
-        $hasher = new WorkerSecretTokenHasher();
+        $hasher = new BcryptWorkerSecretTokenHasher();
         $workerId = WorkerId::generate();
         $workers->save(Worker::create(
             $workerId,

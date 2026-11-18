@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Modules\Workers\Application;
 
 use Modules\Shared\Kernel\Clock;
+use Modules\Workers\Domain\PairingCodeGenerator;
 use Modules\Workers\Domain\WorkerPairingCode;
 use Modules\Workers\Domain\WorkerPairingCodeRepository;
-use Modules\Workers\Infrastructure\Support\PairingCodeGenerator;
 
 final readonly class GeneratePairingCodeCommandHandler
 {

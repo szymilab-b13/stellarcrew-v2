@@ -188,11 +188,11 @@ class Agent
 
     public function assignDefaultWorker(?WorkerId $workerId, DateTimeImmutable $now): void
     {
-        if ($this->defaultWorkerId === null && $workerId === null) {
+        if (!$this->defaultWorkerId instanceof WorkerId && !$workerId instanceof WorkerId) {
             return;
         }
 
-        if ($this->defaultWorkerId !== null && $workerId !== null && $this->defaultWorkerId->equals($workerId)) {
+        if ($this->defaultWorkerId instanceof WorkerId && $workerId instanceof WorkerId && $this->defaultWorkerId->equals($workerId)) {
             return;
         }
 

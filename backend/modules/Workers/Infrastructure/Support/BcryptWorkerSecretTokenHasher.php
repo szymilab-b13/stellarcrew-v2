@@ -6,6 +6,8 @@ namespace Modules\Workers\Infrastructure\Support;
 
 use function base64_encode;
 
+use Modules\Workers\Domain\WorkerSecretTokenHasher;
+
 use const PASSWORD_BCRYPT;
 
 use function password_hash;
@@ -14,7 +16,7 @@ use function random_bytes;
 use function rtrim;
 use function strtr;
 
-final class WorkerSecretTokenHasher
+final class BcryptWorkerSecretTokenHasher implements WorkerSecretTokenHasher
 {
     public function generateToken(): string
     {
