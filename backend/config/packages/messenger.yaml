@@ -9,6 +9,7 @@ framework:
             # publishes here and does not auto-declare queues itself.
             chat_agent_replies:
                 dsn: '%env(AGENT_REPLIES_TRANSPORT_DSN)%'
+                serializer: Modules\Chat\Infrastructure\Messenger\AgentReplyRequestedSerializer
                 options:
                     exchange:
                         name: 'chat.agent_replies'
