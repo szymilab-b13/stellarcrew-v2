@@ -1,12 +1,14 @@
 import 'dotenv-flow/config';
 
-import type { AgentReplyPayload } from './amqp/payload.js';
 import { startAgentReplyConsumer } from './amqp/consumer.js';
 import { buildAmqpUrl, connectAmqp, type AmqpConnection } from './amqp/connection.js';
 import { loadConfig } from './config.js';
 import { startHealthcheckServer } from './healthcheck.js';
 import { createLogger } from './logger.js';
 import { createCredentialsStore, defaultCredentialsPath } from './pairing/credentialsStore.js';
+import { createClaudeRunner } from './reply/claudeRunner.js';
+import { createReplyHandler } from './reply/handler.js';
+import { createWorkerApiClient } from './reply/workerApiClient.js';
 
 async function main(): Promise<void> {
   const config = loadConfig();
@@ -42,21 +44,21 @@ async function main(): Promise<void> {
     logger,
   });
 
+  const apiClient = createWorkerApiClient({
+    baseUrl: config.api.baseUrl,
+    workerId: credentials.workerId,
+    secretToken: credentials.secretToken,
+  });
+
+  const claude = createClaudeRunner({ logger });
+
+  const onPayload = createReplyHandler({ apiClient, claude, logger });
+
   const consumer = await startAgentReplyConsumer({
     channel: amqp.channel,
     workerId: credentials.workerId,
     logger,
-    onPayload: async (payload: AgentReplyPayload) => {
-      logger.info(
-        {
-          threadId: payload.threadId,
-          agentId: payload.agentId,
-          userMessageId: payload.userMessageId,
-          subject: payload.subject,
-        },
-        'AgentReplyRequested received (handler wiring pending BL-CAR-008b)',
-      );
-    },
+    onPayload,
   });
 
   const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
