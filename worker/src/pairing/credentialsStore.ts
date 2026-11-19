@@ -7,6 +7,7 @@ export interface WorkerCredentials {
   readonly secretToken: string;
   readonly rabbitmqUser: string;
   readonly pairedAt: string;
+  readonly refreshToken?: string;
 }
 
 export interface CredentialsStore {
@@ -56,12 +57,16 @@ async function loadCredentials(filePath: string): Promise<WorkerCredentials | nu
     );
   }
 
-  return {
+  const credentials: WorkerCredentials = {
     workerId: parsed.workerId,
     secretToken: parsed.secretToken,
     rabbitmqUser: parsed.rabbitmqUser,
     pairedAt: parsed.pairedAt,
   };
+  if (typeof parsed.refreshToken === 'string' && parsed.refreshToken !== '') {
+    return { ...credentials, refreshToken: parsed.refreshToken };
+  }
+  return credentials;
 }
 
 async function saveCredentials(filePath: string, credentials: WorkerCredentials): Promise<void> {

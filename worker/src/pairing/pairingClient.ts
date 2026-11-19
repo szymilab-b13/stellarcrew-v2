@@ -11,6 +11,7 @@ export interface PairWorkerResult {
   readonly workerId: string;
   readonly secretToken: string;
   readonly rabbitmqUser: string;
+  readonly refreshToken?: string;
 }
 
 export type PairingClient = (input: PairWorkerInput) => Promise<PairWorkerResult>;
@@ -99,7 +100,10 @@ function assertPairingResult(raw: unknown): PairWorkerResult {
   ) {
     throw new Error('Pairing response body is missing workerId, secretToken or rabbitmqUser');
   }
-  return { workerId, secretToken, rabbitmqUser };
+  const refreshToken = typeof raw.refreshToken === 'string' ? raw.refreshToken : undefined;
+  return refreshToken !== undefined
+    ? { workerId, secretToken, rabbitmqUser, refreshToken }
+    : { workerId, secretToken, rabbitmqUser };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
