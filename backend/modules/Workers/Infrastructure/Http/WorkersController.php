@@ -82,6 +82,8 @@ final readonly class WorkersController
             code: $request->code,
             name: $request->name,
             hostLabel: $request->hostLabel,
+            fingerprintHash: $request->fingerprintHash,
+            fingerprintMeta: $request->fingerprintMeta,
         ));
 
         return new JsonResponse([
