@@ -11,6 +11,8 @@ use Modules\Chat\Application\RecordAgentReplyCommand;
 use Modules\Chat\Application\RecordAgentReplyCommandHandler;
 use Modules\Shared\Kernel\ChatMessageId;
 use Modules\Shared\Kernel\ChatThreadId;
+use Modules\Workers\Application\IssueTokenCommand;
+use Modules\Workers\Application\IssueTokenCommandHandler;
 use Modules\Workers\Infrastructure\Support\WorkerAuthenticator;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,7 +28,34 @@ final readonly class WorkerMeController
         private WorkerAuthenticator $authenticator,
         private GetOrCreateThreadWorkerSessionCommandHandler $getOrCreateSession,
         private RecordAgentReplyCommandHandler $recordAgentReply,
+        private IssueTokenCommandHandler $issueToken,
     ) {
+    }
+
+    #[Route('/api/workers/me/token', name: 'workers_me_token', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/workers/me/token',
+        summary: 'Exchange a refresh token for a short-lived JWT access token',
+        tags: ['workers-me'],
+        responses: [
+            new OA\Response(response: 200, description: 'Access token issued, refresh rotated'),
+            new OA\Response(response: 401, description: 'Refresh token invalid, expired or already used'),
+        ],
+    )]
+    public function token(#[MapRequestPayload] IssueTokenRequest $request): JsonResponse
+    {
+        $result = ($this->issueToken)(new IssueTokenCommand(
+            refreshToken: $request->refreshToken,
+            fingerprintHash: $request->fingerprintHash,
+            fingerprintMeta: $request->fingerprintMeta,
+        ));
+
+        return new JsonResponse([
+            'accessToken' => $result->accessToken,
+            'refreshToken' => $result->refreshToken,
+            'expiresIn' => $result->expiresIn,
+            'tokenType' => 'Bearer',
+        ]);
     }
 
     #[Route(
