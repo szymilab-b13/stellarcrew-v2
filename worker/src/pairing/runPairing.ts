@@ -1,3 +1,4 @@
+import { collectFingerprint, type Fingerprint } from '../fingerprint/collector.js';
 import type { CredentialsStore, WorkerCredentials } from './credentialsStore.js';
 import { PairingClientError, type PairingClient } from './pairingClient.js';
 
@@ -21,10 +22,12 @@ export interface RunPairingDeps {
   readonly store: CredentialsStore;
   readonly prompts: PairingPrompts;
   readonly now: () => Date;
+  readonly collectFingerprint?: () => Fingerprint;
 }
 
 export async function runPairing(deps: RunPairingDeps): Promise<WorkerCredentials> {
   const { apiBaseUrl, client, store, prompts, now } = deps;
+  const collect = deps.collectFingerprint ?? collectFingerprint;
 
   const existing = await store.load();
   if (existing !== null) {
@@ -50,8 +53,17 @@ export async function runPairing(deps: RunPairingDeps): Promise<WorkerCredential
     (reason) => prompts.error(reason),
   );
 
+  const fingerprint = collect();
+
   try {
-    const result = await client({ apiBaseUrl, code, name, hostLabel });
+    const result = await client({
+      apiBaseUrl,
+      code,
+      name,
+      hostLabel,
+      fingerprintHash: fingerprint.hash,
+      fingerprintMeta: fingerprint.meta,
+    });
     const credentials: WorkerCredentials = {
       workerId: result.workerId,
       secretToken: result.secretToken,
