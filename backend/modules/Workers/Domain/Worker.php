@@ -142,6 +142,18 @@ class Worker
         $this->updatedAt = $now;
     }
 
+    /**
+     * Updates only the raw metadata (hostname/kernelVersion/etc.) without touching the stable hash.
+     * Used when a fingerprint mismatch is detected and the UI needs the latest observed meta for diff.
+     *
+     * @param array<string, mixed>|null $meta
+     */
+    public function touchFingerprintMeta(?array $meta, DateTimeImmutable $now): void
+    {
+        $this->fingerprintMeta = $meta;
+        $this->updatedAt = $now;
+    }
+
     public function rename(string $name, DateTimeImmutable $now): void
     {
         $this->guardName($name);

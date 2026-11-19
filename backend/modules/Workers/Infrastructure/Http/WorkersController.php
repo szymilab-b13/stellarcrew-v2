@@ -9,6 +9,8 @@ use function array_map;
 use DateTimeInterface;
 use Modules\Auth\Infrastructure\Security\SecurityUser;
 use Modules\Shared\Kernel\WorkerId;
+use Modules\Workers\Application\AcceptFingerprintCommand;
+use Modules\Workers\Application\AcceptFingerprintCommandHandler;
 use Modules\Workers\Application\ClaimPairingCodeCommand;
 use Modules\Workers\Application\ClaimPairingCodeCommandHandler;
 use Modules\Workers\Application\GeneratePairingCodeCommand;
@@ -40,6 +42,7 @@ final readonly class WorkersController
         private ListUserWorkersQueryHandler $listUserWorkers,
         private RevokeWorkerCommandHandler $revokeWorker,
         private RevokeAllOwnerWorkersCommandHandler $revokeAllOwnerWorkers,
+        private AcceptFingerprintCommandHandler $acceptFingerprint,
     ) {
     }
 
@@ -189,6 +192,40 @@ final readonly class WorkersController
         ));
 
         return new JsonResponse(['revoked' => $count]);
+    }
+
+    #[Route(
+        '/api/workers/{id}/fingerprint/accept',
+        name: 'workers_fingerprint_accept',
+        requirements: ['id' => '[0-9a-fA-F-]{36}'],
+        methods: ['POST'],
+    )]
+    #[OA\Post(
+        path: '/api/workers/{id}/fingerprint/accept',
+        summary: 'Accept a new fingerprint for a worker after a mismatch warning',
+        tags: ['workers'],
+        responses: [
+            new OA\Response(response: 204, description: 'Fingerprint accepted and persisted as the stored baseline'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Not the worker owner'),
+            new OA\Response(response: 404, description: 'Worker not found'),
+        ],
+    )]
+    public function acceptFingerprint(
+        string $id,
+        #[MapRequestPayload]
+        AcceptFingerprintRequest $request,
+        #[CurrentUser]
+        SecurityUser $user,
+    ): JsonResponse {
+        ($this->acceptFingerprint)(new AcceptFingerprintCommand(
+            workerId: WorkerId::fromString($id),
+            actorId: $user->domainUser()->id(),
+            fingerprintHash: $request->fingerprintHash,
+            fingerprintMeta: $request->fingerprintMeta,
+        ));
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     /**

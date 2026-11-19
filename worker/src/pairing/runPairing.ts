@@ -64,12 +64,21 @@ export async function runPairing(deps: RunPairingDeps): Promise<WorkerCredential
       fingerprintHash: fingerprint.hash,
       fingerprintMeta: fingerprint.meta,
     });
-    const credentials: WorkerCredentials = {
-      workerId: result.workerId,
-      secretToken: result.secretToken,
-      rabbitmqUser: result.rabbitmqUser,
-      pairedAt: now().toISOString(),
-    };
+    const credentials: WorkerCredentials =
+      result.refreshToken !== undefined
+        ? {
+            workerId: result.workerId,
+            secretToken: result.secretToken,
+            rabbitmqUser: result.rabbitmqUser,
+            pairedAt: now().toISOString(),
+            refreshToken: result.refreshToken,
+          }
+        : {
+            workerId: result.workerId,
+            secretToken: result.secretToken,
+            rabbitmqUser: result.rabbitmqUser,
+            pairedAt: now().toISOString(),
+          };
     await store.save(credentials);
     prompts.info(`Worker paired. Credentials saved to ${store.path}`);
     return credentials;

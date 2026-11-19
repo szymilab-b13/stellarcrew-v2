@@ -2,7 +2,10 @@ import 'dotenv-flow/config';
 
 import { startAgentReplyConsumer } from './amqp/consumer.js';
 import { buildAmqpUrl, connectAmqp, type AmqpConnection } from './amqp/connection.js';
+import { createTokenExchangeClient } from './auth/tokenExchangeClient.js';
+import { createTokenManager } from './auth/tokenManager.js';
 import { loadConfig } from './config.js';
+import { collectFingerprint } from './fingerprint/collector.js';
 import { startHealthcheckServer } from './healthcheck.js';
 import { createLogger } from './logger.js';
 import { createCredentialsStore, defaultCredentialsPath } from './pairing/credentialsStore.js';
@@ -44,10 +47,17 @@ async function main(): Promise<void> {
     logger,
   });
 
+  const tokenExchangeClient = createTokenExchangeClient({ baseUrl: config.api.baseUrl });
+  const tokenManager = createTokenManager({
+    exchangeClient: tokenExchangeClient,
+    store: credentialsStore,
+    logger,
+    collectFingerprint,
+  });
+
   const apiClient = createWorkerApiClient({
     baseUrl: config.api.baseUrl,
-    workerId: credentials.workerId,
-    secretToken: credentials.secretToken,
+    tokenManager,
   });
 
   const claude = createClaudeRunner({ logger });

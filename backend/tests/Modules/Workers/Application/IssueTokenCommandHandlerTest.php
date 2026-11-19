@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Workers\Application;
 
+use App\Tests\Fixtures\Core\SpyEventDispatcher;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRefreshTokenRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRepository;
 use DateTimeImmutable;
@@ -13,6 +14,7 @@ use function hash;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkerId;
+use Modules\Workers\Api\Event\WorkerFingerprintChanged;
 use Modules\Workers\Application\IssueTokenCommand;
 use Modules\Workers\Application\IssueTokenCommandHandler;
 use Modules\Workers\Domain\RefreshTokenGenerator;
@@ -20,6 +22,9 @@ use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerAccessTokenEncoder;
 use Modules\Workers\Domain\WorkerRefreshToken;
 use PHPUnit\Framework\TestCase;
+
+use function str_repeat;
+
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Uid\Uuid;
 
@@ -41,6 +46,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
             $workers,
             $this->deterministicGenerator('rotated-plain'),
             $this->fakeEncoder('access-jwt-xyz'),
+            new SpyEventDispatcher(),
             $this->fixedClock($exchangeAt),
         );
 
@@ -60,6 +66,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
             new InMemoryWorkerRepository(),
             $this->deterministicGenerator('unused'),
             $this->fakeEncoder('unused'),
+            new SpyEventDispatcher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-19T12:00:00+00:00')),
         );
 
@@ -85,11 +92,78 @@ final class IssueTokenCommandHandlerTest extends TestCase
             $workers,
             $this->deterministicGenerator('unused'),
             $this->fakeEncoder('unused'),
+            new SpyEventDispatcher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-19T12:00:00+00:00')),
         );
 
         $this->expectException(UnauthorizedHttpException::class);
         $sut(new IssueTokenCommand(refreshToken: $plaintext));
+    }
+
+    public function testShouldFlagFingerprintWarningWhenMismatch(): void
+    {
+        $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $worker = $this->createWorker($owner);
+        $storedHash = str_repeat('a', 64);
+        $worker->updateFingerprint($storedHash, ['hostname' => 'old-host'], new DateTimeImmutable('2026-11-19T11:00:00+00:00'));
+        $workers->save($worker);
+        $plaintext = 'fp-test';
+        $refreshTokens->save(WorkerRefreshToken::issue(hash('sha256', $plaintext), $worker->id(), new DateTimeImmutable('2026-11-19T12:00:00+00:00')));
+        $events = new SpyEventDispatcher();
+        $sut = new IssueTokenCommandHandler(
+            $refreshTokens,
+            $workers,
+            $this->deterministicGenerator('rotated'),
+            $this->fakeEncoder('jwt'),
+            $events,
+            $this->fixedClock(new DateTimeImmutable('2026-11-19T12:05:00+00:00')),
+        );
+
+        $result = $sut(new IssueTokenCommand(
+            refreshToken: $plaintext,
+            fingerprintHash: str_repeat('b', 64),
+            fingerprintMeta: ['hostname' => 'new-host'],
+        ));
+
+        self::assertTrue($result->fingerprintWarning);
+        self::assertSame(['hostname' => 'old-host'], $result->previousFingerprintMeta);
+        $updated = $workers->findById($worker->id());
+        self::assertInstanceOf(Worker::class, $updated);
+        self::assertSame(['hostname' => 'new-host'], $updated->fingerprintMeta());
+        self::assertSame($storedHash, $updated->fingerprintHash());
+        self::assertCount(1, $events->dispatched);
+        self::assertInstanceOf(WorkerFingerprintChanged::class, $events->dispatched[0]);
+    }
+
+    public function testShouldNotFlagWarningWhenFingerprintMatches(): void
+    {
+        $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
+        $workers = new InMemoryWorkerRepository();
+        $worker = $this->createWorker(new UserId(Uuid::v7()));
+        $storedHash = str_repeat('a', 64);
+        $worker->updateFingerprint($storedHash, ['hostname' => 'host'], new DateTimeImmutable('2026-11-19T11:00:00+00:00'));
+        $workers->save($worker);
+        $plaintext = 'match-test';
+        $refreshTokens->save(WorkerRefreshToken::issue(hash('sha256', $plaintext), $worker->id(), new DateTimeImmutable('2026-11-19T12:00:00+00:00')));
+        $sut = new IssueTokenCommandHandler(
+            $refreshTokens,
+            $workers,
+            $this->deterministicGenerator('rotated'),
+            $this->fakeEncoder('jwt'),
+            new SpyEventDispatcher(),
+            $this->fixedClock(new DateTimeImmutable('2026-11-19T12:05:00+00:00')),
+        );
+
+        $result = $sut(new IssueTokenCommand(
+            refreshToken: $plaintext,
+            fingerprintHash: $storedHash,
+            fingerprintMeta: ['hostname' => 'host'],
+        ));
+
+        self::assertFalse($result->fingerprintWarning);
+        self::assertNull($result->previousFingerprintMeta);
     }
 
     public function testShouldRejectConsumedRefreshToken(): void
@@ -108,6 +182,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
             $workers,
             $this->deterministicGenerator('unused'),
             $this->fakeEncoder('unused'),
+            new SpyEventDispatcher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-19T12:10:00+00:00')),
         );
 
