@@ -180,6 +180,37 @@ final class WorkerTest extends TestCase
         self::assertEquals($later, $sut->updatedAt());
     }
 
+    public function testShouldExposeNullFingerprintWhenCreated(): void
+    {
+        $sut = $this->makeWorker();
+
+        self::assertNull($sut->fingerprintHash());
+        self::assertNull($sut->fingerprintMeta());
+    }
+
+    public function testShouldUpdateFingerprintAndBumpUpdatedAtWhenCalled(): void
+    {
+        $sut = $this->makeWorker();
+        $later = new DateTimeImmutable('2026-11-18T16:00:00+00:00');
+        $hash = str_repeat('a', 64);
+        $meta = ['hostname' => 'mac-studio', 'machineId' => 'abc-def', 'cpuModel' => 'Apple M2 Pro'];
+
+        $sut->updateFingerprint($hash, $meta, $later);
+
+        self::assertSame($hash, $sut->fingerprintHash());
+        self::assertSame($meta, $sut->fingerprintMeta());
+        self::assertEquals($later, $sut->updatedAt());
+    }
+
+    public function testShouldRejectInvalidFingerprintHashWhenUpdated(): void
+    {
+        $sut = $this->makeWorker();
+        $later = new DateTimeImmutable('2026-11-18T16:00:00+00:00');
+
+        $this->expectException(InvalidArgumentException::class);
+        $sut->updateFingerprint('not-a-sha256', null, $later);
+    }
+
     private function makeWorker(
         ?string $name = null,
         ?string $hostLabel = 'default-host',

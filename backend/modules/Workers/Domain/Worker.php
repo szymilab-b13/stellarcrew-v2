@@ -26,6 +26,11 @@ class Worker
 
     public const string RABBITMQ_USER_PATTERN = '/^[a-z0-9_-]+$/';
 
+    public const string FINGERPRINT_HASH_PATTERN = '/^[a-f0-9]{64}$/';
+
+    /**
+     * @param array<string, mixed>|null $fingerprintMeta
+     */
     public function __construct(
         private readonly WorkerId $id,
         private readonly UserId $ownerUserId,
@@ -36,11 +41,14 @@ class Worker
         private ?DateTimeImmutable $lastHeartbeatAt,
         private readonly DateTimeImmutable $createdAt,
         private DateTimeImmutable $updatedAt,
+        private ?string $fingerprintHash = null,
+        private ?array $fingerprintMeta = null,
     ) {
         $this->guardName($name);
         $this->guardHostLabel($hostLabel);
         $this->guardSecretTokenHash($secretTokenHash);
         $this->guardRabbitmqUser($rabbitmqUser);
+        $this->guardFingerprintHash($fingerprintHash);
     }
 
     public static function create(
@@ -108,6 +116,30 @@ class Worker
     public function updatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function fingerprintHash(): ?string
+    {
+        return $this->fingerprintHash;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function fingerprintMeta(): ?array
+    {
+        return $this->fingerprintMeta;
+    }
+
+    /**
+     * @param array<string, mixed>|null $meta
+     */
+    public function updateFingerprint(?string $hash, ?array $meta, DateTimeImmutable $now): void
+    {
+        $this->guardFingerprintHash($hash);
+        $this->fingerprintHash = $hash;
+        $this->fingerprintMeta = $meta;
+        $this->updatedAt = $now;
     }
 
     public function rename(string $name, DateTimeImmutable $now): void
@@ -181,6 +213,17 @@ class Worker
     {
         if (trim($hash) === '') {
             throw new InvalidArgumentException('Worker secret token hash cannot be empty.');
+        }
+    }
+
+    private function guardFingerprintHash(?string $hash): void
+    {
+        if ($hash === null) {
+            return;
+        }
+
+        if (preg_match(self::FINGERPRINT_HASH_PATTERN, $hash) !== 1) {
+            throw new InvalidArgumentException(sprintf('Worker fingerprint hash must match sha256 hex pattern: "%s".', $hash));
         }
     }
 
