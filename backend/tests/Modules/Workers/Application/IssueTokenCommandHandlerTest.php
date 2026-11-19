@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Workers\Application;
 
+use App\Tests\Fixtures\Core\SpyEventDispatcher;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRefreshTokenRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRepository;
 use DateTimeImmutable;
@@ -17,6 +18,7 @@ use Modules\Workers\Application\IssueTokenCommand;
 use Modules\Workers\Application\IssueTokenCommandHandler;
 use Modules\Workers\Domain\RefreshTokenGenerator;
 use Modules\Workers\Domain\Worker;
+use Modules\Workers\Api\Event\WorkerFingerprintChanged;
 use Modules\Workers\Domain\WorkerAccessTokenEncoder;
 use Modules\Workers\Domain\WorkerRefreshToken;
 use PHPUnit\Framework\TestCase;
@@ -44,6 +46,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
             $workers,
             $this->deterministicGenerator('rotated-plain'),
             $this->fakeEncoder('access-jwt-xyz'),
+            new SpyEventDispatcher(),
             $this->fixedClock($exchangeAt),
         );
 
@@ -63,6 +66,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
             new InMemoryWorkerRepository(),
             $this->deterministicGenerator('unused'),
             $this->fakeEncoder('unused'),
+            new SpyEventDispatcher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-19T12:00:00+00:00')),
         );
 
@@ -88,6 +92,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
             $workers,
             $this->deterministicGenerator('unused'),
             $this->fakeEncoder('unused'),
+            new SpyEventDispatcher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-19T12:00:00+00:00')),
         );
 
@@ -106,11 +111,13 @@ final class IssueTokenCommandHandlerTest extends TestCase
         $workers->save($worker);
         $plaintext = 'fp-test';
         $refreshTokens->save(WorkerRefreshToken::issue(hash('sha256', $plaintext), $worker->id(), new DateTimeImmutable('2026-11-19T12:00:00+00:00')));
+        $events = new SpyEventDispatcher();
         $sut = new IssueTokenCommandHandler(
             $refreshTokens,
             $workers,
             $this->deterministicGenerator('rotated'),
             $this->fakeEncoder('jwt'),
+            $events,
             $this->fixedClock(new DateTimeImmutable('2026-11-19T12:05:00+00:00')),
         );
 
@@ -124,6 +131,8 @@ final class IssueTokenCommandHandlerTest extends TestCase
         self::assertSame(['hostname' => 'old-host'], $result->previousFingerprintMeta);
         self::assertSame(['hostname' => 'new-host'], $workers->findById($worker->id())?->fingerprintMeta());
         self::assertSame($storedHash, $workers->findById($worker->id())?->fingerprintHash());
+        self::assertCount(1, $events->dispatched);
+        self::assertInstanceOf(WorkerFingerprintChanged::class, $events->dispatched[0]);
     }
 
     public function testShouldNotFlagWarningWhenFingerprintMatches(): void
@@ -141,6 +150,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
             $workers,
             $this->deterministicGenerator('rotated'),
             $this->fakeEncoder('jwt'),
+            new SpyEventDispatcher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-19T12:05:00+00:00')),
         );
 
@@ -170,6 +180,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
             $workers,
             $this->deterministicGenerator('unused'),
             $this->fakeEncoder('unused'),
+            new SpyEventDispatcher(),
             $this->fixedClock(new DateTimeImmutable('2026-11-19T12:10:00+00:00')),
         );
 

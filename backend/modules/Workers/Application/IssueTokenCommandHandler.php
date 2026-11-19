@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Modules\Workers\Application;
 
 use Modules\Shared\Kernel\Clock;
+use Modules\Workers\Api\Event\WorkerFingerprintChanged;
 use Modules\Workers\Domain\RefreshTokenGenerator;
 use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerAccessTokenEncoder;
 use Modules\Workers\Domain\WorkerRefreshToken;
 use Modules\Workers\Domain\WorkerRefreshTokenRepository;
 use Modules\Workers\Domain\WorkerRepository;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 final readonly class IssueTokenCommandHandler
@@ -22,6 +24,7 @@ final readonly class IssueTokenCommandHandler
         private WorkerRepository $workers,
         private RefreshTokenGenerator $tokenGenerator,
         private WorkerAccessTokenEncoder $tokenEncoder,
+        private EventDispatcherInterface $events,
         private Clock $clock,
     ) {
     }
@@ -57,6 +60,13 @@ final readonly class IssueTokenCommandHandler
             $previousMeta = $storedMeta;
             $worker->touchFingerprintMeta($command->fingerprintMeta, $now);
             $this->workers->save($worker);
+            $this->events->dispatch(new WorkerFingerprintChanged(
+                workerId: $worker->id(),
+                ownerUserId: $worker->ownerUserId(),
+                previousMeta: $storedMeta,
+                currentMeta: $command->fingerprintMeta,
+                occurredAt: $now,
+            ));
         }
 
         $stored->markConsumed($now);
