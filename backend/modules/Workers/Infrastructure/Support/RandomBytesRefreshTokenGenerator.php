@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\Workers\Infrastructure\Support;
 
-use Modules\Workers\Domain\RefreshTokenGenerator;
-
 use function base64_encode;
 use function hash;
+
+use Modules\Workers\Domain\RefreshTokenGenerator;
+
 use function random_bytes;
 use function rtrim;
 use function strtr;

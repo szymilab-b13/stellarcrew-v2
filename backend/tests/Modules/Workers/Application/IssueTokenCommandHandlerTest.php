@@ -7,6 +7,9 @@ namespace App\Tests\Modules\Workers\Application;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRefreshTokenRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRepository;
 use DateTimeImmutable;
+
+use function hash;
+
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkerId;
@@ -17,9 +20,6 @@ use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerAccessTokenEncoder;
 use Modules\Workers\Domain\WorkerRefreshToken;
 use PHPUnit\Framework\TestCase;
-
-use function hash;
-
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Uid\Uuid;
 

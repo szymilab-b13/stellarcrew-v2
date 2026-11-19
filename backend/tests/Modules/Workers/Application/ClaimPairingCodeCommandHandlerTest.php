@@ -9,6 +9,9 @@ use App\Tests\Fixtures\Workers\InMemoryWorkerRefreshTokenRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRepository;
 use DateTimeImmutable;
 use DomainException;
+
+use function hash;
+
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Workers\Application\ClaimPairingCodeCommand;
@@ -18,7 +21,6 @@ use Modules\Workers\Domain\WorkerPairingCode;
 use Modules\Workers\Infrastructure\Support\BcryptWorkerSecretTokenHasher;
 use PHPUnit\Framework\TestCase;
 
-use function hash;
 use function str_repeat;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
