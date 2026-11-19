@@ -15,10 +15,11 @@ use Modules\Workers\Application\ClaimPairingCodeCommandHandler;
 use Modules\Workers\Domain\WorkerPairingCode;
 use Modules\Workers\Infrastructure\Support\BcryptWorkerSecretTokenHasher;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Uid\Uuid;
 
 use function str_repeat;
+
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Uid\Uuid;
 
 final class ClaimPairingCodeCommandHandlerTest extends TestCase
 {
