@@ -55,6 +55,8 @@ final readonly class WorkerMeController
             'refreshToken' => $result->refreshToken,
             'expiresIn' => $result->expiresIn,
             'tokenType' => 'Bearer',
+            'fingerprintWarning' => $result->fingerprintWarning,
+            'previousFingerprintMeta' => $result->previousFingerprintMeta,
         ]);
     }
 

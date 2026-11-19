@@ -48,6 +48,17 @@ final readonly class IssueTokenCommandHandler
             throw new UnauthorizedHttpException('Bearer', 'Worker not found.');
         }
 
+        $storedHash = $worker->fingerprintHash();
+        $storedMeta = $worker->fingerprintMeta();
+        $fingerprintWarning = false;
+        $previousMeta = null;
+        if ($command->fingerprintHash !== null && $storedHash !== null && $storedHash !== $command->fingerprintHash) {
+            $fingerprintWarning = true;
+            $previousMeta = $storedMeta;
+            $worker->touchFingerprintMeta($command->fingerprintMeta, $now);
+            $this->workers->save($worker);
+        }
+
         $stored->markConsumed($now);
 
         $newRefreshPlain = $this->tokenGenerator->generate();
@@ -71,6 +82,8 @@ final readonly class IssueTokenCommandHandler
             accessToken: $accessToken,
             refreshToken: $newRefreshPlain,
             expiresIn: self::ACCESS_TOKEN_TTL_SECONDS,
+            fingerprintWarning: $fingerprintWarning,
+            previousFingerprintMeta: $previousMeta,
         );
     }
 }

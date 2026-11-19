@@ -20,6 +20,9 @@ use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerAccessTokenEncoder;
 use Modules\Workers\Domain\WorkerRefreshToken;
 use PHPUnit\Framework\TestCase;
+
+use function str_repeat;
+
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Uid\Uuid;
 
@@ -90,6 +93,65 @@ final class IssueTokenCommandHandlerTest extends TestCase
 
         $this->expectException(UnauthorizedHttpException::class);
         $sut(new IssueTokenCommand(refreshToken: $plaintext));
+    }
+
+    public function testShouldFlagFingerprintWarningWhenMismatch(): void
+    {
+        $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $worker = $this->createWorker($owner);
+        $storedHash = str_repeat('a', 64);
+        $worker->updateFingerprint($storedHash, ['hostname' => 'old-host'], new DateTimeImmutable('2026-11-19T11:00:00+00:00'));
+        $workers->save($worker);
+        $plaintext = 'fp-test';
+        $refreshTokens->save(WorkerRefreshToken::issue(hash('sha256', $plaintext), $worker->id(), new DateTimeImmutable('2026-11-19T12:00:00+00:00')));
+        $sut = new IssueTokenCommandHandler(
+            $refreshTokens,
+            $workers,
+            $this->deterministicGenerator('rotated'),
+            $this->fakeEncoder('jwt'),
+            $this->fixedClock(new DateTimeImmutable('2026-11-19T12:05:00+00:00')),
+        );
+
+        $result = $sut(new IssueTokenCommand(
+            refreshToken: $plaintext,
+            fingerprintHash: str_repeat('b', 64),
+            fingerprintMeta: ['hostname' => 'new-host'],
+        ));
+
+        self::assertTrue($result->fingerprintWarning);
+        self::assertSame(['hostname' => 'old-host'], $result->previousFingerprintMeta);
+        self::assertSame(['hostname' => 'new-host'], $workers->findById($worker->id())?->fingerprintMeta());
+        self::assertSame($storedHash, $workers->findById($worker->id())?->fingerprintHash());
+    }
+
+    public function testShouldNotFlagWarningWhenFingerprintMatches(): void
+    {
+        $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
+        $workers = new InMemoryWorkerRepository();
+        $worker = $this->createWorker(new UserId(Uuid::v7()));
+        $storedHash = str_repeat('a', 64);
+        $worker->updateFingerprint($storedHash, ['hostname' => 'host'], new DateTimeImmutable('2026-11-19T11:00:00+00:00'));
+        $workers->save($worker);
+        $plaintext = 'match-test';
+        $refreshTokens->save(WorkerRefreshToken::issue(hash('sha256', $plaintext), $worker->id(), new DateTimeImmutable('2026-11-19T12:00:00+00:00')));
+        $sut = new IssueTokenCommandHandler(
+            $refreshTokens,
+            $workers,
+            $this->deterministicGenerator('rotated'),
+            $this->fakeEncoder('jwt'),
+            $this->fixedClock(new DateTimeImmutable('2026-11-19T12:05:00+00:00')),
+        );
+
+        $result = $sut(new IssueTokenCommand(
+            refreshToken: $plaintext,
+            fingerprintHash: $storedHash,
+            fingerprintMeta: ['hostname' => 'host'],
+        ));
+
+        self::assertFalse($result->fingerprintWarning);
+        self::assertNull($result->previousFingerprintMeta);
     }
 
     public function testShouldRejectConsumedRefreshToken(): void
