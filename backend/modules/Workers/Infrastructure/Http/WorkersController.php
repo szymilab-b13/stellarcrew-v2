@@ -213,8 +213,10 @@ final readonly class WorkersController
     )]
     public function acceptFingerprint(
         string $id,
-        #[MapRequestPayload] AcceptFingerprintRequest $request,
-        #[CurrentUser] SecurityUser $user,
+        #[MapRequestPayload]
+        AcceptFingerprintRequest $request,
+        #[CurrentUser]
+        SecurityUser $user,
     ): JsonResponse {
         ($this->acceptFingerprint)(new AcceptFingerprintCommand(
             workerId: WorkerId::fromString($id),

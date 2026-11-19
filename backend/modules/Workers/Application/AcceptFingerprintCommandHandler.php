@@ -7,10 +7,11 @@ namespace Modules\Workers\Application;
 use Modules\Shared\Kernel\Clock;
 use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerRepository;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use function sprintf;
+
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final readonly class AcceptFingerprintCommandHandler
 {

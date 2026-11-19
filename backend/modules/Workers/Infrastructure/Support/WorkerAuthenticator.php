@@ -7,9 +7,6 @@ namespace Modules\Workers\Infrastructure\Support;
 use InvalidArgumentException;
 
 use function is_string;
-use function preg_match;
-use function str_starts_with;
-use function substr;
 
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -17,6 +14,11 @@ use Modules\Shared\Kernel\WorkerId;
 use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerRepository;
 use Modules\Workers\Domain\WorkerSecretTokenHasher;
+
+use function preg_match;
+use function str_starts_with;
+use function substr;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
