@@ -90,6 +90,7 @@ final readonly class WorkersController
             'workerId' => (string) $result->workerId,
             'secretToken' => $result->plaintextSecret,
             'rabbitmqUser' => $result->rabbitmqUser,
+            'refreshToken' => $result->refreshToken,
         ], Response::HTTP_CREATED);
     }
 

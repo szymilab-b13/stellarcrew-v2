@@ -12,6 +12,7 @@ final readonly class ClaimedPairingResult
         public WorkerId $workerId,
         public string $plaintextSecret,
         public string $rabbitmqUser,
+        public string $refreshToken,
     ) {
     }
 }
