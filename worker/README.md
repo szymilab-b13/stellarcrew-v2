@@ -43,6 +43,14 @@ calls `POST /api/workers/pair` and writes credentials to `~/.stellarcrew/worker.
 (`chmod 600`). The file holds `workerId`, `secretToken`, `rabbitmqUser` and `pairedAt`. The
 daemon reads it on startup in BL-CAR-008.
 
+### Fingerprint (BL-WA-003)
+
+Pairing also collects a machine fingerprint from `node:os` + `/etc/machine-id` (sha256 over
+`machineId / primaryMac / cpuModel / cpuCount / osPlatform / arch`) and sends it alongside
+`hostname / osRelease / osVersion` as metadata. The backend persists this on the worker row
+and will warn on later token exchange if the fingerprint changes (worker folder copied to
+another machine, VM cloned, etc.). No env config required; the collector reads stdlib only.
+
 ## Environment variables
 
 | Name                      | Default                             | Purpose                                                                               |

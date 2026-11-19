@@ -52,6 +52,10 @@ final readonly class ClaimPairingCodeCommandHandler
             $command->hostLabel,
         );
 
+        if ($command->fingerprintHash !== null) {
+            $worker->updateFingerprint($command->fingerprintHash, $command->fingerprintMeta, $now);
+        }
+
         $this->codes->save($code);
         $this->workers->save($worker);
 

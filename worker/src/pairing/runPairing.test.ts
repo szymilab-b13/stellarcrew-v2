@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import type { Fingerprint } from '../fingerprint/collector.js';
 import type { CredentialsStore, WorkerCredentials } from './credentialsStore.js';
 import type { PairWorkerInput, PairWorkerResult, PairingClient } from './pairingClient.js';
 import { PairingClientError } from './pairingClient.js';
@@ -11,6 +12,23 @@ const sampleApiResult: PairWorkerResult = {
   secretToken: 's3cr3t',
   rabbitmqUser: 'worker-111122223333444455555555',
 };
+
+const sampleFingerprint: Fingerprint = {
+  hash: 'f'.repeat(64),
+  meta: {
+    machineId: 'machine-abc',
+    hostname: 'test-host',
+    primaryMac: 'aa:bb:cc:dd:ee:ff',
+    cpuModel: 'Test CPU',
+    cpuCount: 4,
+    osPlatform: 'linux',
+    osRelease: '6.6.0',
+    osVersion: '#1 SMP',
+    arch: 'x64',
+  },
+};
+
+const fakeCollectFingerprint = (): Fingerprint => sampleFingerprint;
 
 function createRecordingStore(): {
   readonly store: CredentialsStore;
@@ -101,6 +119,7 @@ describe('runPairing', () => {
       store,
       prompts,
       now: () => new Date('2026-11-18T18:30:00.000Z'),
+      collectFingerprint: fakeCollectFingerprint,
     });
 
     expect(calls).toEqual([
@@ -109,6 +128,8 @@ describe('runPairing', () => {
         code: 'ABCD-2345',
         name: 'MacBook Pro',
         hostLabel: 'macbook.local',
+        fingerprintHash: sampleFingerprint.hash,
+        fingerprintMeta: sampleFingerprint.meta,
       },
     ]);
     expect(saved).toEqual([
@@ -137,6 +158,7 @@ describe('runPairing', () => {
       store,
       prompts,
       now: () => new Date('2026-11-18T18:30:00.000Z'),
+      collectFingerprint: fakeCollectFingerprint,
     });
 
     expect(calls[0].hostLabel).toBeUndefined();
@@ -157,6 +179,7 @@ describe('runPairing', () => {
       store,
       prompts,
       now: () => new Date(),
+      collectFingerprint: fakeCollectFingerprint,
     });
 
     expect(calls).toHaveLength(1);
@@ -179,6 +202,7 @@ describe('runPairing', () => {
       store,
       prompts,
       now: () => new Date(),
+      collectFingerprint: fakeCollectFingerprint,
     });
 
     expect(calls[0].name).toBe('laptop');
@@ -214,9 +238,46 @@ describe('runPairing', () => {
         store,
         prompts,
         now: () => new Date(),
+        collectFingerprint: fakeCollectFingerprint,
       }),
     ).rejects.toThrow(/aborted/i);
     expect(saved).toEqual([]);
+  });
+
+  it('should attach the collected fingerprint to the pairing client call', async () => {
+    const { store } = createRecordingStore();
+    const { client, calls } = captureClient(sampleApiResult);
+    const { prompts } = createScriptedPrompts({
+      code: ['ABCD-2345'],
+      name: ['laptop'],
+      hostLabel: [undefined],
+    });
+    const customFingerprint: Fingerprint = {
+      hash: 'a'.repeat(64),
+      meta: {
+        machineId: 'custom-machine',
+        hostname: 'custom-host',
+        primaryMac: '11:22:33:44:55:66',
+        cpuModel: 'Custom CPU',
+        cpuCount: 8,
+        osPlatform: 'darwin',
+        osRelease: '24.1.0',
+        osVersion: 'Darwin',
+        arch: 'arm64',
+      },
+    };
+
+    await runPairing({
+      apiBaseUrl: 'http://localhost:8080',
+      client,
+      store,
+      prompts,
+      now: () => new Date('2026-11-19T10:00:00.000Z'),
+      collectFingerprint: () => customFingerprint,
+    });
+
+    expect(calls[0].fingerprintHash).toBe(customFingerprint.hash);
+    expect(calls[0].fingerprintMeta).toBe(customFingerprint.meta);
   });
 
   it('should surface a PairingClientError from the client with a friendly message', async () => {
@@ -237,6 +298,7 @@ describe('runPairing', () => {
         store,
         prompts,
         now: () => new Date(),
+        collectFingerprint: fakeCollectFingerprint,
       }),
     ).rejects.toBeInstanceOf(PairingClientError);
     expect(errors.some((msg) => msg.includes('404'))).toBe(true);

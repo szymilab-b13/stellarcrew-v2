@@ -15,6 +15,9 @@ use Modules\Workers\Application\ClaimPairingCodeCommandHandler;
 use Modules\Workers\Domain\WorkerPairingCode;
 use Modules\Workers\Infrastructure\Support\BcryptWorkerSecretTokenHasher;
 use PHPUnit\Framework\TestCase;
+
+use function str_repeat;
+
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Uuid;
 
@@ -78,6 +81,35 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
 
         $this->expectException(DomainException::class);
         $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'M2'));
+    }
+
+    public function testShouldPersistFingerprintWhenProvided(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $hasher = new BcryptWorkerSecretTokenHasher();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, new DateTimeImmutable('2026-11-18T15:00:00+00:00')));
+        $sut = new ClaimPairingCodeCommandHandler(
+            $codes,
+            $workers,
+            $hasher,
+            $this->fixedClock(new DateTimeImmutable('2026-11-18T15:05:00+00:00')),
+        );
+        $hash = str_repeat('f', 64);
+        $meta = ['hostname' => 'macbook', 'machineId' => 'id-1', 'cpuModel' => 'Apple M2'];
+
+        $result = $sut(new ClaimPairingCodeCommand(
+            code: 'ABCD-2345',
+            name: 'M',
+            fingerprintHash: $hash,
+            fingerprintMeta: $meta,
+        ));
+
+        $worker = $workers->findById($result->workerId);
+        self::assertNotNull($worker);
+        self::assertSame($hash, $worker->fingerprintHash());
+        self::assertSame($meta, $worker->fingerprintMeta());
     }
 
     public function testShouldRejectExpiredCode(): void
