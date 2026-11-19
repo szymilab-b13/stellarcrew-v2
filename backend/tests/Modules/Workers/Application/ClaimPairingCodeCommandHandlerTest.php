@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Modules\Workers\Application;
 
 use App\Tests\Fixtures\Workers\InMemoryWorkerPairingCodeRepository;
+use App\Tests\Fixtures\Workers\InMemoryWorkerRefreshTokenRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRepository;
 use DateTimeImmutable;
 use DomainException;
@@ -12,10 +13,12 @@ use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Workers\Application\ClaimPairingCodeCommand;
 use Modules\Workers\Application\ClaimPairingCodeCommandHandler;
+use Modules\Workers\Domain\RefreshTokenGenerator;
 use Modules\Workers\Domain\WorkerPairingCode;
 use Modules\Workers\Infrastructure\Support\BcryptWorkerSecretTokenHasher;
 use PHPUnit\Framework\TestCase;
 
+use function hash;
 use function str_repeat;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -27,12 +30,13 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
     {
         $codes = new InMemoryWorkerPairingCodeRepository();
         $workers = new InMemoryWorkerRepository();
+        $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
         $hasher = new BcryptWorkerSecretTokenHasher();
         $owner = new UserId(Uuid::v7());
         $issuedAt = new DateTimeImmutable('2026-11-18T15:00:00+00:00');
         $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, $issuedAt));
         $claimAt = new DateTimeImmutable('2026-11-18T15:05:00+00:00');
-        $sut = new ClaimPairingCodeCommandHandler($codes, $workers, $hasher, $this->fixedClock($claimAt));
+        $sut = $this->makeHandler($codes, $workers, $refreshTokens, $hasher, $claimAt);
 
         $result = $sut(new ClaimPairingCodeCommand(
             code: 'ABCD-2345',
@@ -49,15 +53,18 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         self::assertMatchesRegularExpression('/^worker-[0-9a-f]{32}$/', $result->rabbitmqUser);
         self::assertTrue($hasher->verify($result->plaintextSecret, $worker->secretTokenHash()));
         self::assertTrue($codes->findByCode('ABCD-2345')?->isClaimed());
+        self::assertSame('refresh-plain', $result->refreshToken);
+        self::assertNotNull($refreshTokens->findByTokenHash(hash('sha256', 'refresh-plain')));
     }
 
     public function testShouldThrow404WhenCodeDoesNotExist(): void
     {
-        $sut = new ClaimPairingCodeCommandHandler(
+        $sut = $this->makeHandler(
             new InMemoryWorkerPairingCodeRepository(),
             new InMemoryWorkerRepository(),
+            new InMemoryWorkerRefreshTokenRepository(),
             new BcryptWorkerSecretTokenHasher(),
-            $this->fixedClock(new DateTimeImmutable('2026-11-18T15:00:00+00:00')),
+            new DateTimeImmutable('2026-11-18T15:00:00+00:00'),
         );
 
         $this->expectException(NotFoundHttpException::class);
@@ -68,14 +75,13 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
     {
         $codes = new InMemoryWorkerPairingCodeRepository();
         $owner = new UserId(Uuid::v7());
-        $issuedAt = new DateTimeImmutable('2026-11-18T15:00:00+00:00');
-        $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, $issuedAt));
-        $hasher = new BcryptWorkerSecretTokenHasher();
-        $sut = new ClaimPairingCodeCommandHandler(
+        $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, new DateTimeImmutable('2026-11-18T15:00:00+00:00')));
+        $sut = $this->makeHandler(
             $codes,
             new InMemoryWorkerRepository(),
-            $hasher,
-            $this->fixedClock(new DateTimeImmutable('2026-11-18T15:05:00+00:00')),
+            new InMemoryWorkerRefreshTokenRepository(),
+            new BcryptWorkerSecretTokenHasher(),
+            new DateTimeImmutable('2026-11-18T15:05:00+00:00'),
         );
         $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'M'));
 
@@ -87,14 +93,14 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
     {
         $codes = new InMemoryWorkerPairingCodeRepository();
         $workers = new InMemoryWorkerRepository();
-        $hasher = new BcryptWorkerSecretTokenHasher();
         $owner = new UserId(Uuid::v7());
         $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, new DateTimeImmutable('2026-11-18T15:00:00+00:00')));
-        $sut = new ClaimPairingCodeCommandHandler(
+        $sut = $this->makeHandler(
             $codes,
             $workers,
-            $hasher,
-            $this->fixedClock(new DateTimeImmutable('2026-11-18T15:05:00+00:00')),
+            new InMemoryWorkerRefreshTokenRepository(),
+            new BcryptWorkerSecretTokenHasher(),
+            new DateTimeImmutable('2026-11-18T15:05:00+00:00'),
         );
         $hash = str_repeat('f', 64);
         $meta = ['hostname' => 'macbook', 'machineId' => 'id-1', 'cpuModel' => 'Apple M2'];
@@ -116,17 +122,53 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
     {
         $codes = new InMemoryWorkerPairingCodeRepository();
         $owner = new UserId(Uuid::v7());
-        $issuedAt = new DateTimeImmutable('2026-11-18T15:00:00+00:00');
-        $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, $issuedAt));
-        $sut = new ClaimPairingCodeCommandHandler(
+        $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, new DateTimeImmutable('2026-11-18T15:00:00+00:00')));
+        $sut = $this->makeHandler(
             $codes,
             new InMemoryWorkerRepository(),
+            new InMemoryWorkerRefreshTokenRepository(),
             new BcryptWorkerSecretTokenHasher(),
-            $this->fixedClock(new DateTimeImmutable('2026-11-18T15:20:00+00:00')),
+            new DateTimeImmutable('2026-11-18T15:20:00+00:00'),
         );
 
         $this->expectException(DomainException::class);
         $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'M'));
+    }
+
+    private function makeHandler(
+        InMemoryWorkerPairingCodeRepository $codes,
+        InMemoryWorkerRepository $workers,
+        InMemoryWorkerRefreshTokenRepository $refreshTokens,
+        BcryptWorkerSecretTokenHasher $hasher,
+        DateTimeImmutable $now,
+    ): ClaimPairingCodeCommandHandler {
+        return new ClaimPairingCodeCommandHandler(
+            $codes,
+            $workers,
+            $refreshTokens,
+            $hasher,
+            $this->deterministicGenerator('refresh-plain'),
+            $this->fixedClock($now),
+        );
+    }
+
+    private function deterministicGenerator(string $plaintext): RefreshTokenGenerator
+    {
+        return new readonly class ($plaintext) implements RefreshTokenGenerator {
+            public function __construct(private string $plaintext)
+            {
+            }
+
+            public function generate(): string
+            {
+                return $this->plaintext;
+            }
+
+            public function hash(string $plaintext): string
+            {
+                return hash('sha256', $plaintext);
+            }
+        };
     }
 
     private function fixedClock(DateTimeImmutable $now): Clock
