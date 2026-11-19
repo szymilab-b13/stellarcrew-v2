@@ -38,6 +38,7 @@ final readonly class IssueTokenCommandHandler
         if ($stored->isExpired($now)) {
             throw new UnauthorizedHttpException('Bearer', 'Refresh token expired.');
         }
+
         if ($stored->isConsumed()) {
             throw new UnauthorizedHttpException('Bearer', 'Refresh token already used.');
         }

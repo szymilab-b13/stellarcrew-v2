@@ -101,6 +101,7 @@ final class IssueTokenCommandHandlerTest extends TestCase
         $plaintext = 'consumed-token';
         $token = WorkerRefreshToken::issue(hash('sha256', $plaintext), $worker->id(), new DateTimeImmutable('2026-11-19T12:00:00+00:00'));
         $token->markConsumed(new DateTimeImmutable('2026-11-19T12:05:00+00:00'));
+
         $refreshTokens->save($token);
         $sut = new IssueTokenCommandHandler(
             $refreshTokens,

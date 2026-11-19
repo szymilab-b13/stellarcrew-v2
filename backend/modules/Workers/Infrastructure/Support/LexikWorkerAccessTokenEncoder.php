@@ -31,7 +31,7 @@ final readonly class LexikWorkerAccessTokenEncoder implements WorkerAccessTokenE
         $payload = [
             'iss' => $this->issuer,
             'aud' => $this->audience,
-            'sub' => 'worker:' . (string) $workerId,
+            'sub' => 'worker:' . $workerId,
             'owner_user_id' => (string) $ownerUserId,
             'scope' => $this->scope,
             'iat' => $issuedAt->getTimestamp(),
