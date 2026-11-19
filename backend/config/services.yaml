@@ -121,6 +121,9 @@ services:
     Modules\Workers\Domain\WorkerPairingCodeRepository:
         alias: Modules\Workers\Infrastructure\Doctrine\Repository\DoctrineWorkerPairingCodeRepository
 
+    Modules\Workers\Domain\WorkerRefreshTokenRepository:
+        alias: Modules\Workers\Infrastructure\Doctrine\Repository\DoctrineWorkerRefreshTokenRepository
+
     # Plan limits (cross-cutting usage gate per ADR-BE-006)
     Modules\Shared\Api\PlanLimitsService:
         alias: Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService
