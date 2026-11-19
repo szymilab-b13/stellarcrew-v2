@@ -94,6 +94,7 @@ final readonly class IssueTokenCommandHandler
             expiresIn: self::ACCESS_TOKEN_TTL_SECONDS,
             fingerprintWarning: $fingerprintWarning,
             previousFingerprintMeta: $previousMeta,
+            currentFingerprintHash: $fingerprintWarning ? $command->fingerprintHash : null,
         );
     }
 }

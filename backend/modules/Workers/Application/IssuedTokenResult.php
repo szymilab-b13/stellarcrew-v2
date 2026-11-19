@@ -15,6 +15,7 @@ final readonly class IssuedTokenResult
         public int $expiresIn,
         public bool $fingerprintWarning = false,
         public ?array $previousFingerprintMeta = null,
+        public ?string $currentFingerprintHash = null,
     ) {
     }
 }

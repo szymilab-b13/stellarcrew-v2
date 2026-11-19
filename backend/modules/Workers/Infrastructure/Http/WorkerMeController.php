@@ -57,6 +57,7 @@ final readonly class WorkerMeController
             'tokenType' => 'Bearer',
             'fingerprintWarning' => $result->fingerprintWarning,
             'previousFingerprintMeta' => $result->previousFingerprintMeta,
+            'currentFingerprintHash' => $result->currentFingerprintHash,
         ]);
     }
 
