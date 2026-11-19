@@ -1,3 +1,5 @@
+import type { TokenManager } from '../auth/tokenManager.js';
+
 export interface WorkerSessionView {
   readonly threadId: string;
   readonly workerId: string;
@@ -37,30 +39,38 @@ export class WorkerApiError extends Error {
 
 export interface WorkerApiClientOptions {
   readonly baseUrl: string;
-  readonly workerId: string;
-  readonly secretToken: string;
+  readonly tokenManager: TokenManager;
   readonly fetchFn?: typeof fetch;
 }
 
 export function createWorkerApiClient({
   baseUrl,
-  workerId,
-  secretToken,
+  tokenManager,
   fetchFn = fetch,
 }: WorkerApiClientOptions): WorkerApiClient {
   const base = stripTrailingSlash(baseUrl);
-  const authHeaders: Record<string, string> = {
-    'X-Worker-Id': workerId,
-    'X-Worker-Secret': secretToken,
-    Accept: 'application/json',
-  };
+
+  interface AuthorizedInit {
+    readonly method: 'GET' | 'POST';
+    readonly headers?: Record<string, string>;
+    readonly body?: string;
+  }
+
+  async function authorizedFetch(url: string, init: AuthorizedInit): Promise<Response> {
+    const accessToken = await tokenManager.getAccessToken();
+    const headers = buildHeaders(init.headers, accessToken);
+    const first = await fetchFn(url, { ...init, headers });
+    if (first.status !== 401) {
+      return first;
+    }
+    const refreshed = await tokenManager.forceRefresh();
+    const retried = await fetchFn(url, { ...init, headers: buildHeaders(init.headers, refreshed) });
+    return retried;
+  }
 
   async function getOrCreateSession(threadId: string): Promise<WorkerSessionView> {
     const url = `${base}/api/workers/me/threads/${threadId}/session`;
-    const response = await fetchFn(url, {
-      method: 'GET',
-      headers: authHeaders,
-    });
+    const response = await authorizedFetch(url, { method: 'GET' });
     if (!response.ok) {
       throw await makeError(response, `GET ${url}`);
     }
@@ -69,12 +79,9 @@ export function createWorkerApiClient({
 
   async function recordMessage(input: RecordMessageInput): Promise<RecordedMessage> {
     const url = `${base}/api/workers/me/messages`;
-    const response = await fetchFn(url, {
+    const response = await authorizedFetch(url, {
       method: 'POST',
-      headers: {
-        ...authHeaders,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         threadId: input.threadId,
         agentId: input.agentId,
@@ -89,6 +96,17 @@ export function createWorkerApiClient({
   }
 
   return { getOrCreateSession, recordMessage };
+}
+
+function buildHeaders(
+  incoming: Record<string, string> | undefined,
+  accessToken: string,
+): Record<string, string> {
+  const base: Record<string, string> = {
+    Authorization: `Bearer ${accessToken}`,
+    Accept: 'application/json',
+  };
+  return incoming === undefined ? base : { ...incoming, ...base };
 }
 
 async function makeError(response: Response, context: string): Promise<WorkerApiError> {
