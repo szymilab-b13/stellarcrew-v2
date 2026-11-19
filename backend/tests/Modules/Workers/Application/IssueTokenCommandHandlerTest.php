@@ -129,8 +129,10 @@ final class IssueTokenCommandHandlerTest extends TestCase
 
         self::assertTrue($result->fingerprintWarning);
         self::assertSame(['hostname' => 'old-host'], $result->previousFingerprintMeta);
-        self::assertSame(['hostname' => 'new-host'], $workers->findById($worker->id())?->fingerprintMeta());
-        self::assertSame($storedHash, $workers->findById($worker->id())?->fingerprintHash());
+        $updated = $workers->findById($worker->id());
+        self::assertInstanceOf(Worker::class, $updated);
+        self::assertSame(['hostname' => 'new-host'], $updated->fingerprintMeta());
+        self::assertSame($storedHash, $updated->fingerprintHash());
         self::assertCount(1, $events->dispatched);
         self::assertInstanceOf(WorkerFingerprintChanged::class, $events->dispatched[0]);
     }

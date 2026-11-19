@@ -24,8 +24,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 final readonly class WorkerAuthenticator
 {
-    private const string JWT_SUBJECT_PREFIX = 'worker:';
-
     private const string JWT_SUBJECT_PATTERN = '/^worker:([0-9a-fA-F-]{36})$/';
 
     public function __construct(
