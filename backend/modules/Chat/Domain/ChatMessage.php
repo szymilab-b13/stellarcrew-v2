@@ -12,6 +12,7 @@ use function mb_strlen;
 use Modules\Shared\Kernel\ChatMessageId;
 use Modules\Shared\Kernel\ChatSessionId;
 use Modules\Shared\Kernel\ChatThreadId;
+use Modules\Shared\Kernel\WorkerId;
 
 use function sprintf;
 
@@ -45,6 +46,7 @@ class ChatMessage
         private readonly ClassifiedBy $classifiedBy,
         private readonly ?float $classificationConfidence,
         private readonly DateTimeImmutable $createdAt,
+        private readonly ?WorkerId $handledByWorkerId = null,
     ) {
         $this->guardSubject($subject);
         $this->guardContent($content);
@@ -73,6 +75,7 @@ class ChatMessage
         ClassifiedBy $classifiedBy,
         ?float $classificationConfidence,
         DateTimeImmutable $now,
+        ?WorkerId $handledByWorkerId = null,
     ): self {
         return new self(
             $id,
@@ -93,6 +96,7 @@ class ChatMessage
             $classifiedBy,
             $classificationConfidence,
             $now,
+            $handledByWorkerId,
         );
     }
 
@@ -157,6 +161,11 @@ class ChatMessage
     public function metadata(): array
     {
         return $this->metadata;
+    }
+
+    public function handledByWorkerId(): ?WorkerId
+    {
+        return $this->handledByWorkerId;
     }
 
     public function replyToMessageId(): ?ChatMessageId

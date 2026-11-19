@@ -13,6 +13,7 @@ use Modules\Shared\Kernel\AgentId;
 use Modules\Shared\Kernel\AgentTemplateId;
 use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
+use Modules\Shared\Kernel\WorkerId;
 
 use function preg_match;
 use function sprintf;
@@ -52,6 +53,7 @@ class Agent
         private DateTimeImmutable $updatedAt,
         private ?DateTimeImmutable $deletedAt = null,
         private ?string $color = null,
+        private ?WorkerId $defaultWorkerId = null,
     ) {
         $this->guardSlug($slug);
         $this->guardName($name);
@@ -176,6 +178,25 @@ class Agent
         }
 
         $this->color = $color;
+        $this->updatedAt = $now;
+    }
+
+    public function defaultWorkerId(): ?WorkerId
+    {
+        return $this->defaultWorkerId;
+    }
+
+    public function assignDefaultWorker(?WorkerId $workerId, DateTimeImmutable $now): void
+    {
+        if (!$this->defaultWorkerId instanceof WorkerId && !$workerId instanceof WorkerId) {
+            return;
+        }
+
+        if ($this->defaultWorkerId instanceof WorkerId && $workerId instanceof WorkerId && $this->defaultWorkerId->equals($workerId)) {
+            return;
+        }
+
+        $this->defaultWorkerId = $workerId;
         $this->updatedAt = $now;
     }
 

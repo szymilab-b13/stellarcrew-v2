@@ -13,15 +13,20 @@ use Modules\Chat\Domain\ChatSessionRepository;
 use Modules\Chat\Domain\ChatThread;
 use Modules\Chat\Domain\ChatThreadNotFoundException;
 use Modules\Chat\Domain\ChatThreadRepository;
+use Modules\Chat\Domain\ParticipantType;
 use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Core\Api\Dto\AuditEntry;
 use Modules\Shared\Kernel\ChatMessageId;
 use Modules\Shared\Kernel\Clock;
+use Modules\Shared\Kernel\WorkerId;
 
 use function sprintf;
 
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 final readonly class SendMessageCommandHandler
@@ -36,6 +41,7 @@ final readonly class SendMessageCommandHandler
         private ChatMessageRepository $messages,
         private AuditLoggerInterface $audit,
         private Clock $clock,
+        private MessageBusInterface $agentReplyBus,
     ) {
     }
 
@@ -118,7 +124,42 @@ final readonly class SendMessageCommandHandler
             ],
         ));
 
+        $this->dispatchAgentReplyIfNeeded($command, $thread, $message);
+
         return $message;
+    }
+
+    private function dispatchAgentReplyIfNeeded(
+        SendMessageCommand $command,
+        ChatThread $thread,
+        ChatMessage $message,
+    ): void {
+        if ($command->senderType !== ParticipantType::User) {
+            return;
+        }
+
+        if ($command->recipientType !== ParticipantType::Agent) {
+            return;
+        }
+
+        $workerId = $thread->currentWorkerId();
+        if (!$workerId instanceof WorkerId) {
+            return;
+        }
+
+        $this->agentReplyBus->dispatch(
+            new Envelope(
+                new AgentReplyRequested(
+                    threadId: $command->threadId,
+                    workerId: $workerId,
+                    agentId: $command->recipientId,
+                    userMessageId: $message->id(),
+                    userContent: $command->content,
+                    subject: $command->subject,
+                ),
+                [new AmqpStamp((string) $workerId)],
+            ),
+        );
     }
 
     /**

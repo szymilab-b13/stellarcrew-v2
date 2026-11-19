@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Modules\Workers\Domain\Worker" table="workers" schema="workers">
+
+        <id name="id" type="worker_id_vo" column="id">
+            <generator strategy="NONE"/>
+        </id>
+
+        <field name="ownerUserId" type="user_id_vo" column="owner_user_id" nullable="false"/>
+        <field name="name" type="string" column="name" length="80" nullable="false"/>
+        <field name="hostLabel" type="string" column="host_label" length="120" nullable="true"/>
+        <field name="secretTokenHash" type="string" column="secret_token_hash" length="255" nullable="false"/>
+        <field name="rabbitmqUser" type="string" column="rabbitmq_user" length="80" nullable="false" unique="true"/>
+        <field name="lastHeartbeatAt" type="datetimetz_immutable" column="last_heartbeat_at" nullable="true"/>
+        <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>
+        <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
+
+        <indexes>
+            <index name="idx_workers_workers_owner_user_id" columns="owner_user_id"/>
+        </indexes>
+
+    </entity>
+
+</doctrine-mapping>

@@ -9,6 +9,7 @@ use Modules\Chat\Domain\ChatThread;
 use Modules\Chat\Domain\ChatThreadRepository;
 use Modules\Shared\Kernel\ChatSessionId;
 use Modules\Shared\Kernel\ChatThreadId;
+use Modules\Shared\Kernel\WorkerId;
 
 final readonly class DoctrineChatThreadRepository implements ChatThreadRepository
 {
@@ -66,6 +67,20 @@ final readonly class DoctrineChatThreadRepository implements ChatThreadRepositor
             ->andWhere('t.parentThreadId IS NULL')
             ->orderBy('t.createdAt', 'ASC')
             ->setParameter('sessionId', $sessionId)
+            ->getQuery()
+            ->getResult();
+
+        /** @var list<ChatThread> $rows */
+        return $rows;
+    }
+
+    public function findByCurrentWorker(WorkerId $workerId): array
+    {
+        $rows = $this->em->createQueryBuilder()
+            ->select('t')
+            ->from(ChatThread::class, 't')
+            ->where('t.currentWorkerId = :workerId')
+            ->setParameter('workerId', $workerId)
             ->getQuery()
             ->getResult();
 

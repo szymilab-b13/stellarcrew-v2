@@ -11,6 +11,7 @@ use function mb_strlen;
 
 use Modules\Shared\Kernel\ChatSessionId;
 use Modules\Shared\Kernel\ChatThreadId;
+use Modules\Shared\Kernel\WorkerId;
 
 use function sprintf;
 use function trim;
@@ -26,6 +27,7 @@ class ChatThread
         private readonly DateTimeImmutable $createdAt,
         private DateTimeImmutable $updatedAt,
         private ?ChatThreadId $parentThreadId = null,
+        private ?WorkerId $currentWorkerId = null,
     ) {
         $this->guardSubject($subject);
     }
@@ -75,6 +77,25 @@ class ChatThread
     public function parentThreadId(): ?ChatThreadId
     {
         return $this->parentThreadId;
+    }
+
+    public function currentWorkerId(): ?WorkerId
+    {
+        return $this->currentWorkerId;
+    }
+
+    public function assignCurrentWorker(?WorkerId $workerId, DateTimeImmutable $now): void
+    {
+        if (!$this->currentWorkerId instanceof WorkerId && !$workerId instanceof WorkerId) {
+            return;
+        }
+
+        if ($this->currentWorkerId instanceof WorkerId && $workerId instanceof WorkerId && $this->currentWorkerId->equals($workerId)) {
+            return;
+        }
+
+        $this->currentWorkerId = $workerId;
+        $this->updatedAt = $now;
     }
 
     public function rename(string $subject, DateTimeImmutable $now): void

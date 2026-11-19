@@ -10,6 +10,7 @@ RUN apk add --no-cache \
         libzip-dev \
         oniguruma-dev \
         postgresql-dev \
+        rabbitmq-c-dev \
         linux-headers \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     && docker-php-ext-install -j"$(nproc)" \
@@ -18,8 +19,9 @@ RUN apk add --no-cache \
         bcmath \
         zip \
         opcache \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
+        sockets \
+    && pecl install redis amqp \
+    && docker-php-ext-enable redis amqp \
     && apk del .build-deps
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

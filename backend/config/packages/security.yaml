@@ -26,6 +26,9 @@ security:
         - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/logout, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/auth/me, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/workers/pair$, roles: PUBLIC_ACCESS }
+        - { path: '^/api/workers/[0-9a-fA-F-]{36}/heartbeat$', roles: PUBLIC_ACCESS }
+        - { path: ^/api/workers/me/, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

@@ -8,6 +8,7 @@ use Modules\Agents\Domain\Agent;
 use Modules\Agents\Domain\AgentRepository;
 use Modules\Shared\Kernel\AgentId;
 use Modules\Shared\Kernel\OrganizationId;
+use Modules\Shared\Kernel\WorkerId;
 
 final class InMemoryAgentRepository implements AgentRepository
 {
@@ -91,6 +92,19 @@ final class InMemoryAgentRepository implements AgentRepository
         }
 
         usort($result, static fn (Agent $a, Agent $b): int => strcmp($a->name(), $b->name()));
+
+        return $result;
+    }
+
+    public function findByDefaultWorker(WorkerId $workerId): array
+    {
+        $result = [];
+        foreach ($this->agents as $agent) {
+            $assigned = $agent->defaultWorkerId();
+            if ($assigned instanceof WorkerId && $assigned->equals($workerId)) {
+                $result[] = $agent;
+            }
+        }
 
         return $result;
     }

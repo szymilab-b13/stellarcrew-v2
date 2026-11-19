@@ -7,8 +7,10 @@ namespace App\Tests\Modules\Chat\Application;
 use App\Tests\Fixtures\Chat\InMemoryChatMessageRepository;
 use App\Tests\Fixtures\Chat\InMemoryChatSessionRepository;
 use App\Tests\Fixtures\Chat\InMemoryChatThreadRepository;
+use App\Tests\Fixtures\Chat\SpyMessageBus;
 use App\Tests\Fixtures\Core\SpyAuditLogger;
 use DateTimeImmutable;
+use Modules\Chat\Application\AgentReplyRequested;
 use Modules\Chat\Application\SendMessageCommand;
 use Modules\Chat\Application\SendMessageCommandHandler;
 use Modules\Chat\Domain\ChatSession;
@@ -24,9 +26,11 @@ use Modules\Shared\Kernel\ChatThreadId;
 use Modules\Shared\Kernel\FrozenClock;
 use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
+use Modules\Shared\Kernel\WorkerId;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Uid\Uuid;
 
@@ -41,12 +45,14 @@ final class SendMessageCommandHandlerTest extends TestCase
         $threads = new InMemoryChatThreadRepository();
         $messages = new InMemoryChatMessageRepository();
         $audit = new SpyAuditLogger();
+        $bus = new SpyMessageBus();
         $sut = new SendMessageCommandHandler(
             $sessions,
             $threads,
             $messages,
             $audit,
             new FrozenClock(new DateTimeImmutable(self::NOW)),
+            $bus,
         );
 
         $session = ChatSession::create(
@@ -81,6 +87,124 @@ final class SendMessageCommandHandlerTest extends TestCase
         self::assertSame((string) $message->id(), $audit->entries[0]->resourceId);
         self::assertNotNull($audit->entries[0]->userId);
         self::assertTrue($audit->entries[0]->userId->equals($actorId));
+        self::assertSame([], $bus->envelopes, 'No agent reply dispatched when thread has no worker.');
+    }
+
+    public function testShouldDispatchAgentReplyWhenThreadHasCurrentWorkerAndRecipientIsAgent(): void
+    {
+        $actorId = new UserId(Uuid::v7());
+        $workerId = WorkerId::generate();
+        $sessions = new InMemoryChatSessionRepository();
+        $threads = new InMemoryChatThreadRepository();
+        $messages = new InMemoryChatMessageRepository();
+        $bus = new SpyMessageBus();
+        $sut = new SendMessageCommandHandler(
+            $sessions,
+            $threads,
+            $messages,
+            new SpyAuditLogger(),
+            new FrozenClock(new DateTimeImmutable(self::NOW)),
+            $bus,
+        );
+
+        $session = ChatSession::create(
+            ChatSessionId::generate(),
+            OrganizationId::generate(),
+            $actorId,
+            'Session',
+            new DateTimeImmutable(self::NOW),
+        );
+        $sessions->save($session);
+
+        $thread = ChatThread::create(
+            ChatThreadId::generate(),
+            $session->id(),
+            'Thread with worker',
+            new DateTimeImmutable(self::NOW),
+        );
+        $thread->assignCurrentWorker($workerId, new DateTimeImmutable(self::NOW));
+
+        $threads->save($thread);
+
+        $command = $this->command($actorId, $session->id(), $thread->id());
+
+        $message = $sut($command);
+
+        self::assertCount(1, $bus->envelopes);
+        $envelope = $bus->envelopes[0];
+        $event = $envelope->getMessage();
+        self::assertInstanceOf(AgentReplyRequested::class, $event);
+        self::assertTrue($event->threadId->equals($thread->id()));
+        self::assertTrue($event->workerId->equals($workerId));
+        self::assertTrue($event->agentId->equals($command->recipientId));
+        self::assertTrue($event->userMessageId->equals($message->id()));
+        self::assertSame('Hello body', $event->userContent);
+        self::assertSame('Hello', $event->subject);
+
+        $stamp = $envelope->last(AmqpStamp::class);
+        self::assertInstanceOf(AmqpStamp::class, $stamp);
+        self::assertSame((string) $workerId, $stamp->getRoutingKey());
+    }
+
+    public function testShouldNotDispatchAgentReplyWhenRecipientIsNotAgent(): void
+    {
+        $actorId = new UserId(Uuid::v7());
+        $otherUserId = new UserId(Uuid::v7());
+        $workerId = WorkerId::generate();
+        $sessions = new InMemoryChatSessionRepository();
+        $threads = new InMemoryChatThreadRepository();
+        $bus = new SpyMessageBus();
+        $sut = new SendMessageCommandHandler(
+            $sessions,
+            $threads,
+            new InMemoryChatMessageRepository(),
+            new SpyAuditLogger(),
+            new FrozenClock(new DateTimeImmutable(self::NOW)),
+            $bus,
+        );
+
+        $session = ChatSession::create(
+            ChatSessionId::generate(),
+            OrganizationId::generate(),
+            $actorId,
+            'Session',
+            new DateTimeImmutable(self::NOW),
+        );
+        $sessions->save($session);
+
+        $thread = ChatThread::create(
+            ChatThreadId::generate(),
+            $session->id(),
+            'DM thread',
+            new DateTimeImmutable(self::NOW),
+        );
+        $thread->assignCurrentWorker($workerId, new DateTimeImmutable(self::NOW));
+
+        $threads->save($thread);
+
+        $command = new SendMessageCommand(
+            actorId: $actorId,
+            sessionId: $session->id(),
+            threadId: $thread->id(),
+            senderType: ParticipantType::User,
+            senderId: $actorId->value,
+            recipientType: ParticipantType::User,
+            recipientId: $otherUserId->value,
+            subject: 'Hi',
+            priority: Priority::P2,
+            content: 'Hey',
+            contentType: ContentType::Text,
+            metadata: [],
+            replyToMessageId: null,
+            engineId: Uuid::v7(),
+            engineType: EngineType::CliTerminal,
+            classifiedBy: ClassifiedBy::Sender,
+            classificationConfidence: null,
+        );
+
+        $sut($command);
+
+        self::assertSame([], $bus->envelopes);
     }
 
     public function testShouldThrowNotFoundWhenSessionMissing(): void
@@ -192,6 +316,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             $messages,
             $audit,
             new FrozenClock(new DateTimeImmutable(self::NOW)),
+            new SpyMessageBus(),
         );
 
         $session = ChatSession::create(
@@ -239,6 +364,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             $messages ?? new InMemoryChatMessageRepository(),
             $audit ?? new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::NOW)),
+            new SpyMessageBus(),
         );
     }
 

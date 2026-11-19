@@ -3,6 +3,7 @@
 DOCKER_COMPOSE ?= docker compose
 BACKEND_DIR    := backend
 FRONTEND_DIR   := frontend
+WORKER_DIR     := worker
 
 .PHONY: help install up down restart logs ps shell shell-db shell-redis \
         backend-install backend-shell backend-test backend-lint backend-lint-fix \
@@ -10,6 +11,8 @@ FRONTEND_DIR   := frontend
         backend-rector backend-rector-fix \
         frontend-install frontend-build frontend-dev frontend-test \
         frontend-lint frontend-lint-fix frontend-eslint frontend-prettier frontend-typecheck \
+        worker-install worker-test worker-lint worker-lint-fix worker-eslint \
+        worker-prettier worker-typecheck \
         migrate seed test lint build clean smoke reset-install
 
 help: ## Show available targets
@@ -126,6 +129,46 @@ frontend-lint-fix: ## Auto-fix eslint + prettier (requires frontend container up
 	$(DOCKER_COMPOSE) exec -T frontend pnpm lint:fix
 	$(DOCKER_COMPOSE) exec -T frontend pnpm format
 
+## ---- Worker (Node.js / TypeScript) ---------------------------------------
+
+worker-install: ## pnpm install for the worker daemon (uses node:22-alpine image)
+	docker run --rm \
+		-v "$(PWD)/$(WORKER_DIR):/app" \
+		-w /app \
+		node:22-alpine sh -c "corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm install --frozen-lockfile && chown -R $(shell id -u):$(shell id -g) /app"
+
+worker-test: ## vitest for the worker (uses node:22-alpine image)
+	docker run --rm \
+		-v "$(PWD)/$(WORKER_DIR):/app" \
+		-w /app \
+		node:22-alpine sh -c "corepack enable && pnpm test"
+
+worker-eslint: ## eslint check for the worker (uses node:22-alpine image)
+	docker run --rm \
+		-v "$(PWD)/$(WORKER_DIR):/app" \
+		-w /app \
+		node:22-alpine sh -c "corepack enable && pnpm lint"
+
+worker-prettier: ## prettier --check for the worker (uses node:22-alpine image)
+	docker run --rm \
+		-v "$(PWD)/$(WORKER_DIR):/app" \
+		-w /app \
+		node:22-alpine sh -c "corepack enable && pnpm format:check"
+
+worker-typecheck: ## tsc --noEmit for the worker (uses node:22-alpine image)
+	docker run --rm \
+		-v "$(PWD)/$(WORKER_DIR):/app" \
+		-w /app \
+		node:22-alpine sh -c "corepack enable && pnpm typecheck"
+
+worker-lint: worker-eslint worker-prettier worker-typecheck ## Full worker static analysis pipeline
+
+worker-lint-fix: ## Auto-fix eslint + prettier for the worker (uses node:22-alpine image)
+	docker run --rm \
+		-v "$(PWD)/$(WORKER_DIR):/app" \
+		-w /app \
+		node:22-alpine sh -c "corepack enable && pnpm lint:fix && pnpm format && chown -R $(shell id -u):$(shell id -g) /app"
+
 ## ---- Aggregates -----------------------------------------------------------
 
 migrate: ## Run DB migrations (TBD: BL-CORE-001+)
@@ -134,9 +177,9 @@ migrate: ## Run DB migrations (TBD: BL-CORE-001+)
 seed: ## Seed initial data (TBD: BL-CORE-002 install CLI)
 	@echo "[seed] TBD: install wizard / fixtures — added in BL-CORE-002."
 
-test: backend-test frontend-test ## Run all tests (backend + frontend)
+test: backend-test frontend-test worker-test ## Run all tests (backend + frontend + worker)
 
-lint: backend-lint frontend-lint ## Run all linters
+lint: backend-lint frontend-lint worker-lint ## Run all linters
 
 build: frontend-build ## Build production bundles (frontend bundle; backend has no build step)
 
