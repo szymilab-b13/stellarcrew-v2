@@ -124,6 +124,12 @@ services:
     Modules\Workers\Domain\WorkerRefreshTokenRepository:
         alias: Modules\Workers\Infrastructure\Doctrine\Repository\DoctrineWorkerRefreshTokenRepository
 
+    Modules\Workers\Domain\WorkerAccessTokenEncoder:
+        alias: Modules\Workers\Infrastructure\Support\LexikWorkerAccessTokenEncoder
+
+    Modules\Workers\Domain\RefreshTokenGenerator:
+        alias: Modules\Workers\Infrastructure\Support\RandomBytesRefreshTokenGenerator
+
     # Plan limits (cross-cutting usage gate per ADR-BE-006)
     Modules\Shared\Api\PlanLimitsService:
         alias: Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService
