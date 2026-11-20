@@ -13,7 +13,6 @@
         <field name="ownerUserId" type="user_id_vo" column="owner_user_id" nullable="false"/>
         <field name="name" type="string" column="name" length="80" nullable="false"/>
         <field name="hostLabel" type="string" column="host_label" length="120" nullable="true"/>
-        <field name="secretTokenHash" type="string" column="secret_token_hash" length="255" nullable="false"/>
         <field name="rabbitmqUser" type="string" column="rabbitmq_user" length="80" nullable="false" unique="true"/>
         <field name="lastHeartbeatAt" type="datetimetz_immutable" column="last_heartbeat_at" nullable="true"/>
         <field name="createdAt" type="datetimetz_immutable" column="created_at" nullable="false"/>

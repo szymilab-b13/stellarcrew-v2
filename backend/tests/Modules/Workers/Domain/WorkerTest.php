@@ -28,7 +28,6 @@ final class WorkerTest extends TestCase
             $ownerId,
             'MacBook Pro',
             'worker-mac-01',
-            'hash-xyz',
             $now,
             'macbook.local',
         );
@@ -37,7 +36,6 @@ final class WorkerTest extends TestCase
         self::assertTrue($sut->ownerUserId()->equals($ownerId));
         self::assertSame('MacBook Pro', $sut->name());
         self::assertSame('macbook.local', $sut->hostLabel());
-        self::assertSame('hash-xyz', $sut->secretTokenHash());
         self::assertSame('worker-mac-01', $sut->rabbitmqUser());
         self::assertNull($sut->lastHeartbeatAt());
         self::assertEquals($now, $sut->createdAt());
@@ -79,12 +77,6 @@ final class WorkerTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->makeWorker(rabbitmqUser: 'Bad Worker!');
-    }
-
-    public function testShouldRejectBlankSecretTokenHashWhenCreated(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->makeWorker(secretTokenHash: '   ');
     }
 
     public function testShouldRenameAndBumpUpdatedAtWhenRenamed(): void
@@ -167,17 +159,6 @@ final class WorkerTest extends TestCase
         $now = new DateTimeImmutable('2026-11-18T16:02:00+00:00');
 
         self::assertFalse($sut->isOnline($now, thresholdSeconds: 60));
-    }
-
-    public function testShouldRotateSecretAndBumpUpdatedAtWhenCalled(): void
-    {
-        $sut = $this->makeWorker();
-        $later = new DateTimeImmutable('2026-11-18T16:00:00+00:00');
-
-        $sut->rotateSecret('new-hash', $later);
-
-        self::assertSame('new-hash', $sut->secretTokenHash());
-        self::assertEquals($later, $sut->updatedAt());
     }
 
     public function testShouldExposeNullFingerprintWhenCreated(): void
@@ -301,7 +282,6 @@ final class WorkerTest extends TestCase
         ?string $name = null,
         ?string $hostLabel = 'default-host',
         ?string $rabbitmqUser = null,
-        ?string $secretTokenHash = null,
         ?DateTimeImmutable $now = null,
     ): Worker {
         return Worker::create(
@@ -309,7 +289,6 @@ final class WorkerTest extends TestCase
             new UserId(Uuid::v7()),
             $name ?? 'Default Worker',
             $rabbitmqUser ?? 'worker-default-01',
-            $secretTokenHash ?? 'hash-default',
             $now ?? new DateTimeImmutable('2026-11-18T15:00:00+00:00'),
             $hostLabel,
         );

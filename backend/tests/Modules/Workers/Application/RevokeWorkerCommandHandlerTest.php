@@ -28,7 +28,7 @@ final class RevokeWorkerCommandHandlerTest extends TestCase
         $workerId = WorkerId::generate();
         $owner = new UserId(Uuid::v7());
         $createdAt = new DateTimeImmutable('2026-11-18T10:00:00+00:00');
-        $workers->save(Worker::create($workerId, $owner, 'Test', 'worker-xyz', 'hash', $createdAt));
+        $workers->save(Worker::create($workerId, $owner, 'Test', 'worker-xyz', $createdAt));
         $events = new SpyEventDispatcher();
         $now = new DateTimeImmutable('2026-11-18T12:00:00+00:00');
         $audit = new SpyAuditLogger();
@@ -55,7 +55,6 @@ final class RevokeWorkerCommandHandlerTest extends TestCase
             $owner,
             'My Laptop',
             'worker-abc',
-            'hash',
             new DateTimeImmutable('2026-11-18T10:00:00+00:00'),
         ));
         $audit = new SpyAuditLogger();
@@ -99,7 +98,6 @@ final class RevokeWorkerCommandHandlerTest extends TestCase
             $owner,
             'Test',
             'worker-xyz',
-            'hash',
             new DateTimeImmutable('2026-11-18T10:00:00+00:00'),
         ));
         $events = new SpyEventDispatcher();

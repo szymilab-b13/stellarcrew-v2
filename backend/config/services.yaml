@@ -130,10 +130,6 @@ services:
     Modules\Workers\Domain\RefreshTokenGenerator:
         alias: Modules\Workers\Infrastructure\Support\RandomBytesRefreshTokenGenerator
 
-    Modules\Workers\Infrastructure\Support\WorkerAuthenticator:
-        arguments:
-            $legacyAuthEnabled: '%env(bool:WORKER_LEGACY_AUTH_ENABLED)%'
-
     # Plan limits (cross-cutting usage gate per ADR-BE-006)
     Modules\Shared\Api\PlanLimitsService:
         alias: Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService

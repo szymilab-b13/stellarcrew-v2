@@ -17,8 +17,6 @@ use Modules\Workers\Application\GeneratePairingCodeCommand;
 use Modules\Workers\Application\GeneratePairingCodeCommandHandler;
 use Modules\Workers\Application\ListUserWorkersQuery;
 use Modules\Workers\Application\ListUserWorkersQueryHandler;
-use Modules\Workers\Application\RecordHeartbeatCommand;
-use Modules\Workers\Application\RecordHeartbeatCommandHandler;
 use Modules\Workers\Application\RevokeAllOwnerWorkersCommand;
 use Modules\Workers\Application\RevokeAllOwnerWorkersCommandHandler;
 use Modules\Workers\Application\RevokeWorkerCommand;
@@ -38,7 +36,6 @@ final readonly class WorkersController
     public function __construct(
         private GeneratePairingCodeCommandHandler $generatePairingCode,
         private ClaimPairingCodeCommandHandler $claimPairingCode,
-        private RecordHeartbeatCommandHandler $recordHeartbeat,
         private ListUserWorkersQueryHandler $listUserWorkers,
         private RevokeWorkerCommandHandler $revokeWorker,
         private RevokeAllOwnerWorkersCommandHandler $revokeAllOwnerWorkers,
@@ -95,32 +92,6 @@ final readonly class WorkersController
             'rabbitmqUser' => $result->rabbitmqUser,
             'refreshToken' => $result->refreshToken,
         ], Response::HTTP_CREATED);
-    }
-
-    #[Route(
-        '/api/workers/{id}/heartbeat',
-        name: 'workers_heartbeat',
-        requirements: ['id' => '[0-9a-fA-F-]{36}'],
-        methods: ['POST'],
-    )]
-    #[OA\Post(
-        path: '/api/workers/{id}/heartbeat',
-        summary: 'Report worker heartbeat (authenticates by plaintext secret)',
-        tags: ['workers'],
-        responses: [
-            new OA\Response(response: 204, description: 'Heartbeat recorded'),
-            new OA\Response(response: 401, description: 'Invalid worker credentials'),
-            new OA\Response(response: 404, description: 'Worker not found'),
-        ],
-    )]
-    public function heartbeat(string $id, #[MapRequestPayload] RecordHeartbeatRequest $request): JsonResponse
-    {
-        ($this->recordHeartbeat)(new RecordHeartbeatCommand(
-            workerId: WorkerId::fromString($id),
-            plaintextSecret: $request->secret,
-        ));
-
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/api/workers', name: 'workers_list', methods: ['GET'])]

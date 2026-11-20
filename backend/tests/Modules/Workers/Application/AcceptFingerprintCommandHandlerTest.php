@@ -95,7 +95,6 @@ final class AcceptFingerprintCommandHandlerTest extends TestCase
             $owner,
             'Worker',
             'worker-x-01',
-            'secret-hash',
             new DateTimeImmutable('2026-11-19T11:00:00+00:00'),
         );
     }

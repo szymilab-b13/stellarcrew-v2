@@ -31,15 +31,15 @@ final class ListUserWorkersQueryHandlerTest extends TestCase
         $other = new UserId(Uuid::v7());
         $createdAt = new DateTimeImmutable('2026-11-18T15:00:00+00:00');
 
-        $onlineWorker = Worker::create(WorkerId::generate(), $owner, 'Online', 'worker-online', 'hash', $createdAt);
+        $onlineWorker = Worker::create(WorkerId::generate(), $owner, 'Online', 'worker-online', $createdAt);
         $onlineWorker->recordHeartbeat(new DateTimeImmutable('2026-11-18T15:04:00+00:00'));
 
         $workers->save($onlineWorker);
 
-        $offlineWorker = Worker::create(WorkerId::generate(), $owner, 'Offline', 'worker-offline', 'hash', $createdAt);
+        $offlineWorker = Worker::create(WorkerId::generate(), $owner, 'Offline', 'worker-offline', $createdAt);
         $workers->save($offlineWorker);
 
-        $foreignWorker = Worker::create(WorkerId::generate(), $other, 'Foreign', 'worker-foreign', 'hash', $createdAt);
+        $foreignWorker = Worker::create(WorkerId::generate(), $other, 'Foreign', 'worker-foreign', $createdAt);
         $workers->save($foreignWorker);
 
         $sut = new ListUserWorkersQueryHandler($workers, $this->fixedClock(new DateTimeImmutable('2026-11-18T15:05:00+00:00')));

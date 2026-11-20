@@ -205,7 +205,6 @@ final class IssueTokenCommandHandlerTest extends TestCase
             $owner,
             'Test Worker',
             'worker-test-01',
-            'secret-hash',
             new DateTimeImmutable('2026-11-19T11:00:00+00:00'),
         );
     }

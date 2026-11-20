@@ -44,7 +44,6 @@ class Worker
         private readonly UserId $ownerUserId,
         private string $name,
         private ?string $hostLabel,
-        private string $secretTokenHash,
         private readonly string $rabbitmqUser,
         private ?DateTimeImmutable $lastHeartbeatAt,
         private readonly DateTimeImmutable $createdAt,
@@ -55,7 +54,6 @@ class Worker
     ) {
         $this->guardName($name);
         $this->guardHostLabel($hostLabel);
-        $this->guardSecretTokenHash($secretTokenHash);
         $this->guardRabbitmqUser($rabbitmqUser);
         $this->guardFingerprintHash($fingerprintHash);
     }
@@ -65,7 +63,6 @@ class Worker
         UserId $ownerUserId,
         string $name,
         string $rabbitmqUser,
-        string $secretTokenHash,
         DateTimeImmutable $now,
         ?string $hostLabel = null,
     ): self {
@@ -74,7 +71,6 @@ class Worker
             $ownerUserId,
             $name,
             $hostLabel,
-            $secretTokenHash,
             $rabbitmqUser,
             null,
             $now,
@@ -100,11 +96,6 @@ class Worker
     public function hostLabel(): ?string
     {
         return $this->hostLabel;
-    }
-
-    public function secretTokenHash(): string
-    {
-        return $this->secretTokenHash;
     }
 
     public function rabbitmqUser(): string
@@ -229,13 +220,6 @@ class Worker
         $this->updatedAt = $now;
     }
 
-    public function rotateSecret(string $secretTokenHash, DateTimeImmutable $now): void
-    {
-        $this->guardSecretTokenHash($secretTokenHash);
-        $this->secretTokenHash = $secretTokenHash;
-        $this->updatedAt = $now;
-    }
-
     public function isOnline(DateTimeImmutable $now, int $thresholdSeconds = 60): bool
     {
         if (!$this->lastHeartbeatAt instanceof DateTimeImmutable) {
@@ -265,13 +249,6 @@ class Worker
 
         if (mb_strlen($hostLabel) > self::HOST_LABEL_MAX) {
             throw new InvalidArgumentException(sprintf('Worker host label cannot exceed %d characters.', self::HOST_LABEL_MAX));
-        }
-    }
-
-    private function guardSecretTokenHash(string $hash): void
-    {
-        if (trim($hash) === '') {
-            throw new InvalidArgumentException('Worker secret token hash cannot be empty.');
         }
     }
 
