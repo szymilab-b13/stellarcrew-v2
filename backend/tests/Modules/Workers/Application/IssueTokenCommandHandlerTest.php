@@ -135,6 +135,14 @@ final class IssueTokenCommandHandlerTest extends TestCase
         self::assertSame($storedHash, $updated->fingerprintHash());
         self::assertCount(1, $events->dispatched);
         self::assertInstanceOf(WorkerFingerprintChanged::class, $events->dispatched[0]);
+
+        $history = $updated->fingerprintChangeHistory();
+        self::assertCount(1, $history);
+        self::assertSame('detected', $history[0]['status']);
+        self::assertSame($storedHash, $history[0]['previousHash']);
+        self::assertSame(str_repeat('b', 64), $history[0]['newHash']);
+        self::assertSame(['hostname' => 'old-host'], $history[0]['previousMeta']);
+        self::assertSame(['hostname' => 'new-host'], $history[0]['newMeta']);
     }
 
     public function testShouldNotFlagWarningWhenFingerprintMatches(): void

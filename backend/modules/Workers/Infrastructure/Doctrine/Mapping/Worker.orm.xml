@@ -20,6 +20,7 @@
         <field name="updatedAt" type="datetimetz_immutable" column="updated_at" nullable="false"/>
         <field name="fingerprintHash" type="string" column="fingerprint_hash" length="64" nullable="true" fixed="true"/>
         <field name="fingerprintMeta" type="json" column="fingerprint_meta" nullable="true"/>
+        <field name="fingerprintChangeHistory" type="json" column="fingerprint_change_history" nullable="false"/>
 
         <indexes>
             <index name="idx_workers_workers_owner_user_id" columns="owner_user_id"/>

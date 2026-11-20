@@ -29,7 +29,15 @@ class Worker
     public const string FINGERPRINT_HASH_PATTERN = '/^[a-f0-9]{64}$/';
 
     /**
-     * @param array<string, mixed>|null $fingerprintMeta
+     * @param array<string, mixed>|null                $fingerprintMeta
+     * @param list<array{
+     *     at: string,
+     *     status: string,
+     *     previousHash: string|null,
+     *     previousMeta: array<string, mixed>|null,
+     *     newHash: string|null,
+     *     newMeta: array<string, mixed>|null
+     * }> $fingerprintChangeHistory
      */
     public function __construct(
         private readonly WorkerId $id,
@@ -43,6 +51,7 @@ class Worker
         private DateTimeImmutable $updatedAt,
         private ?string $fingerprintHash = null,
         private ?array $fingerprintMeta = null,
+        private array $fingerprintChangeHistory = [],
     ) {
         $this->guardName($name);
         $this->guardHostLabel($hostLabel);
@@ -132,25 +141,63 @@ class Worker
     }
 
     /**
+     * @return list<array{
+     *     at: string,
+     *     status: string,
+     *     previousHash: string|null,
+     *     previousMeta: array<string, mixed>|null,
+     *     newHash: string|null,
+     *     newMeta: array<string, mixed>|null
+     * }>
+     */
+    public function fingerprintChangeHistory(): array
+    {
+        return $this->fingerprintChangeHistory;
+    }
+
+    /**
      * @param array<string, mixed>|null $meta
      */
     public function updateFingerprint(?string $hash, ?array $meta, DateTimeImmutable $now): void
     {
         $this->guardFingerprintHash($hash);
+
+        if ($this->fingerprintHash !== null && $this->fingerprintHash !== $hash) {
+            $this->fingerprintChangeHistory[] = [
+                'at' => $now->format(DateTimeImmutable::ATOM),
+                'status' => 'accepted',
+                'previousHash' => $this->fingerprintHash,
+                'previousMeta' => $this->fingerprintMeta,
+                'newHash' => $hash,
+                'newMeta' => $meta,
+            ];
+        }
+
         $this->fingerprintHash = $hash;
         $this->fingerprintMeta = $meta;
         $this->updatedAt = $now;
     }
 
     /**
-     * Updates only the raw metadata (hostname/kernelVersion/etc.) without touching the stable hash.
-     * Used when a fingerprint mismatch is detected and the UI needs the latest observed meta for diff.
+     * Appends a 'detected' entry to the change history without rotating the stored hash.
+     * The stored meta is refreshed so the UI diff shows the latest observed signal.
      *
-     * @param array<string, mixed>|null $meta
+     * @param array<string, mixed>|null $newMeta
      */
-    public function touchFingerprintMeta(?array $meta, DateTimeImmutable $now): void
+    public function recordFingerprintMismatch(?string $newHash, ?array $newMeta, DateTimeImmutable $now): void
     {
-        $this->fingerprintMeta = $meta;
+        $this->guardFingerprintHash($newHash);
+
+        $this->fingerprintChangeHistory[] = [
+            'at' => $now->format(DateTimeImmutable::ATOM),
+            'status' => 'detected',
+            'previousHash' => $this->fingerprintHash,
+            'previousMeta' => $this->fingerprintMeta,
+            'newHash' => $newHash,
+            'newMeta' => $newMeta,
+        ];
+
+        $this->fingerprintMeta = $newMeta;
         $this->updatedAt = $now;
     }
 

@@ -211,6 +211,92 @@ final class WorkerTest extends TestCase
         $sut->updateFingerprint('not-a-sha256', null, $later);
     }
 
+    public function testShouldStartWithEmptyFingerprintChangeHistoryWhenCreated(): void
+    {
+        $sut = $this->makeWorker();
+
+        self::assertSame([], $sut->fingerprintChangeHistory());
+    }
+
+    public function testShouldNotAppendHistoryEntryOnInitialFingerprintSet(): void
+    {
+        $sut = $this->makeWorker();
+        $hash = str_repeat('a', 64);
+        $later = new DateTimeImmutable('2026-11-18T16:00:00+00:00');
+
+        $sut->updateFingerprint($hash, ['hostname' => 'first'], $later);
+
+        self::assertSame([], $sut->fingerprintChangeHistory());
+    }
+
+    public function testShouldAppendAcceptedHistoryEntryWhenFingerprintRotated(): void
+    {
+        $sut = $this->makeWorker();
+        $oldHash = str_repeat('a', 64);
+        $newHash = str_repeat('b', 64);
+        $firstAt = new DateTimeImmutable('2026-11-18T16:00:00+00:00');
+        $acceptAt = new DateTimeImmutable('2026-11-18T17:00:00+00:00');
+        $sut->updateFingerprint($oldHash, ['hostname' => 'old'], $firstAt);
+
+        $sut->updateFingerprint($newHash, ['hostname' => 'new'], $acceptAt);
+
+        $history = $sut->fingerprintChangeHistory();
+        self::assertCount(1, $history);
+        self::assertSame('accepted', $history[0]['status']);
+        self::assertSame($oldHash, $history[0]['previousHash']);
+        self::assertSame(['hostname' => 'old'], $history[0]['previousMeta']);
+        self::assertSame($newHash, $history[0]['newHash']);
+        self::assertSame(['hostname' => 'new'], $history[0]['newMeta']);
+        self::assertSame($acceptAt->format(DateTimeImmutable::ATOM), $history[0]['at']);
+    }
+
+    public function testShouldNotAppendHistoryEntryWhenUpdatingFingerprintToSameHash(): void
+    {
+        $sut = $this->makeWorker();
+        $hash = str_repeat('a', 64);
+        $firstAt = new DateTimeImmutable('2026-11-18T16:00:00+00:00');
+        $secondAt = new DateTimeImmutable('2026-11-18T17:00:00+00:00');
+        $sut->updateFingerprint($hash, ['hostname' => 'old'], $firstAt);
+
+        $sut->updateFingerprint($hash, ['hostname' => 'refreshed'], $secondAt);
+
+        self::assertSame([], $sut->fingerprintChangeHistory());
+    }
+
+    public function testShouldAppendDetectedHistoryEntryAndRefreshMetaWhenMismatchRecorded(): void
+    {
+        $sut = $this->makeWorker();
+        $storedHash = str_repeat('a', 64);
+        $firstAt = new DateTimeImmutable('2026-11-18T16:00:00+00:00');
+        $sut->updateFingerprint($storedHash, ['hostname' => 'old'], $firstAt);
+        $newHash = str_repeat('b', 64);
+        $mismatchAt = new DateTimeImmutable('2026-11-18T17:00:00+00:00');
+
+        $sut->recordFingerprintMismatch($newHash, ['hostname' => 'new'], $mismatchAt);
+
+        self::assertSame($storedHash, $sut->fingerprintHash());
+        self::assertSame(['hostname' => 'new'], $sut->fingerprintMeta());
+        self::assertEquals($mismatchAt, $sut->updatedAt());
+
+        $history = $sut->fingerprintChangeHistory();
+        self::assertCount(1, $history);
+        self::assertSame('detected', $history[0]['status']);
+        self::assertSame($storedHash, $history[0]['previousHash']);
+        self::assertSame(['hostname' => 'old'], $history[0]['previousMeta']);
+        self::assertSame($newHash, $history[0]['newHash']);
+        self::assertSame(['hostname' => 'new'], $history[0]['newMeta']);
+        self::assertSame($mismatchAt->format(DateTimeImmutable::ATOM), $history[0]['at']);
+    }
+
+    public function testShouldRejectInvalidFingerprintHashWhenMismatchRecorded(): void
+    {
+        $sut = $this->makeWorker();
+        $later = new DateTimeImmutable('2026-11-18T16:00:00+00:00');
+
+        $this->expectException(InvalidArgumentException::class);
+        $sut->recordFingerprintMismatch('not-a-sha256', null, $later);
+    }
+
     private function makeWorker(
         ?string $name = null,
         ?string $hostLabel = 'default-host',
