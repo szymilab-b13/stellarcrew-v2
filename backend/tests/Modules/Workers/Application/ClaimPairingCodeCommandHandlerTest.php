@@ -154,15 +154,11 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
     private function sequencedGenerator(array $plaintexts): RefreshTokenGenerator
     {
         return new class ($plaintexts) implements RefreshTokenGenerator {
-            /** @var list<string> */
-            private array $plaintexts;
-
             /**
              * @param list<string> $plaintexts
              */
-            public function __construct(array $plaintexts)
+            public function __construct(private array $plaintexts)
             {
-                $this->plaintexts = $plaintexts;
             }
 
             public function generate(): string
