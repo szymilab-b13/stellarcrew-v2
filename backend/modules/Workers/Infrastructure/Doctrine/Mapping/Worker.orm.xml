@@ -20,6 +20,7 @@
         <field name="fingerprintHash" type="string" column="fingerprint_hash" length="64" nullable="true" fixed="true"/>
         <field name="fingerprintMeta" type="json" column="fingerprint_meta" nullable="true"/>
         <field name="fingerprintChangeHistory" type="json" column="fingerprint_change_history" nullable="false"/>
+        <field name="hostInfo" type="json" column="host_info" nullable="true"/>
 
         <indexes>
             <index name="idx_workers_workers_owner_user_id" columns="owner_user_id"/>

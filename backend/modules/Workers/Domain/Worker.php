@@ -38,7 +38,8 @@ class Worker
      *     previousMeta: array<string, mixed>|null,
      *     newHash: string|null,
      *     newMeta: array<string, mixed>|null
-     * }> $fingerprintChangeHistory
+     * }>                                              $fingerprintChangeHistory
+     * @param array<string, mixed>|null                $hostInfo
      */
     public function __construct(
         private readonly WorkerId $id,
@@ -52,6 +53,7 @@ class Worker
         private ?string $fingerprintHash = null,
         private ?array $fingerprintMeta = null,
         private array $fingerprintChangeHistory = [],
+        private ?array $hostInfo = null,
     ) {
         $this->guardName($name);
         $this->guardHostLabel($hostLabel);
@@ -242,6 +244,27 @@ class Worker
         }
 
         return 'ok';
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function hostInfo(): ?array
+    {
+        return $this->hostInfo;
+    }
+
+    /**
+     * @param array<string, mixed>|null $hostInfo
+     */
+    public function updateHostInfo(?array $hostInfo, DateTimeImmutable $now): void
+    {
+        if ($this->hostInfo === $hostInfo) {
+            return;
+        }
+
+        $this->hostInfo = $hostInfo;
+        $this->updatedAt = $now;
     }
 
     private function guardName(string $name): void
