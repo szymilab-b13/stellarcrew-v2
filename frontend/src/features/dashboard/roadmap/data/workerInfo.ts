@@ -7,7 +7,7 @@ export const WORKER_INFO_MILESTONE: RoadmapMilestone = {
   tasks: [
     { id: 'BL-WI-001', status: 'done', commit: '3604ac6' },
     { id: 'BL-WI-002', status: 'done', commit: '7f374f6' },
-    { id: 'BL-WI-003', status: 'planned' },
+    { id: 'BL-WI-003', status: 'done', commit: '7f902a9' },
     { id: 'BL-WI-004', status: 'planned' },
     { id: 'BL-WI-005', status: 'planned' },
     { id: 'BL-WI-006', status: 'planned' },
