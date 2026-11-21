@@ -362,6 +362,38 @@
       "expiresIn": "Expires in {{time}}",
       "expired": "This code has expired.",
       "regenerate": "Generate a new code"
+    },
+    "detail": {
+      "loading": "Loading worker…",
+      "loadingBreadcrumb": "Worker",
+      "loadError": "Could not load worker.",
+      "backToList": "Back to workers",
+      "info": {
+        "pairedAt": "Paired at",
+        "currentHash": "Current fingerprint"
+      },
+      "hardware": {
+        "title": "Hardware",
+        "empty": "No hardware info reported yet. The worker fills this in on first token refresh.",
+        "os": "OS",
+        "hostname": "Hostname",
+        "cpu": "CPU",
+        "memory": "Memory",
+        "kernel": "Kernel",
+        "arch": "Architecture"
+      },
+      "fingerprintHistory": {
+        "title": "Fingerprint change history",
+        "empty": "No fingerprint changes recorded.",
+        "at": "At",
+        "status": "Status",
+        "newHash": "New hash",
+        "action": "Action",
+        "statusDetected": "Detected",
+        "statusAccepted": "Accepted",
+        "accept": "Accept",
+        "accepting": "Accepting…"
+      }
     }
   },
   "agents": {

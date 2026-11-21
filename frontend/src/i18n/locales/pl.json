@@ -362,6 +362,38 @@
       "expiresIn": "Wygasa za {{time}}",
       "expired": "Ten kod wygasł.",
       "regenerate": "Wygeneruj nowy kod"
+    },
+    "detail": {
+      "loading": "Ładowanie workera…",
+      "loadingBreadcrumb": "Worker",
+      "loadError": "Nie udało się załadować workera.",
+      "backToList": "Powrót do listy workerów",
+      "info": {
+        "pairedAt": "Sparowano",
+        "currentHash": "Aktualny odcisk"
+      },
+      "hardware": {
+        "title": "Sprzęt",
+        "empty": "Jeszcze brak informacji o sprzęcie. Worker wypełni te dane przy pierwszym odświeżeniu tokena.",
+        "os": "System",
+        "hostname": "Hostname",
+        "cpu": "CPU",
+        "memory": "Pamięć",
+        "kernel": "Kernel",
+        "arch": "Architektura"
+      },
+      "fingerprintHistory": {
+        "title": "Historia zmian odcisku",
+        "empty": "Brak zapisanych zmian odcisku.",
+        "at": "Kiedy",
+        "status": "Status",
+        "newHash": "Nowy hash",
+        "action": "Akcja",
+        "statusDetected": "Wykryto",
+        "statusAccepted": "Zaakceptowano",
+        "accept": "Zaakceptuj",
+        "accepting": "Akceptuję…"
+      }
     }
   },
   "agents": {
