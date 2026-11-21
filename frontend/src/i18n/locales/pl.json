@@ -340,11 +340,28 @@
       "neverContacted": "nigdy",
       "onlineAria": "Online",
       "offlineAria": "Offline",
+      "addCta": "Dodaj workera",
       "fingerprint": {
         "ok": "Urządzenie OK",
         "warning": "Zmiana urządzenia",
         "missing": "Brak odcisku"
       }
+    },
+    "add": {
+      "title": "Dodaj nowego workera",
+      "close": "Zamknij",
+      "intro": "Wygeneruj krótko ważny kod parowania. Wklej gotową komendę na swoim serwerze, żeby zainstalować workera i sparować go z Twoim kontem.",
+      "generate": "Wygeneruj kod parowania",
+      "generating": "Generuję…",
+      "generateError": "Nie udało się wygenerować kodu. Spróbuj za chwilę.",
+      "codeLabel": "Kod parowania",
+      "commandLabel": "Uruchom na swoim serwerze",
+      "copy": "Skopiuj komendę",
+      "copied": "Komenda skopiowana.",
+      "hint": "Komenda zainstaluje workera jako serwis i sparuje go tym kodem. Zostaw to okno otwarte, aż worker pojawi się na liście.",
+      "expiresIn": "Wygasa za {{time}}",
+      "expired": "Ten kod wygasł.",
+      "regenerate": "Wygeneruj nowy kod"
     }
   },
   "agents": {

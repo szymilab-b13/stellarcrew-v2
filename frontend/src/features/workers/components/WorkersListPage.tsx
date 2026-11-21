@@ -1,12 +1,14 @@
-import { CircleDashed, Clock3, Loader2, Server, ShieldAlert, ShieldCheck } from 'lucide-react';
-import { useMemo } from 'react';
+import { CircleDashed, Clock3, Loader2, Plus, Server, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
+import { Button } from '@/components/ui/Button';
 
 import { useWorkers } from '../api/useWorkers';
 import type { FingerprintStatus, Worker } from '../types';
+import { AddWorkerModal } from './AddWorkerModal';
 
 function FingerprintBadge({ status }: { status: FingerprintStatus }) {
   const { t } = useTranslation();
@@ -102,6 +104,7 @@ function WorkerCard({ worker }: { worker: Worker }) {
 export function WorkersListPage() {
   const { t } = useTranslation();
   const workersQuery = useWorkers();
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
   const breadcrumbs = useMemo(() => [{ label: t('workers.list.breadcrumb') }], [t]);
   usePageBreadcrumbs(breadcrumbs);
@@ -116,6 +119,9 @@ export function WorkersListPage() {
           </h1>
           <p className="text-sm text-sc-text-muted">{t('workers.list.subtitle')}</p>
         </div>
+        <Button variant="primary" onClick={() => setIsAddOpen(true)}>
+          <Plus size={14} aria-hidden /> {t('workers.list.addCta')}
+        </Button>
       </header>
 
       {workersQuery.isPending ? (
@@ -142,6 +148,9 @@ export function WorkersListPage() {
           <Server size={32} aria-hidden className="text-sc-text-muted" />
           <p className="text-base font-medium text-sc-text">{t('workers.list.emptyTitle')}</p>
           <p className="max-w-md text-sm text-sc-text-muted">{t('workers.list.emptyBody')}</p>
+          <Button variant="primary" onClick={() => setIsAddOpen(true)}>
+            <Plus size={14} aria-hidden /> {t('workers.list.addCta')}
+          </Button>
         </section>
       ) : null}
 
@@ -155,6 +164,8 @@ export function WorkersListPage() {
           ))}
         </section>
       ) : null}
+
+      {isAddOpen ? <AddWorkerModal onClose={() => setIsAddOpen(false)} /> : null}
     </div>
   );
 }

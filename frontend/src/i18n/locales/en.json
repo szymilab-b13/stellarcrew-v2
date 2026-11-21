@@ -340,11 +340,28 @@
       "neverContacted": "never",
       "onlineAria": "Online",
       "offlineAria": "Offline",
+      "addCta": "Add worker",
       "fingerprint": {
         "ok": "Device OK",
         "warning": "Device changed",
         "missing": "No fingerprint"
       }
+    },
+    "add": {
+      "title": "Add a new worker",
+      "close": "Close",
+      "intro": "Generate a short-lived pairing code. Paste the resulting one-line command on your server to install and pair a new worker.",
+      "generate": "Generate pairing code",
+      "generating": "Generating…",
+      "generateError": "Could not generate pairing code. Try again in a moment.",
+      "codeLabel": "Pairing code",
+      "commandLabel": "Run this on your server",
+      "copy": "Copy install command",
+      "copied": "Command copied to clipboard.",
+      "hint": "The command installs the worker as a service and pairs it with this code. Keep this modal open until the worker appears in the list.",
+      "expiresIn": "Expires in {{time}}",
+      "expired": "This code has expired.",
+      "regenerate": "Generate a new code"
     }
   },
   "agents": {
