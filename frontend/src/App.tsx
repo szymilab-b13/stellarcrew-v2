@@ -14,6 +14,7 @@ import { LoginPage } from './features/auth';
 import { AdminAuditPage } from './features/audit';
 import { ChatPage } from './features/chat';
 import { AdminUserDetailPage, AdminUsersPage } from './features/user-management';
+import { WorkersListPage } from './features/workers';
 import { CurrentWorkspaceGuard } from './features/workspaces/components/CurrentWorkspaceGuard';
 import { WorkspaceOverviewPage } from './features/workspaces/components/WorkspaceOverviewPage';
 import {
@@ -65,6 +66,7 @@ export function App() {
             <Route path="/agents/new/scratch" element={<AgentFromScratchFormPage />} />
             <Route path="/agents/:id/overview" element={<AgentOverviewPage />} />
             <Route path="/agents/:id/settings" element={<AgentSettingsPage />} />
+            <Route path="/settings/workers" element={<WorkersListPage />} />
             <Route element={<RequireSuperAdmin />}>
               <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />

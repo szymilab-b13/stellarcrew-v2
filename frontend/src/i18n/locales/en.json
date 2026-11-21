@@ -324,6 +324,29 @@
     "breadcrumb": "Projects",
     "title": "Projects"
   },
+  "workers": {
+    "list": {
+      "breadcrumb": "Workers",
+      "title": "Workers",
+      "subtitle": "Machines paired to your account that run agent replies.",
+      "loading": "Loading workers…",
+      "loadError": "Could not load workers.",
+      "listAria": "Workers list",
+      "emptyAria": "No workers yet",
+      "emptyTitle": "You don't have any workers yet",
+      "emptyBody": "Add a worker to run agent replies on your own machine. You'll get a one-line install command.",
+      "lastContact": "Last contact",
+      "fingerprintLabel": "Fingerprint",
+      "neverContacted": "never",
+      "onlineAria": "Online",
+      "offlineAria": "Offline",
+      "fingerprint": {
+        "ok": "Device OK",
+        "warning": "Device changed",
+        "missing": "No fingerprint"
+      }
+    }
+  },
   "agents": {
     "breadcrumb": "Agents",
     "title": "Agents",

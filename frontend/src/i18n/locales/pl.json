@@ -324,6 +324,29 @@
     "breadcrumb": "Projekty",
     "title": "Projekty"
   },
+  "workers": {
+    "list": {
+      "breadcrumb": "Workery",
+      "title": "Workery",
+      "subtitle": "Maszyny sparowane z Twoim kontem, odpowiadają w imieniu agentów.",
+      "loading": "Ładowanie workerów…",
+      "loadError": "Nie udało się załadować workerów.",
+      "listAria": "Lista workerów",
+      "emptyAria": "Brak workerów",
+      "emptyTitle": "Nie masz jeszcze żadnego workera",
+      "emptyBody": "Dodaj workera, żeby odpalać odpowiedzi agentów na własnej maszynie. Dostaniesz jedną komendę do wklejenia na serwerze.",
+      "lastContact": "Ostatni kontakt",
+      "fingerprintLabel": "Odcisk",
+      "neverContacted": "nigdy",
+      "onlineAria": "Online",
+      "offlineAria": "Offline",
+      "fingerprint": {
+        "ok": "Urządzenie OK",
+        "warning": "Zmiana urządzenia",
+        "missing": "Brak odcisku"
+      }
+    }
+  },
   "agents": {
     "breadcrumb": "Agenci",
     "title": "Agenci",
