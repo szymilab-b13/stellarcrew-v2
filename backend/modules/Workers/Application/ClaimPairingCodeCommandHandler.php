@@ -13,7 +13,6 @@ use Modules\Workers\Domain\WorkerPairingCodeRepository;
 use Modules\Workers\Domain\WorkerRefreshToken;
 use Modules\Workers\Domain\WorkerRefreshTokenRepository;
 use Modules\Workers\Domain\WorkerRepository;
-use Modules\Workers\Domain\WorkerSecretTokenHasher;
 
 use function sprintf;
 use function str_replace;
@@ -26,7 +25,6 @@ final readonly class ClaimPairingCodeCommandHandler
         private WorkerPairingCodeRepository $codes,
         private WorkerRepository $workers,
         private WorkerRefreshTokenRepository $refreshTokens,
-        private WorkerSecretTokenHasher $hasher,
         private RefreshTokenGenerator $tokenGenerator,
         private Clock $clock,
     ) {
@@ -44,15 +42,13 @@ final readonly class ClaimPairingCodeCommandHandler
 
         $workerId = WorkerId::generate();
         $rabbitmqUser = sprintf('worker-%s', str_replace('-', '', (string) $workerId));
-        $plaintextSecret = $this->hasher->generateToken();
-        $secretHash = $this->hasher->hash($plaintextSecret);
+        $rabbitmqPassword = $this->tokenGenerator->generate();
 
         $worker = Worker::create(
             $workerId,
             $code->ownerUserId(),
             $command->name,
             $rabbitmqUser,
-            $secretHash,
             $now,
             $command->hostLabel,
         );
@@ -72,6 +68,6 @@ final readonly class ClaimPairingCodeCommandHandler
         $this->workers->save($worker);
         $this->refreshTokens->save($refreshToken);
 
-        return new ClaimedPairingResult($workerId, $plaintextSecret, $rabbitmqUser, $refreshPlaintext);
+        return new ClaimedPairingResult($workerId, $rabbitmqPassword, $rabbitmqUser, $refreshPlaintext);
     }
 }

@@ -58,7 +58,7 @@ final readonly class IssueTokenCommandHandler
         if ($command->fingerprintHash !== null && $storedHash !== null && $storedHash !== $command->fingerprintHash) {
             $fingerprintWarning = true;
             $previousMeta = $storedMeta;
-            $worker->touchFingerprintMeta($command->fingerprintMeta, $now);
+            $worker->recordFingerprintMismatch($command->fingerprintHash, $command->fingerprintMeta, $now);
             $this->workers->save($worker);
             $this->events->dispatch(new WorkerFingerprintChanged(
                 workerId: $worker->id(),

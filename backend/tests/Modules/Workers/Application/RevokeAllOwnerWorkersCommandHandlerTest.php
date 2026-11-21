@@ -38,9 +38,9 @@ final class RevokeAllOwnerWorkersCommandHandlerTest extends TestCase
         $workerAId = WorkerId::generate();
         $workerBId = WorkerId::generate();
         $foreignId = WorkerId::generate();
-        $workers->save(Worker::create($workerAId, $owner, 'A', 'worker-a', 'hash', $createdAt));
-        $workers->save(Worker::create($workerBId, $owner, 'B', 'worker-b', 'hash', $createdAt));
-        $workers->save(Worker::create($foreignId, $foreign, 'F', 'worker-f', 'hash', $createdAt));
+        $workers->save(Worker::create($workerAId, $owner, 'A', 'worker-a', $createdAt));
+        $workers->save(Worker::create($workerBId, $owner, 'B', 'worker-b', $createdAt));
+        $workers->save(Worker::create($foreignId, $foreign, 'F', 'worker-f', $createdAt));
 
         $events = new SpyEventDispatcher();
         $sut = $this->buildHandler($workers, $events);

@@ -12,13 +12,13 @@ use DomainException;
 
 use function hash;
 
+use LogicException;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
 use Modules\Workers\Application\ClaimPairingCodeCommand;
 use Modules\Workers\Application\ClaimPairingCodeCommandHandler;
 use Modules\Workers\Domain\RefreshTokenGenerator;
 use Modules\Workers\Domain\WorkerPairingCode;
-use Modules\Workers\Infrastructure\Support\BcryptWorkerSecretTokenHasher;
 use PHPUnit\Framework\TestCase;
 
 use function str_repeat;
@@ -33,12 +33,11 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         $codes = new InMemoryWorkerPairingCodeRepository();
         $workers = new InMemoryWorkerRepository();
         $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
-        $hasher = new BcryptWorkerSecretTokenHasher();
         $owner = new UserId(Uuid::v7());
         $issuedAt = new DateTimeImmutable('2026-11-18T15:00:00+00:00');
         $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, $issuedAt));
         $claimAt = new DateTimeImmutable('2026-11-18T15:05:00+00:00');
-        $sut = $this->makeHandler($codes, $workers, $refreshTokens, $hasher, $claimAt);
+        $sut = $this->makeHandler($codes, $workers, $refreshTokens, $claimAt);
 
         $result = $sut(new ClaimPairingCodeCommand(
             code: 'ABCD-2345',
@@ -53,7 +52,8 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         self::assertTrue($worker->ownerUserId()->equals($owner));
         self::assertSame($result->rabbitmqUser, $worker->rabbitmqUser());
         self::assertMatchesRegularExpression('/^worker-[0-9a-f]{32}$/', $result->rabbitmqUser);
-        self::assertTrue($hasher->verify($result->plaintextSecret, $worker->secretTokenHash()));
+        self::assertSame('amqp-pass', $result->plaintextSecret);
+        self::assertNotSame($result->plaintextSecret, $result->refreshToken);
         self::assertTrue($codes->findByCode('ABCD-2345')?->isClaimed());
         self::assertSame('refresh-plain', $result->refreshToken);
         self::assertNotNull($refreshTokens->findByTokenHash(hash('sha256', 'refresh-plain')));
@@ -65,7 +65,6 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
             new InMemoryWorkerPairingCodeRepository(),
             new InMemoryWorkerRepository(),
             new InMemoryWorkerRefreshTokenRepository(),
-            new BcryptWorkerSecretTokenHasher(),
             new DateTimeImmutable('2026-11-18T15:00:00+00:00'),
         );
 
@@ -82,7 +81,6 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
             $codes,
             new InMemoryWorkerRepository(),
             new InMemoryWorkerRefreshTokenRepository(),
-            new BcryptWorkerSecretTokenHasher(),
             new DateTimeImmutable('2026-11-18T15:05:00+00:00'),
         );
         $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'M'));
@@ -101,7 +99,6 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
             $codes,
             $workers,
             new InMemoryWorkerRefreshTokenRepository(),
-            new BcryptWorkerSecretTokenHasher(),
             new DateTimeImmutable('2026-11-18T15:05:00+00:00'),
         );
         $hash = str_repeat('f', 64);
@@ -129,7 +126,6 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
             $codes,
             new InMemoryWorkerRepository(),
             new InMemoryWorkerRefreshTokenRepository(),
-            new BcryptWorkerSecretTokenHasher(),
             new DateTimeImmutable('2026-11-18T15:20:00+00:00'),
         );
 
@@ -141,29 +137,38 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         InMemoryWorkerPairingCodeRepository $codes,
         InMemoryWorkerRepository $workers,
         InMemoryWorkerRefreshTokenRepository $refreshTokens,
-        BcryptWorkerSecretTokenHasher $hasher,
         DateTimeImmutable $now,
     ): ClaimPairingCodeCommandHandler {
         return new ClaimPairingCodeCommandHandler(
             $codes,
             $workers,
             $refreshTokens,
-            $hasher,
-            $this->deterministicGenerator('refresh-plain'),
+            $this->sequencedGenerator(['amqp-pass', 'refresh-plain']),
             $this->fixedClock($now),
         );
     }
 
-    private function deterministicGenerator(string $plaintext): RefreshTokenGenerator
+    /**
+     * @param list<string> $plaintexts
+     */
+    private function sequencedGenerator(array $plaintexts): RefreshTokenGenerator
     {
-        return new readonly class ($plaintext) implements RefreshTokenGenerator {
-            public function __construct(private string $plaintext)
+        return new class ($plaintexts) implements RefreshTokenGenerator {
+            /**
+             * @param list<string> $plaintexts
+             */
+            public function __construct(private array $plaintexts)
             {
             }
 
             public function generate(): string
             {
-                return $this->plaintext;
+                $next = array_shift($this->plaintexts);
+                if ($next === null) {
+                    throw new LogicException('sequencedGenerator exhausted');
+                }
+
+                return $next;
             }
 
             public function hash(string $plaintext): string

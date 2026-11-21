@@ -45,6 +45,13 @@ final class AcceptFingerprintCommandHandlerTest extends TestCase
         self::assertNotNull($updated);
         self::assertSame($newHash, $updated->fingerprintHash());
         self::assertSame(['hostname' => 'new'], $updated->fingerprintMeta());
+
+        $history = $updated->fingerprintChangeHistory();
+        self::assertCount(1, $history);
+        self::assertSame('accepted', $history[0]['status']);
+        self::assertSame($oldHash, $history[0]['previousHash']);
+        self::assertSame($newHash, $history[0]['newHash']);
+        self::assertSame($acceptAt->format(DateTimeImmutable::ATOM), $history[0]['at']);
     }
 
     public function testShouldReject404WhenWorkerUnknown(): void
@@ -88,7 +95,6 @@ final class AcceptFingerprintCommandHandlerTest extends TestCase
             $owner,
             'Worker',
             'worker-x-01',
-            'secret-hash',
             new DateTimeImmutable('2026-11-19T11:00:00+00:00'),
         );
     }

@@ -13,7 +13,6 @@ use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Modules\Shared\Kernel\WorkerId;
 use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerRepository;
-use Modules\Workers\Domain\WorkerSecretTokenHasher;
 
 use function preg_match;
 use function str_starts_with;
@@ -28,28 +27,18 @@ final readonly class WorkerAuthenticator
 
     public function __construct(
         private WorkerRepository $workers,
-        private WorkerSecretTokenHasher $hasher,
         private JWTEncoderInterface $jwtEncoder,
-        private bool $legacyAuthEnabled = false,
     ) {
     }
 
     public function authenticate(Request $request): Worker
     {
         $authorization = $request->headers->get('Authorization');
-        if (is_string($authorization) && str_starts_with($authorization, 'Bearer ')) {
-            return $this->authenticateBearer(substr($authorization, 7));
+        if (!is_string($authorization) || !str_starts_with($authorization, 'Bearer ')) {
+            throw new AccessDeniedHttpException('Missing Authorization bearer token.');
         }
 
-        if ($this->legacyAuthEnabled) {
-            return $this->authenticateLegacy($request);
-        }
-
-        throw new AccessDeniedHttpException('Missing Authorization bearer token.');
-    }
-
-    private function authenticateBearer(string $jwt): Worker
-    {
+        $jwt = substr($authorization, 7);
         if ($jwt === '') {
             throw new AccessDeniedHttpException('Empty bearer token.');
         }
@@ -74,33 +63,6 @@ final readonly class WorkerAuthenticator
         $worker = $this->workers->findById($workerId);
         if (!$worker instanceof Worker) {
             throw new AccessDeniedHttpException('Unknown worker.');
-        }
-
-        return $worker;
-    }
-
-    private function authenticateLegacy(Request $request): Worker
-    {
-        $workerIdHeader = $request->headers->get('X-Worker-Id');
-        $secretHeader = $request->headers->get('X-Worker-Secret');
-
-        if (!is_string($workerIdHeader) || !is_string($secretHeader) || $workerIdHeader === '' || $secretHeader === '') {
-            throw new AccessDeniedHttpException('Missing worker credentials.');
-        }
-
-        try {
-            $workerId = WorkerId::fromString($workerIdHeader);
-        } catch (InvalidArgumentException) {
-            throw new AccessDeniedHttpException('Malformed X-Worker-Id.');
-        }
-
-        $worker = $this->workers->findById($workerId);
-        if (!$worker instanceof Worker) {
-            throw new AccessDeniedHttpException('Unknown worker.');
-        }
-
-        if (!$this->hasher->verify($secretHeader, $worker->secretTokenHash())) {
-            throw new AccessDeniedHttpException('Invalid worker credentials.');
         }
 
         return $worker;

@@ -12,7 +12,7 @@ use Modules\Workers\Domain\WorkerAccessTokenEncoder;
 
 final readonly class LexikWorkerAccessTokenEncoder implements WorkerAccessTokenEncoder
 {
-    public const string DEFAULT_SCOPE = 'worker:session.read worker:messages.write worker:heartbeat';
+    public const string DEFAULT_SCOPE = 'worker:session.read worker:messages.write';
 
     public function __construct(
         private JWTEncoderInterface $encoder,
