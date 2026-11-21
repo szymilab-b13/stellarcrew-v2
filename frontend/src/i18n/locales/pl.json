@@ -1128,6 +1128,15 @@
       "chatAgentUx": {
         "title": "CHAT AGENT UX — redesign agent-centric (lista agentów po lewej, płaski feed rozmowy)"
       },
+      "chatAgentReply": {
+        "title": "CHAT AGENT REPLY — worker odpala Claude i odpowiada w imieniu agenta"
+      },
+      "workerAuth": {
+        "title": "WORKER AUTH — parowanie workera, token JWT + refresh, kontrola odcisku urządzenia"
+      },
+      "workerInfo": {
+        "title": "WORKER INFO — /settings/workers lista + szczegóły, modal Dodaj Workera, pakowanie systemd"
+      },
       "threads": {
         "title": "Wątki pozamilestone’owe — DX i dokumentacja"
       },
@@ -1682,6 +1691,144 @@
       },
       "BL-CAGU-011": {
         "story": "ThreadComposer — textarea treści + Send + popover zębatki (typ silnika / engineId / priorytet / toggle nowego tematu z inline tematem)."
+      },
+      "BL-CAGU-R": {
+        "story": "Redesign czatu, follow-up — wyrzucone ThreadTabs i chapter dividery, płaski chronologiczny strumień wiadomości per agent, tint dymka w kolorze agenta, ChatSettingsModal przeniesiony do nagłówka."
+      },
+      "BL-AUTH-FP-001": {
+        "story": "Worker dostaje odcisk urządzenia — stabilny skrót hosta (machine id, mac, cpu) zapisany obok workera. Jak urządzenie się zmieni, backend to zauważa."
+      },
+      "BL-AUTH-JWT-001": {
+        "story": "Worker loguje się JWT — krótki access token (15 min) + refresh token (90 dni) z jednorazową rotacją, w bazie trzymany jako hash."
+      },
+      "BL-WA-005a": {
+        "story": "Backend zauważa gdy worker wraca z innym odciskiem — response zwraca ostrzeżenie i zachowuje metadane poprzedniego urządzenia."
+      },
+      "BL-WA-005b": {
+        "story": "Zmiana odcisku emituje zdarzenie domenowe — inne moduły (audit, powiadomienia) mogą na to zareagować."
+      },
+      "BL-WA-005c": {
+        "story": "Każda zmiana odcisku ląduje w historii workera — detected i accepted obok siebie, w kolumnie JSONB."
+      },
+      "BL-WA-006a": {
+        "story": "Zmianę odcisku można zaakceptować przez POST /api/workers/{id}/fingerprint/accept — aktualny hash wchodzi do rekordu workera."
+      },
+      "BL-WA-007a": {
+        "story": "Worker sam zarządza swoim tokenem — menedżer tokena + klient wymiany dzwonią do refresh endpointu zanim access wygaśnie."
+      },
+      "BL-WA-007c": {
+        "story": "Plik credentials workera trzyma refresh token obok danych parowania (schemat v2 na dysku)."
+      },
+      "BL-WA-008a": {
+        "story": "Klient workera gada z backendem przez Bearer JWT — na 401 wymusza refresh i ponawia zapytanie raz."
+      },
+      "BL-WA-009a": {
+        "story": "WorkerAuthenticator preferuje Bearer JWT przez Lexik — stary fallback na nagłówki X-Worker-* jest za flagą."
+      },
+      "BL-WA-009b": {
+        "story": "Stare logowanie X-Worker-* jest usunięte — razem z endpointem heartbeat i kolumną z hashem sekretu."
+      },
+      "BL-CAR-005b": {
+        "story": "Backend publikuje AgentReplyRequested na RabbitMQ gdy wątek czatu ma przypisanego workera — jedna wiadomość per prośba o odpowiedź."
+      },
+      "BL-CAR-005d": {
+        "story": "Workera można wycofać — pojedynczo albo wszystkich naraz — backend kaskadowo sprząta przypisania do agentów i sesji czatu."
+      },
+      "BL-CAR-006": {
+        "story": "Szkielet daemona workera w Node — projekt TypeScript, serwer healthcheck, logi JSON, graceful shutdown na SIGTERM."
+      },
+      "BL-CAR-007": {
+        "story": "Interaktywny CLI do parowania — `pnpm pair` pyta o kod, zapisuje credentials do ~/.stellarcrew/worker.json z bezpiecznymi uprawnieniami."
+      },
+      "BL-CAR-008": {
+        "story": "Własny serializer JSON dla AgentReplyRequested — worker konsumuje czysty JSON, bez PHP-owych metadanych na drucie."
+      },
+      "BL-CAR-008a": {
+        "story": "AMQP consumer workera — bindowanie kolejki per worker do exchange chat.agent_replies, ack lub requeue w zależności od wyniku."
+      },
+      "BL-CAR-008b": {
+        "story": "Worker odpala `claude -p --resume` przy każdej prośbie — łapie stdout, przycina, zapisuje odpowiedź przez API workera."
+      },
+      "BL-CAR-009": {
+        "story": "Mercure streamuje odpowiedzi agenta do UI w momencie gdy Claude je generuje — fragment po fragmencie zamiast czekania na koniec."
+      },
+      "BL-CAR-010": {
+        "story": "Worker dokłada CLAUDE.md agenta jako system prompt — Claude odpowiada głosem agenta, nie domyślnym."
+      },
+      "BL-WI-001": {
+        "story": "Kod parowania generujesz w panelu — response zawiera jedną komendę do wklejenia na serwer."
+      },
+      "BL-WI-002": {
+        "story": "GET /api/workers zwraca twoich workerów — nazwa, host, online/offline, ostatni kontakt, status odcisku."
+      },
+      "BL-WI-003": {
+        "story": "Endpoint szczegółów workera — pełne info o sprzęcie, historia zmian odcisku, lista agentów przypisanych do tego workera."
+      },
+      "BL-WI-004": {
+        "story": "Workery trzymają host info w JSONB — system, CPU, pamięć, kernel — zasilane przez workera przy każdym refreshu tokena."
+      },
+      "BL-WI-005": {
+        "story": "Pair endpoint przyjmuje host info — świeżo sparowany worker od razu pokazuje pełne dane o sprzęcie."
+      },
+      "BL-WI-006": {
+        "story": "Wymiana tokena bumpuje last-heartbeat i odświeża host info — wskaźnik online pokazuje rzeczywistość."
+      },
+      "BL-WI-007": {
+        "story": "Kod parowania można anulować zanim zostanie użyty lub wygaśnie."
+      },
+      "BL-WI-008": {
+        "story": "Strona /settings/workers pokazuje twoich workerów jako karty — nazwa, host, zielona kropka online, status odcisku, podgląd sprzętu."
+      },
+      "BL-WI-009": {
+        "story": "Każdy wiersz workera ma menu pod burgerem — Szczegóły, Kopiuj ID, Wycofaj (z potwierdzeniem)."
+      },
+      "BL-WI-010": {
+        "story": "Strona szczegółów workera — sprzęt, odcisk z historią + przycisk Zaakceptuj, i agenci przypisani do tego workera."
+      },
+      "BL-WI-011": {
+        "story": "Banner nad listą workerów ostrzega gdy któryś zgłasza zmianę urządzenia — klik prowadzi do akceptacji lub wycofania."
+      },
+      "BL-WI-012": {
+        "story": "Sidebar linkuje do /settings/workers — docierasz do listy bez wpisywania URL."
+      },
+      "BL-WI-013": {
+        "story": "Warstwa API workerów na froncie — typy + funkcje fetch + hooki react-query używane na liście, szczegółach i w modalu."
+      },
+      "BL-WI-014": {
+        "story": "Vitest i tłumaczenia dla /settings/workers — PL i EN obok siebie, wszystkie ekrany przetestowane."
+      },
+      "BL-WI-015": {
+        "story": "Modal Dodaj Workera — nazwa instancji, folder roboczy, opis maszyny → komenda instalacyjna do wklejenia, modal czeka aż worker się sparuje."
+      },
+      "BL-WI-016": {
+        "story": "Kopiowanie komendy do schowka z toastem potwierdzającym — plus przycisk Regeneruj gdy kod wygaśnie."
+      },
+      "BL-WI-017": {
+        "story": "Dedykowany hook pollingu sprawdzający czy nowy worker się pojawił — zatrzymuje się po sukcesie lub wygaśnięciu kodu."
+      },
+      "BL-WI-018": {
+        "story": "Tłumaczenia + Vitest dla modala Dodaj Workera — PL/EN plus testy walidacji, pollingu, timeoutu i kopiowania."
+      },
+      "BL-WI-019": {
+        "story": "CLI stellarcrew-worker z subkomendami — pair, start, status, logs, restart, unpair, list — każda z opcjonalną nazwą instancji."
+      },
+      "BL-WI-020": {
+        "story": "Resolver ścieżek dla konfiguracji i credentials per instancja — /etc/stellarcrew-worker/{instance}/ pod rootem, ~/.stellarcrew/{instance}/ bez roota."
+      },
+      "BL-WI-021": {
+        "story": "Systemd template unit stellarcrew-worker@.service — każda instancja działa jako swój enabled serwis, logi przez journalctl."
+      },
+      "BL-WI-022": {
+        "story": "Worker buduje się jako jedno-plikowy binary — jeden plik w /usr/local/bin/stellarcrew-worker, bez node_modules na serwerze."
+      },
+      "BL-WI-023": {
+        "story": "install-worker.sh — ściąga binary, instaluje systemd unit, paruje kodem i startuje serwis w jednym strzale."
+      },
+      "BL-WI-024": {
+        "story": "Backend serwuje install-worker.sh — panel generuje gotowe do skopiowania komendy z odpowiednim base URL."
+      },
+      "BL-WI-025": {
+        "story": "Pokrycie workerowego CLI Vitestem + sekcja README o instalacji na produkcji — ręczna instalacja + referencja CLI."
       },
       "BL-DX-001": {
         "story": "CI korzysta z usług ci/services (postgres, redis, rabbit) zamiast zaślepek — gdy testy wyjdą poza warstwę API."

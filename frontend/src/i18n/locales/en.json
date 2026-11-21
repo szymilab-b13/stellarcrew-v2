@@ -1128,6 +1128,15 @@
       "chatAgentUx": {
         "title": "CHAT AGENT UX — agent-centric redesign (sidebar of agents, flat conversation feed)"
       },
+      "chatAgentReply": {
+        "title": "CHAT AGENT REPLY — worker daemon spawns Claude for agent replies"
+      },
+      "workerAuth": {
+        "title": "WORKER AUTH — worker pairing, JWT access + refresh tokens, fingerprint checks"
+      },
+      "workerInfo": {
+        "title": "WORKER INFO — /settings/workers list + detail, Add Worker modal, systemd packaging"
+      },
       "threads": {
         "title": "Non-milestone threads — DX and documentation"
       },
@@ -1682,6 +1691,144 @@
       },
       "BL-CAGU-011": {
         "story": "ThreadComposer — content textarea + Send + gear popover (engine type / engine id / priority / new-topic toggle with inline subject)."
+      },
+      "BL-CAGU-R": {
+        "story": "Chat redesign follow-up — dropped ThreadTabs + chapter dividers, flat chronological message stream per agent, per-agent color bubble tint, ChatSettingsModal moved to the header."
+      },
+      "BL-AUTH-FP-001": {
+        "story": "Workers get a fingerprint — a stable hash of the host (machine id, mac, cpu) stored next to the worker. If the device changes, the backend notices."
+      },
+      "BL-AUTH-JWT-001": {
+        "story": "Workers authenticate with JWT — short-lived access token (15 minutes) + refresh token (90 days) with one-use rotation, hashed in the database."
+      },
+      "BL-WA-005a": {
+        "story": "Backend notices when a worker calls back with a different fingerprint — response flags a warning and keeps the previous fingerprint metadata."
+      },
+      "BL-WA-005b": {
+        "story": "Fingerprint changes emit a domain event so other modules (audit, notifications) can react."
+      },
+      "BL-WA-005c": {
+        "story": "Every fingerprint change is logged in the worker's history — detected and accepted entries side by side, kept in JSONB."
+      },
+      "BL-WA-006a": {
+        "story": "You can accept a changed fingerprint via POST /api/workers/{id}/fingerprint/accept — the current hash rolls into the worker record."
+      },
+      "BL-WA-007a": {
+        "story": "Worker daemon manages its own tokens — token manager + token exchange client call the refresh endpoint before the access token expires."
+      },
+      "BL-WA-007c": {
+        "story": "Worker credentials file stores the refresh token alongside the pairing data (schema v2 on disk)."
+      },
+      "BL-WA-008a": {
+        "story": "Worker API client talks to the backend with Bearer JWT — on 401 it forces a refresh and retries the call once."
+      },
+      "BL-WA-009a": {
+        "story": "WorkerAuthenticator prefers Bearer JWT via Lexik — legacy X-Worker-* header fallback is gated by a feature flag."
+      },
+      "BL-WA-009b": {
+        "story": "Legacy X-Worker-* authentication is gone — along with the heartbeat endpoint and the secret token hash column."
+      },
+      "BL-CAR-005b": {
+        "story": "Backend publishes AgentReplyRequested on RabbitMQ when a chat thread has a worker assigned — one message per reply request."
+      },
+      "BL-CAR-005d": {
+        "story": "You can revoke a worker — single or all at once — and the backend cascades cleanup to assigned agents and chat sessions."
+      },
+      "BL-CAR-006": {
+        "story": "Node worker daemon skeleton — TypeScript project with healthcheck server, structured logs and graceful shutdown on SIGTERM."
+      },
+      "BL-CAR-007": {
+        "story": "Interactive pairing CLI — `pnpm pair` asks for the code, stores credentials to ~/.stellarcrew/worker.json with safe file permissions."
+      },
+      "BL-CAR-008": {
+        "story": "Custom JSON serializer for AgentReplyRequested — worker consumes clean JSON, no PHP-specific metadata on the wire."
+      },
+      "BL-CAR-008a": {
+        "story": "Worker AMQP consumer — binds a per-worker queue to the chat.agent_replies exchange and acks or requeues based on success."
+      },
+      "BL-CAR-008b": {
+        "story": "Worker spawns `claude -p --resume` for each reply — captures stdout, trims, and records the reply back through the worker API."
+      },
+      "BL-CAR-009": {
+        "story": "Mercure streams agent replies to the UI as Claude emits them — chunk-by-chunk instead of waiting for the final answer."
+      },
+      "BL-CAR-010": {
+        "story": "Worker injects the agent's CLAUDE.md as a system prompt — Claude answers in the agent's voice, not plain default."
+      },
+      "BL-WI-001": {
+        "story": "You generate a pairing code from the web panel — the response includes the one-line command to paste into your server."
+      },
+      "BL-WI-002": {
+        "story": "GET /api/workers returns your workers — name, host, online/offline, last contact, fingerprint status."
+      },
+      "BL-WI-003": {
+        "story": "Worker detail endpoint — full hardware info, fingerprint change history, and the list of agents assigned to this worker."
+      },
+      "BL-WI-004": {
+        "story": "Workers store host info in JSONB — operating system, CPU, memory, kernel — populated from the worker on every token refresh."
+      },
+      "BL-WI-005": {
+        "story": "Pair endpoint accepts host info — a freshly paired worker shows up with full hardware data from the start."
+      },
+      "BL-WI-006": {
+        "story": "Token refresh exchange bumps the last-heartbeat timestamp and refreshes host info — the online badge reflects reality."
+      },
+      "BL-WI-007": {
+        "story": "You can cancel a pairing code before it is used or expires."
+      },
+      "BL-WI-008": {
+        "story": "A /settings/workers page lists your workers as cards — name, host, online dot, fingerprint status, hardware preview."
+      },
+      "BL-WI-009": {
+        "story": "Every worker row has a kebab menu — Details, Copy ID, Revoke (with confirm)."
+      },
+      "BL-WI-010": {
+        "story": "Worker detail page — hardware, fingerprint with history + Accept button, and the agents assigned to this worker."
+      },
+      "BL-WI-011": {
+        "story": "A banner over the workers list warns when any worker reports a device change — click through to accept or revoke."
+      },
+      "BL-WI-012": {
+        "story": "The sidebar links to /settings/workers — you reach the list without typing the URL."
+      },
+      "BL-WI-013": {
+        "story": "Frontend workers API layer — types + fetch functions + react-query hooks reused across the list, detail and modal."
+      },
+      "BL-WI-014": {
+        "story": "Vitest and translations for /settings/workers — PL and EN side-by-side, all screens tested."
+      },
+      "BL-WI-015": {
+        "story": "Add Worker modal — instance name, working directory, host description → one-line install command shown, modal waits until the worker pairs."
+      },
+      "BL-WI-016": {
+        "story": "Copy-to-clipboard for the install command with a toast confirmation — plus a Regenerate button when the code expires."
+      },
+      "BL-WI-017": {
+        "story": "A dedicated hook polls for the new worker to appear — it stops on success or when the code's time-to-live runs out."
+      },
+      "BL-WI-018": {
+        "story": "Translations + Vitest for the Add Worker modal — PL/EN plus tests covering validation, polling, timeout and copy."
+      },
+      "BL-WI-019": {
+        "story": "stellarcrew-worker CLI with subcommands — pair, start, status, logs, restart, unpair, list — each accepting an instance name."
+      },
+      "BL-WI-020": {
+        "story": "Paths resolver for per-instance config and credentials — /etc/stellarcrew-worker/{instance}/ under root, ~/.stellarcrew/{instance}/ otherwise."
+      },
+      "BL-WI-021": {
+        "story": "Systemd template unit stellarcrew-worker@.service — each instance runs as its own enabled service with logs via journalctl."
+      },
+      "BL-WI-022": {
+        "story": "Worker builds as a single-file executable — one binary in /usr/local/bin/stellarcrew-worker, no node_modules on the server."
+      },
+      "BL-WI-023": {
+        "story": "install-worker.sh — pulls the binary, installs the systemd unit, pairs with the code and starts the service in one shot."
+      },
+      "BL-WI-024": {
+        "story": "Backend serves install-worker.sh — the panel generates copy-ready commands with the right base URL."
+      },
+      "BL-WI-025": {
+        "story": "Worker CLI Vitest coverage + README section on installing in production — Manual install + CLI reference."
       },
       "BL-DX-001": {
         "story": "CI uses a ci/services block (postgres, redis, rabbit) instead of ad-hoc fakes — once tests move beyond the API surface."

@@ -9,6 +9,7 @@ import { AUDIT_MILESTONE } from './audit';
 import { AUTH_MILESTONE } from './auth';
 import { AUTH_REFRESH_MILESTONE } from './authRefresh';
 import { CHAT_MILESTONE } from './chat';
+import { CHAT_AGENT_REPLY_MILESTONE } from './chatAgentReply';
 import { CHAT_AGENT_UX_MILESTONE } from './chatAgentUx';
 import { CORE_MILESTONE } from './core';
 import { FLOWS_MILESTONE } from './flows';
@@ -27,6 +28,8 @@ import { THREADS_MILESTONE } from './threads';
 import { UI_MILESTONE } from './ui';
 import { USER_MANAGEMENT_MILESTONE } from './userManagement';
 import { VARIABLES_MILESTONE } from './variables';
+import { WORKER_AUTH_MILESTONE } from './workerAuth';
+import { WORKER_INFO_MILESTONE } from './workerInfo';
 import { WORKSPACE_UX_MILESTONE } from './workspaceUx';
 import { WORKSPACES_MILESTONE } from './workspaces';
 
@@ -58,6 +61,9 @@ export const ROADMAP: RoadmapMilestone[] = [
   AUTH_REFRESH_MILESTONE,
   CHAT_MILESTONE,
   CHAT_AGENT_UX_MILESTONE,
+  CHAT_AGENT_REPLY_MILESTONE,
+  WORKER_AUTH_MILESTONE,
+  WORKER_INFO_MILESTONE,
   THREADS_MILESTONE,
   PLANS_USAGE_MILESTONE,
   AGENTS_ORCHESTRATION_MILESTONE,
