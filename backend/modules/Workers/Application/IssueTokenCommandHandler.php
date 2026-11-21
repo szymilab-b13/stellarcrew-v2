@@ -59,7 +59,6 @@ final readonly class IssueTokenCommandHandler
             $fingerprintWarning = true;
             $previousMeta = $storedMeta;
             $worker->recordFingerprintMismatch($command->fingerprintHash, $command->fingerprintMeta, $now);
-            $this->workers->save($worker);
             $this->events->dispatch(new WorkerFingerprintChanged(
                 workerId: $worker->id(),
                 ownerUserId: $worker->ownerUserId(),
@@ -68,6 +67,13 @@ final readonly class IssueTokenCommandHandler
                 occurredAt: $now,
             ));
         }
+
+        if ($command->hostInfo !== null) {
+            $worker->updateHostInfo($command->hostInfo, $now);
+        }
+
+        $worker->recordHeartbeat($now);
+        $this->workers->save($worker);
 
         $stored->markConsumed($now);
 
