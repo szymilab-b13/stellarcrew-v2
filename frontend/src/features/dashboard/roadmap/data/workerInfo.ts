@@ -5,7 +5,7 @@ export const WORKER_INFO_MILESTONE: RoadmapMilestone = {
   status: 'inProgress',
   note: 'Worker management UI + production packaging: /settings/workers list + detail, "Add worker" modal with one-line install command, systemd template unit for multi-instance (per-project cwd). Backend: pairing code generation endpoint, list+detail endpoints, host_info JSONB + heartbeat on refresh. Worker CLI (pair/start/status/logs/restart/unpair/list) + install-worker.sh. Brief: knowledge/briefs/1i-worker-info.md. ~25 BL in 4 phases (A backend, B frontend list/detail, C modal, D worker CLI+installer).',
   tasks: [
-    { id: 'BL-WI-001', status: 'planned' },
+    { id: 'BL-WI-001', status: 'done', commit: '3604ac6' },
     { id: 'BL-WI-002', status: 'planned' },
     { id: 'BL-WI-003', status: 'planned' },
     { id: 'BL-WI-004', status: 'planned' },
