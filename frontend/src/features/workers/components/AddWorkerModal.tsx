@@ -1,14 +1,16 @@
 import { Check, Copy, Loader2, Terminal, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/Button';
 
 import { useCreatePairingCode } from '../api/useCreatePairingCode';
+import { usePollForPairedWorker } from '../api/usePollForPairedWorker';
 import type { PairingCodeResponse } from '../types';
 
 interface AddWorkerModalProps {
   onClose(): void;
+  onPaired?(workerId: string): void;
 }
 
 function formatCountdown(ms: number): string {
@@ -18,12 +20,31 @@ function formatCountdown(ms: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
-export function AddWorkerModal({ onClose }: AddWorkerModalProps) {
+export function AddWorkerModal({ onClose, onPaired }: AddWorkerModalProps) {
   const { t } = useTranslation();
   const createCode = useCreatePairingCode();
   const [pairingCode, setPairingCode] = useState<PairingCodeResponse | null>(null);
+  const [issuedAt, setIssuedAt] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [remainingMs, setRemainingMs] = useState<number>(0);
+
+  const handlePaired = useCallback(
+    (workerId: string) => {
+      if (onPaired) {
+        onPaired(workerId);
+      } else {
+        onClose();
+      }
+    },
+    [onClose, onPaired],
+  );
+
+  usePollForPairedWorker({
+    pairingIssuedAt: issuedAt,
+    expiresAt: pairingCode?.expiresAt ?? null,
+    enabled: pairingCode !== null,
+    onPaired: handlePaired,
+  });
 
   useEffect(() => {
     function handleKey(event: KeyboardEvent) {
@@ -49,7 +70,10 @@ export function AddWorkerModal({ onClose }: AddWorkerModalProps) {
     createCode.mutate(
       {},
       {
-        onSuccess: (response) => setPairingCode(response),
+        onSuccess: (response) => {
+          setPairingCode(response);
+          setIssuedAt(new Date().toISOString());
+        },
       },
     );
   }
@@ -159,6 +183,13 @@ export function AddWorkerModal({ onClose }: AddWorkerModalProps) {
               ) : null}
               <p className="text-xs text-sc-text-muted">{t('workers.add.hint')}</p>
             </div>
+
+            {!expired ? (
+              <p className="flex items-center gap-2 text-xs text-sc-text-muted">
+                <Loader2 className="animate-spin" size={12} aria-hidden />
+                {t('workers.add.waitingForWorker')}
+              </p>
+            ) : null}
 
             {expired ? (
               <div className="flex justify-end gap-2">

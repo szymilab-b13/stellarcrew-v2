@@ -361,7 +361,8 @@
       "hint": "The command installs the worker as a service and pairs it with this code. Keep this modal open until the worker appears in the list.",
       "expiresIn": "Expires in {{time}}",
       "expired": "This code has expired.",
-      "regenerate": "Generate a new code"
+      "regenerate": "Generate a new code",
+      "waitingForWorker": "Waiting for the worker to pair…"
     },
     "detail": {
       "loading": "Loading worker…",

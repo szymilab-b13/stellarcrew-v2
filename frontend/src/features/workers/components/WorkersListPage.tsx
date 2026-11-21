@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { usePageBreadcrumbs } from '@/components/app/useBreadcrumbs';
 import { Button } from '@/components/ui/Button';
@@ -112,8 +112,14 @@ function WorkerCard({ worker }: { worker: Worker }) {
 
 export function WorkersListPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const workersQuery = useWorkers();
   const [isAddOpen, setIsAddOpen] = useState(false);
+
+  function handlePaired(workerId: string) {
+    setIsAddOpen(false);
+    navigate(`/settings/workers/${workerId}`);
+  }
 
   const breadcrumbs = useMemo(() => [{ label: t('workers.list.breadcrumb') }], [t]);
   usePageBreadcrumbs(breadcrumbs);
@@ -174,7 +180,9 @@ export function WorkersListPage() {
         </section>
       ) : null}
 
-      {isAddOpen ? <AddWorkerModal onClose={() => setIsAddOpen(false)} /> : null}
+      {isAddOpen ? (
+        <AddWorkerModal onClose={() => setIsAddOpen(false)} onPaired={handlePaired} />
+      ) : null}
     </div>
   );
 }

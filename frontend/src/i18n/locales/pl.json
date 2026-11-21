@@ -361,7 +361,8 @@
       "hint": "Komenda zainstaluje workera jako serwis i sparuje go tym kodem. Zostaw to okno otwarte, aż worker pojawi się na liście.",
       "expiresIn": "Wygasa za {{time}}",
       "expired": "Ten kod wygasł.",
-      "regenerate": "Wygeneruj nowy kod"
+      "regenerate": "Wygeneruj nowy kod",
+      "waitingForWorker": "Czekam aż worker się sparuje…"
     },
     "detail": {
       "loading": "Ładowanie workera…",
