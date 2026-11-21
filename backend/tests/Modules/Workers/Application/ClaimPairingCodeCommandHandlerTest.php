@@ -89,6 +89,31 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'M2'));
     }
 
+    public function testShouldPersistHostInfoWhenProvided(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('BCDE-3456', $owner, new DateTimeImmutable('2026-11-21T13:00:00+00:00')));
+        $sut = $this->makeHandler(
+            $codes,
+            $workers,
+            new InMemoryWorkerRefreshTokenRepository(),
+            new DateTimeImmutable('2026-11-21T13:05:00+00:00'),
+        );
+        $hostInfo = ['os' => 'Linux', 'osRelease' => '6.1.0', 'cpuModel' => 'AMD Ryzen 9', 'cpuCount' => 16, 'memoryBytes' => 32 * 1024 * 1024 * 1024];
+
+        $result = $sut(new ClaimPairingCodeCommand(
+            code: 'BCDE-3456',
+            name: 'Prod',
+            hostInfo: $hostInfo,
+        ));
+
+        $worker = $workers->findById($result->workerId);
+        self::assertNotNull($worker);
+        self::assertSame($hostInfo, $worker->hostInfo());
+    }
+
     public function testShouldPersistFingerprintWhenProvided(): void
     {
         $codes = new InMemoryWorkerPairingCodeRepository();

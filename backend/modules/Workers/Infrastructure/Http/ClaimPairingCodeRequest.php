@@ -12,6 +12,7 @@ final readonly class ClaimPairingCodeRequest
 {
     /**
      * @param array<string, mixed>|null $fingerprintMeta
+     * @param array<string, mixed>|null $hostInfo
      */
     public function __construct(
         #[Assert\NotBlank(message: 'code is required')]
@@ -25,6 +26,7 @@ final readonly class ClaimPairingCodeRequest
         #[Assert\Regex(pattern: Worker::FINGERPRINT_HASH_PATTERN, message: 'fingerprintHash must match sha256 hex pattern')]
         public ?string $fingerprintHash = null,
         public ?array $fingerprintMeta = null,
+        public ?array $hostInfo = null,
     ) {
     }
 }

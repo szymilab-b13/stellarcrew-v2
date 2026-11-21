@@ -57,6 +57,10 @@ final readonly class ClaimPairingCodeCommandHandler
             $worker->updateFingerprint($command->fingerprintHash, $command->fingerprintMeta, $now);
         }
 
+        if ($command->hostInfo !== null) {
+            $worker->updateHostInfo($command->hostInfo, $now);
+        }
+
         $refreshPlaintext = $this->tokenGenerator->generate();
         $refreshToken = WorkerRefreshToken::issue(
             $this->tokenGenerator->hash($refreshPlaintext),
