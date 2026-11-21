@@ -12,7 +12,7 @@ final readonly class ClaimPairingCodeCommand
      */
     public function __construct(
         public string $code,
-        public string $name,
+        public ?string $name = null,
         public ?string $hostLabel = null,
         public ?string $fingerprintHash = null,
         public ?array $fingerprintMeta = null,

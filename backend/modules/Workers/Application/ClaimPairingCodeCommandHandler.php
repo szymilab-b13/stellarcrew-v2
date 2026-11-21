@@ -16,8 +16,11 @@ use Modules\Workers\Domain\WorkerRepository;
 
 use function sprintf;
 use function str_replace;
+use function substr;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+use function trim;
 
 final readonly class ClaimPairingCodeCommandHandler
 {
@@ -43,11 +46,14 @@ final readonly class ClaimPairingCodeCommandHandler
         $workerId = WorkerId::generate();
         $rabbitmqUser = sprintf('worker-%s', str_replace('-', '', (string) $workerId));
         $rabbitmqPassword = $this->tokenGenerator->generate();
+        $name = $command->name !== null && trim($command->name) !== ''
+            ? $command->name
+            : sprintf('worker-%s', substr(str_replace('-', '', (string) $workerId), -6));
 
         $worker = Worker::create(
             $workerId,
             $code->ownerUserId(),
-            $command->name,
+            $name,
             $rabbitmqUser,
             $now,
             $command->hostLabel,

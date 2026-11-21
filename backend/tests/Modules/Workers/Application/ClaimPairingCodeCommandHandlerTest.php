@@ -89,6 +89,46 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'M2'));
     }
 
+    public function testShouldGenerateAutoNameWhenNamesIsNull(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('WXYZ-4567', $owner, new DateTimeImmutable('2026-11-21T14:00:00+00:00')));
+        $sut = $this->makeHandler(
+            $codes,
+            $workers,
+            new InMemoryWorkerRefreshTokenRepository(),
+            new DateTimeImmutable('2026-11-21T14:05:00+00:00'),
+        );
+
+        $result = $sut(new ClaimPairingCodeCommand(code: 'WXYZ-4567'));
+
+        $worker = $workers->findById($result->workerId);
+        self::assertNotNull($worker);
+        self::assertMatchesRegularExpression('/^worker-[0-9a-f]{6}$/', $worker->name());
+    }
+
+    public function testShouldGenerateAutoNameWhenNameIsBlank(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('XYZZ-5678', $owner, new DateTimeImmutable('2026-11-21T14:00:00+00:00')));
+        $sut = $this->makeHandler(
+            $codes,
+            $workers,
+            new InMemoryWorkerRefreshTokenRepository(),
+            new DateTimeImmutable('2026-11-21T14:05:00+00:00'),
+        );
+
+        $result = $sut(new ClaimPairingCodeCommand(code: 'XYZZ-5678', name: '   '));
+
+        $worker = $workers->findById($result->workerId);
+        self::assertNotNull($worker);
+        self::assertMatchesRegularExpression('/^worker-[0-9a-f]{6}$/', $worker->name());
+    }
+
     public function testShouldPersistHostInfoWhenProvided(): void
     {
         $codes = new InMemoryWorkerPairingCodeRepository();

@@ -18,9 +18,8 @@ final readonly class ClaimPairingCodeRequest
         #[Assert\NotBlank(message: 'code is required')]
         #[Assert\Regex(pattern: WorkerPairingCode::CODE_PATTERN, message: 'code must match XXXX-XXXX unambiguous pattern')]
         public string $code,
-        #[Assert\NotBlank(message: 'name is required')]
         #[Assert\Length(max: Worker::NAME_MAX, maxMessage: 'name cannot exceed {{ limit }} characters')]
-        public string $name,
+        public ?string $name = null,
         #[Assert\Length(max: Worker::HOST_LABEL_MAX, maxMessage: 'hostLabel cannot exceed {{ limit }} characters')]
         public ?string $hostLabel = null,
         #[Assert\Regex(pattern: Worker::FINGERPRINT_HASH_PATTERN, message: 'fingerprintHash must match sha256 hex pattern')]
