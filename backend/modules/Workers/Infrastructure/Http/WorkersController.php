@@ -216,6 +216,8 @@ final readonly class WorkersController
             'isOnline' => $view->isOnline,
             'createdAt' => $view->createdAt->format(DateTimeInterface::ATOM),
             'updatedAt' => $view->updatedAt->format(DateTimeInterface::ATOM),
+            'fingerprintHashShort' => $view->fingerprintHashShort,
+            'fingerprintStatus' => $view->fingerprintStatus,
         ];
     }
 }

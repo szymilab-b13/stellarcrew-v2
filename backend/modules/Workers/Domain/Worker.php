@@ -7,6 +7,7 @@ namespace Modules\Workers\Domain;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
+use function end;
 use function mb_strlen;
 
 use Modules\Shared\Kernel\UserId;
@@ -227,6 +228,20 @@ class Worker
         }
 
         return ($now->getTimestamp() - $this->lastHeartbeatAt->getTimestamp()) <= $thresholdSeconds;
+    }
+
+    public function fingerprintStatus(): string
+    {
+        if ($this->fingerprintHash === null) {
+            return 'missing';
+        }
+
+        $lastEntry = end($this->fingerprintChangeHistory);
+        if ($lastEntry !== false && $lastEntry['status'] === 'detected') {
+            return 'warning';
+        }
+
+        return 'ok';
     }
 
     private function guardName(string $name): void

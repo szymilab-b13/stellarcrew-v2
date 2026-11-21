@@ -278,6 +278,40 @@ final class WorkerTest extends TestCase
         $sut->recordFingerprintMismatch('not-a-sha256', null, $later);
     }
 
+    public function testShouldReportMissingFingerprintStatusWhenHashNotSet(): void
+    {
+        $sut = $this->makeWorker();
+
+        self::assertSame('missing', $sut->fingerprintStatus());
+    }
+
+    public function testShouldReportOkFingerprintStatusWhenHashSetAndHistoryEmpty(): void
+    {
+        $sut = $this->makeWorker();
+        $sut->updateFingerprint(str_repeat('a', 64), null, new DateTimeImmutable('2026-11-18T15:30:00+00:00'));
+
+        self::assertSame('ok', $sut->fingerprintStatus());
+    }
+
+    public function testShouldReportWarningFingerprintStatusWhenLastEntryDetected(): void
+    {
+        $sut = $this->makeWorker();
+        $sut->updateFingerprint(str_repeat('a', 64), null, new DateTimeImmutable('2026-11-18T15:30:00+00:00'));
+        $sut->recordFingerprintMismatch(str_repeat('b', 64), null, new DateTimeImmutable('2026-11-18T16:00:00+00:00'));
+
+        self::assertSame('warning', $sut->fingerprintStatus());
+    }
+
+    public function testShouldReportOkFingerprintStatusWhenMismatchAcceptedAfterDetection(): void
+    {
+        $sut = $this->makeWorker();
+        $sut->updateFingerprint(str_repeat('a', 64), null, new DateTimeImmutable('2026-11-18T15:30:00+00:00'));
+        $sut->recordFingerprintMismatch(str_repeat('b', 64), null, new DateTimeImmutable('2026-11-18T16:00:00+00:00'));
+        $sut->updateFingerprint(str_repeat('b', 64), null, new DateTimeImmutable('2026-11-18T16:30:00+00:00'));
+
+        self::assertSame('ok', $sut->fingerprintStatus());
+    }
+
     private function makeWorker(
         ?string $name = null,
         ?string $hostLabel = 'default-host',
