@@ -134,6 +134,10 @@ services:
         arguments:
             $publicBaseUrl: '%env(DEFAULT_URI)%'
 
+    Modules\Workers\Infrastructure\Http\InstallerController:
+        arguments:
+            $publicBaseUrl: '%env(DEFAULT_URI)%'
+
     # Plan limits (cross-cutting usage gate per ADR-BE-006)
     Modules\Shared\Api\PlanLimitsService:
         alias: Modules\Shared\Infrastructure\Plans\ConfigBackedPlanLimitsService
