@@ -50,6 +50,7 @@
       "workspaces": "Workspace’y",
       "workspace": "Workspace",
       "project": "Projekt",
+      "settings": "Ustawienia",
       "admin": "Administracja",
       "pinned": "Przypięte"
     },
@@ -73,6 +74,7 @@
       "projectTasks": "Zadania",
       "projectSettings": "Ustawienia",
       "users": "Użytkownicy",
+      "workers": "Workery",
       "auditLog": "Dziennik audytu"
     },
     "workspaceContext": {
