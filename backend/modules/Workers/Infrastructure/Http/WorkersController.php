@@ -23,6 +23,7 @@ use Modules\Workers\Application\RevokeWorkerCommand;
 use Modules\Workers\Application\RevokeWorkerCommandHandler;
 use Modules\Workers\Application\WorkerView;
 use Modules\Workers\Domain\WorkerNotFoundException;
+use Modules\Workers\Infrastructure\Support\PairCommandFormatter;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,6 +41,7 @@ final readonly class WorkersController
         private RevokeWorkerCommandHandler $revokeWorker,
         private RevokeAllOwnerWorkersCommandHandler $revokeAllOwnerWorkers,
         private AcceptFingerprintCommandHandler $acceptFingerprint,
+        private PairCommandFormatter $pairCommandFormatter,
     ) {
     }
 
@@ -62,6 +64,7 @@ final readonly class WorkersController
         return new JsonResponse([
             'code' => $code->code(),
             'expiresAt' => $code->expiresAt()->format(DateTimeInterface::ATOM),
+            'pairCommand' => $this->pairCommandFormatter->format($code->code()),
         ], Response::HTTP_CREATED);
     }
 
