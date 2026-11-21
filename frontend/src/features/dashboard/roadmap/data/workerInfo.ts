@@ -16,7 +16,7 @@ export const WORKER_INFO_MILESTONE: RoadmapMilestone = {
     { id: 'BL-WI-009', status: 'planned' },
     { id: 'BL-WI-010', status: 'planned' },
     { id: 'BL-WI-011', status: 'planned' },
-    { id: 'BL-WI-012', status: 'planned' },
+    { id: 'BL-WI-012', status: 'done', commit: '71222ac' },
     { id: 'BL-WI-013', status: 'planned' },
     { id: 'BL-WI-014', status: 'planned' },
     { id: 'BL-WI-015', status: 'planned' },
