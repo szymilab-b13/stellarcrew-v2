@@ -95,7 +95,10 @@ export function AddWorkerModal({ onClose }: AddWorkerModalProps) {
           <section className="flex flex-col gap-3">
             <p className="text-sm text-sc-text-muted">{t('workers.add.intro')}</p>
             {createCode.isError ? (
-              <p role="alert" className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900">
+              <p
+                role="alert"
+                className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900"
+              >
                 {t('workers.add.generateError')}
               </p>
             ) : null}
@@ -103,7 +106,8 @@ export function AddWorkerModal({ onClose }: AddWorkerModalProps) {
               <Button variant="primary" onClick={handleGenerate} disabled={createCode.isPending}>
                 {createCode.isPending ? (
                   <>
-                    <Loader2 className="animate-spin" size={14} aria-hidden /> {t('workers.add.generating')}
+                    <Loader2 className="animate-spin" size={14} aria-hidden />{' '}
+                    {t('workers.add.generating')}
                   </>
                 ) : (
                   t('workers.add.generate')

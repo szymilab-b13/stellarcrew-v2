@@ -48,7 +48,9 @@ describe('AddWorkerModal', () => {
   it('shows intro state with Generate button before a code is created', () => {
     renderModal();
 
-    expect(screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/ABCD-/)).not.toBeInTheDocument();
   });
 
@@ -60,18 +62,23 @@ describe('AddWorkerModal', () => {
         {
           code: 'ABCD-2345',
           expiresAt,
-          pairCommand: 'curl -fsSL http://localhost:8000/install-worker.sh | bash -s -- --code ABCD-2345',
+          pairCommand:
+            'curl -fsSL http://localhost:8000/install-worker.sh | bash -s -- --code ABCD-2345',
         },
         201,
       ),
     );
 
     renderModal();
-    await user.click(screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }));
+    await user.click(
+      screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }),
+    );
 
     expect(await screen.findByText('ABCD-2345')).toBeInTheDocument();
     expect(
-      screen.getByText(/curl -fsSL http:\/\/localhost:8000\/install-worker.sh \| bash -s -- --code ABCD-2345/),
+      screen.getByText(
+        /curl -fsSL http:\/\/localhost:8000\/install-worker.sh \| bash -s -- --code ABCD-2345/,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -91,7 +98,9 @@ describe('AddWorkerModal', () => {
     );
 
     renderModal();
-    await user.click(screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }));
+    await user.click(
+      screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }),
+    );
     await screen.findByText('ABCD-2345');
     await user.click(screen.getByRole('button', { name: /Skopiuj komendę|Copy install command/i }));
 
@@ -112,7 +121,9 @@ describe('AddWorkerModal', () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(mockResponse({ message: 'nope' }, 500));
 
     renderModal();
-    await user.click(screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }));
+    await user.click(
+      screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }),
+    );
 
     expect(
       await screen.findByText(/Nie udało się wygenerować kodu|Could not generate pairing code/i),

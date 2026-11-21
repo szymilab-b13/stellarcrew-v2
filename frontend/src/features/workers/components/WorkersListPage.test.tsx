@@ -69,7 +69,12 @@ describe('WorkersListPage', () => {
 
   it('renders worker cards when data arrives', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      mockResponse({ workers: [workerBase, { ...workerBase, id: 'b', name: 'projekt-b', fingerprintStatus: 'warning' }] }),
+      mockResponse({
+        workers: [
+          workerBase,
+          { ...workerBase, id: 'b', name: 'projekt-b', fingerprintStatus: 'warning' },
+        ],
+      }),
     );
 
     renderPage();

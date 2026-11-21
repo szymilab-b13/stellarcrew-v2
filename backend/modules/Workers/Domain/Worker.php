@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Modules\Workers\Domain;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 
 use function end;
+
+use InvalidArgumentException;
+
 use function mb_strlen;
 
 use Modules\Shared\Kernel\UserId;

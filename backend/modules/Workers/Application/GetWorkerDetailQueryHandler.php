@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Modules\Workers\Application;
 
-use function sprintf;
-use function substr;
-
 use Modules\Shared\Kernel\Clock;
 use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerRepository;
+
+use function sprintf;
+use function substr;
+
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 

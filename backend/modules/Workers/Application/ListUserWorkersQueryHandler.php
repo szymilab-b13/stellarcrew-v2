@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\Workers\Application;
 
-use function substr;
-
 use Modules\Shared\Kernel\Clock;
 use Modules\Workers\Domain\WorkerRepository;
+
+use function substr;
 
 final readonly class ListUserWorkersQueryHandler
 {

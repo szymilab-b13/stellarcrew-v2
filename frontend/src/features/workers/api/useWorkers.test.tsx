@@ -63,7 +63,10 @@ describe('workers api hooks', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toEqual(response);
-    expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining('/api/workers'), expect.anything());
+    expect(fetchSpy).toHaveBeenCalledWith(
+      expect.stringContaining('/api/workers'),
+      expect.anything(),
+    );
   });
 
   it('useWorker fetches detail when id provided', async () => {
@@ -98,7 +101,8 @@ describe('workers api hooks', () => {
     const response: PairingCodeResponse = {
       code: 'ABCD-2345',
       expiresAt: '2026-11-21T14:00:00+00:00',
-      pairCommand: 'curl -fsSL http://localhost:8000/install-worker.sh | bash -s -- --code ABCD-2345',
+      pairCommand:
+        'curl -fsSL http://localhost:8000/install-worker.sh | bash -s -- --code ABCD-2345',
     };
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(mockResponse(response, 201));
     const { Wrapper } = createWrapper();

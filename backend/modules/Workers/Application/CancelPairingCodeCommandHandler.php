@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\Workers\Application;
 
-use function sprintf;
-
 use Modules\Workers\Domain\WorkerPairingCode;
 use Modules\Workers\Domain\WorkerPairingCodeRepository;
+
+use function sprintf;
+
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

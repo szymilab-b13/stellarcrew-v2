@@ -15,7 +15,9 @@ export async function fetchWorker(id: string): Promise<WorkerDetail> {
   return apiFetch<WorkerDetail>(`/api/workers/${id}`);
 }
 
-export async function createPairingCode(_input: CreatePairingCodeInput = {}): Promise<PairingCodeResponse> {
+export async function createPairingCode(
+  _input: CreatePairingCodeInput = {},
+): Promise<PairingCodeResponse> {
   return apiFetch<PairingCodeResponse>('/api/workers/pairing-codes', {
     method: 'POST',
     body: JSON.stringify({}),

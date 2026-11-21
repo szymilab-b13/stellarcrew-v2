@@ -1,4 +1,13 @@
-import { ArrowLeft, Clock3, Cpu, HardDrive, Loader2, Server, ShieldAlert, ShieldCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  Clock3,
+  Cpu,
+  HardDrive,
+  Loader2,
+  Server,
+  ShieldAlert,
+  ShieldCheck,
+} from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
@@ -32,9 +41,7 @@ function formatDateTime(iso: string | null): string {
 function HardwareSection({ hostInfo }: { hostInfo: HostInfo | null }) {
   const { t } = useTranslation();
   if (hostInfo === null) {
-    return (
-      <p className="text-sm text-sc-text-muted">{t('workers.detail.hardware.empty')}</p>
-    );
+    return <p className="text-sm text-sc-text-muted">{t('workers.detail.hardware.empty')}</p>;
   }
   return (
     <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -42,7 +49,10 @@ function HardwareSection({ hostInfo }: { hostInfo: HostInfo | null }) {
         <dt className="text-xs uppercase tracking-wide text-sc-text-muted">
           {t('workers.detail.hardware.os')}
         </dt>
-        <dd className="text-sm text-sc-text">{hostInfo.os ?? '—'}{hostInfo.osRelease ? ` (${hostInfo.osRelease})` : ''}</dd>
+        <dd className="text-sm text-sc-text">
+          {hostInfo.os ?? '—'}
+          {hostInfo.osRelease ? ` (${hostInfo.osRelease})` : ''}
+        </dd>
       </div>
       <div className="flex flex-col gap-0.5">
         <dt className="text-xs uppercase tracking-wide text-sc-text-muted">
@@ -94,7 +104,9 @@ function FingerprintHistoryTable({
   const acceptMutation = useAcceptFingerprint();
 
   if (entries.length === 0) {
-    return <p className="text-sm text-sc-text-muted">{t('workers.detail.fingerprintHistory.empty')}</p>;
+    return (
+      <p className="text-sm text-sc-text-muted">{t('workers.detail.fingerprintHistory.empty')}</p>
+    );
   }
 
   const latestIndex = entries.length - 1;
@@ -124,7 +136,11 @@ function FingerprintHistoryTable({
                         : 'inline-flex items-center gap-1 rounded-md border border-emerald-400/50 bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-700 dark:text-emerald-300'
                     }
                   >
-                    {entry.status === 'detected' ? <ShieldAlert size={12} aria-hidden /> : <ShieldCheck size={12} aria-hidden />}
+                    {entry.status === 'detected' ? (
+                      <ShieldAlert size={12} aria-hidden />
+                    ) : (
+                      <ShieldCheck size={12} aria-hidden />
+                    )}
                     {entry.status === 'detected'
                       ? t('workers.detail.fingerprintHistory.statusDetected')
                       : t('workers.detail.fingerprintHistory.statusAccepted')}
@@ -187,10 +203,16 @@ export function WorkerDetailPage() {
   if (workerQuery.isError || !workerQuery.data) {
     return (
       <div className="flex flex-col gap-3">
-        <Link to="/settings/workers" className="inline-flex items-center gap-1 text-sm text-sc-text-muted hover:text-sc-text">
+        <Link
+          to="/settings/workers"
+          className="inline-flex items-center gap-1 text-sm text-sc-text-muted hover:text-sc-text"
+        >
           <ArrowLeft size={14} aria-hidden /> {t('workers.detail.backToList')}
         </Link>
-        <p role="alert" className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900">
+        <p
+          role="alert"
+          className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900"
+        >
           {t('workers.detail.loadError')}
         </p>
       </div>
@@ -203,7 +225,10 @@ export function WorkerDetailPage() {
   return (
     <div className="flex w-full flex-col gap-6">
       <div>
-        <Link to="/settings/workers" className="inline-flex items-center gap-1 text-sm text-sc-text-muted hover:text-sc-text">
+        <Link
+          to="/settings/workers"
+          className="inline-flex items-center gap-1 text-sm text-sc-text-muted hover:text-sc-text"
+        >
           <ArrowLeft size={14} aria-hidden /> {t('workers.detail.backToList')}
         </Link>
       </div>

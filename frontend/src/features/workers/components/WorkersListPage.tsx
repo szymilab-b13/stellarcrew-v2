@@ -1,4 +1,12 @@
-import { CircleDashed, Clock3, Loader2, Plus, Server, ShieldAlert, ShieldCheck } from 'lucide-react';
+import {
+  CircleDashed,
+  Clock3,
+  Loader2,
+  Plus,
+  Server,
+  ShieldAlert,
+  ShieldCheck,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -51,7 +59,8 @@ function OnlineDot({ isOnline }: { isOnline: boolean }) {
 
 function RelativeTime({ iso }: { iso: string | null }) {
   const { t } = useTranslation();
-  if (iso === null) return <span className="text-sc-text-muted">{t('workers.list.neverContacted')}</span>;
+  if (iso === null)
+    return <span className="text-sc-text-muted">{t('workers.list.neverContacted')}</span>;
   const date = new Date(iso);
   const formatted = new Intl.DateTimeFormat(undefined, {
     year: 'numeric',
