@@ -5,6 +5,7 @@ export interface PairWorkerInput {
   readonly hostLabel?: string;
   readonly fingerprintHash?: string;
   readonly fingerprintMeta?: object;
+  readonly hostInfo?: object;
 }
 
 export interface PairWorkerResult {
@@ -47,6 +48,9 @@ export function createPairingClient(fetchFn: typeof fetch = fetch): PairingClien
     }
     if (input.fingerprintMeta !== undefined) {
       payload.fingerprintMeta = input.fingerprintMeta;
+    }
+    if (input.hostInfo !== undefined) {
+      payload.hostInfo = input.hostInfo;
     }
 
     const response = await fetchFn(url, {

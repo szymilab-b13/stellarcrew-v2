@@ -63,6 +63,15 @@ export async function runPairing(deps: RunPairingDeps): Promise<WorkerCredential
       hostLabel,
       fingerprintHash: fingerprint.hash,
       fingerprintMeta: fingerprint.meta,
+      hostInfo: {
+        os: fingerprint.meta.osPlatform,
+        osRelease: fingerprint.meta.osRelease,
+        arch: fingerprint.meta.arch,
+        cpuModel: fingerprint.meta.cpuModel,
+        cpuCount: fingerprint.meta.cpuCount,
+        hostname: fingerprint.meta.hostname,
+        kernelVersion: fingerprint.meta.osVersion,
+      },
     });
     const credentials: WorkerCredentials =
       result.refreshToken !== undefined

@@ -38,9 +38,9 @@ function formatDateTime(iso: string | null): string {
   }).format(new Date(iso));
 }
 
-function HardwareSection({ hostInfo }: { hostInfo: HostInfo | null }) {
+function HardwareSection({ hostInfo }: { hostInfo: HostInfo | null | undefined }) {
   const { t } = useTranslation();
-  if (hostInfo === null) {
+  if (!hostInfo) {
     return <p className="text-sm text-sc-text-muted">{t('workers.detail.hardware.empty')}</p>;
   }
   return (

@@ -130,6 +130,15 @@ describe('runPairing', () => {
         hostLabel: 'macbook.local',
         fingerprintHash: sampleFingerprint.hash,
         fingerprintMeta: sampleFingerprint.meta,
+        hostInfo: {
+          os: sampleFingerprint.meta.osPlatform,
+          osRelease: sampleFingerprint.meta.osRelease,
+          arch: sampleFingerprint.meta.arch,
+          cpuModel: sampleFingerprint.meta.cpuModel,
+          cpuCount: sampleFingerprint.meta.cpuCount,
+          hostname: sampleFingerprint.meta.hostname,
+          kernelVersion: sampleFingerprint.meta.osVersion,
+        },
       },
     ]);
     expect(saved).toEqual([
