@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Chat\Application;
 
+use Modules\Agents\Api\AgentsApi;
+use Modules\Agents\Api\Dto\AgentView;
 use Modules\Chat\Domain\ChatMessage;
 use Modules\Chat\Domain\ChatMessageNotFoundException;
 use Modules\Chat\Domain\ChatMessageRepository;
@@ -16,6 +18,7 @@ use Modules\Chat\Domain\ChatThreadRepository;
 use Modules\Chat\Domain\ParticipantType;
 use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Core\Api\Dto\AuditEntry;
+use Modules\Shared\Kernel\AgentId;
 use Modules\Shared\Kernel\ChatMessageId;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\WorkerId;
@@ -42,6 +45,7 @@ final readonly class SendMessageCommandHandler
         private AuditLoggerInterface $audit,
         private Clock $clock,
         private MessageBusInterface $agentReplyBus,
+        private AgentsApi $agents,
     ) {
     }
 
@@ -144,7 +148,14 @@ final readonly class SendMessageCommandHandler
 
         $workerId = $thread->currentWorkerId();
         if (!$workerId instanceof WorkerId) {
-            return;
+            $agent = $this->agents->findById(new AgentId($command->recipientId));
+            if (!$agent instanceof AgentView || !$agent->defaultWorkerId instanceof WorkerId) {
+                return;
+            }
+
+            $workerId = $agent->defaultWorkerId;
+            $thread->assignCurrentWorker($workerId, $this->clock->now());
+            $this->threads->save($thread);
         }
 
         $this->agentReplyBus->dispatch(

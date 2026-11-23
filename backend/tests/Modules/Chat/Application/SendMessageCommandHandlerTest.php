@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Chat\Application;
 
+use App\Tests\Fixtures\Agents\InMemoryAgentsApi;
 use App\Tests\Fixtures\Chat\InMemoryChatMessageRepository;
 use App\Tests\Fixtures\Chat\InMemoryChatSessionRepository;
 use App\Tests\Fixtures\Chat\InMemoryChatThreadRepository;
 use App\Tests\Fixtures\Chat\SpyMessageBus;
 use App\Tests\Fixtures\Core\SpyAuditLogger;
 use DateTimeImmutable;
+use Modules\Agents\Api\Dto\AgentView;
 use Modules\Chat\Application\AgentReplyRequested;
 use Modules\Chat\Application\SendMessageCommand;
 use Modules\Chat\Application\SendMessageCommandHandler;
@@ -20,6 +22,7 @@ use Modules\Chat\Domain\ContentType;
 use Modules\Chat\Domain\EngineType;
 use Modules\Chat\Domain\ParticipantType;
 use Modules\Chat\Domain\Priority;
+use Modules\Shared\Kernel\AgentId;
 use Modules\Shared\Kernel\ChatMessageId;
 use Modules\Shared\Kernel\ChatSessionId;
 use Modules\Shared\Kernel\ChatThreadId;
@@ -53,6 +56,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             $audit,
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
+            new InMemoryAgentsApi(),
         );
 
         $session = ChatSession::create(
@@ -105,6 +109,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
+            new InMemoryAgentsApi(),
         );
 
         $session = ChatSession::create(
@@ -146,6 +151,172 @@ final class SendMessageCommandHandlerTest extends TestCase
         self::assertSame((string) $workerId, $stamp->getRoutingKey());
     }
 
+    public function testShouldAssignAgentDefaultWorkerToThreadAndDispatchAgentReply(): void
+    {
+        $actorId = new UserId(Uuid::v7());
+        $defaultWorkerId = WorkerId::generate();
+        $sessions = new InMemoryChatSessionRepository();
+        $threads = new InMemoryChatThreadRepository();
+        $bus = new SpyMessageBus();
+        $agentId = AgentId::generate();
+        $agents = new InMemoryAgentsApi([
+            new AgentView(
+                id: $agentId,
+                organizationId: OrganizationId::generate(),
+                ownerUserId: $actorId,
+                sourceTemplateId: null,
+                slug: 'bot',
+                name: 'Bot',
+                role: 'Assistant',
+                roleDescription: 'desc',
+                expertise: 'expertise',
+                workflow: 'workflow',
+                style: 'style',
+                outputFormat: 'format',
+                isActive: true,
+                createdAt: new DateTimeImmutable(self::NOW),
+                updatedAt: new DateTimeImmutable(self::NOW),
+                defaultWorkerId: $defaultWorkerId,
+            ),
+        ]);
+        $sut = new SendMessageCommandHandler(
+            $sessions,
+            $threads,
+            new InMemoryChatMessageRepository(),
+            new SpyAuditLogger(),
+            new FrozenClock(new DateTimeImmutable(self::NOW)),
+            $bus,
+            $agents,
+        );
+
+        $session = ChatSession::create(
+            ChatSessionId::generate(),
+            OrganizationId::generate(),
+            $actorId,
+            'Session',
+            new DateTimeImmutable(self::NOW),
+        );
+        $sessions->save($session);
+
+        $thread = ChatThread::create(
+            ChatThreadId::generate(),
+            $session->id(),
+            'Thread without worker',
+            new DateTimeImmutable(self::NOW),
+        );
+        $threads->save($thread);
+
+        $command = new SendMessageCommand(
+            actorId: $actorId,
+            sessionId: $session->id(),
+            threadId: $thread->id(),
+            senderType: ParticipantType::User,
+            senderId: $actorId->value,
+            recipientType: ParticipantType::Agent,
+            recipientId: $agentId->value,
+            subject: 'Hello',
+            priority: Priority::P2,
+            content: 'Hello body',
+            contentType: ContentType::Text,
+            metadata: [],
+            replyToMessageId: null,
+            engineId: Uuid::v7(),
+            engineType: EngineType::CliTerminal,
+            classifiedBy: ClassifiedBy::Sender,
+            classificationConfidence: null,
+        );
+
+        $sut($command);
+
+        $savedThread = $threads->findById($thread->id());
+        self::assertNotNull($savedThread);
+        self::assertTrue($savedThread->currentWorkerId()?->equals($defaultWorkerId));
+        self::assertCount(1, $bus->envelopes);
+        $envelope = $bus->envelopes[0];
+        $event = $envelope->getMessage();
+        self::assertInstanceOf(AgentReplyRequested::class, $event);
+        self::assertTrue($event->workerId->equals($defaultWorkerId));
+    }
+
+    public function testShouldNotDispatchAgentReplyWhenAgentHasNoDefaultWorker(): void
+    {
+        $actorId = new UserId(Uuid::v7());
+        $sessions = new InMemoryChatSessionRepository();
+        $threads = new InMemoryChatThreadRepository();
+        $bus = new SpyMessageBus();
+        $agentId = AgentId::generate();
+        $agents = new InMemoryAgentsApi([
+            new AgentView(
+                id: $agentId,
+                organizationId: OrganizationId::generate(),
+                ownerUserId: $actorId,
+                sourceTemplateId: null,
+                slug: 'bot',
+                name: 'Bot',
+                role: 'Assistant',
+                roleDescription: 'desc',
+                expertise: 'expertise',
+                workflow: 'workflow',
+                style: 'style',
+                outputFormat: 'format',
+                isActive: true,
+                createdAt: new DateTimeImmutable(self::NOW),
+                updatedAt: new DateTimeImmutable(self::NOW),
+            ),
+        ]);
+        $sut = new SendMessageCommandHandler(
+            $sessions,
+            $threads,
+            new InMemoryChatMessageRepository(),
+            new SpyAuditLogger(),
+            new FrozenClock(new DateTimeImmutable(self::NOW)),
+            $bus,
+            $agents,
+        );
+
+        $session = ChatSession::create(
+            ChatSessionId::generate(),
+            OrganizationId::generate(),
+            $actorId,
+            'Session',
+            new DateTimeImmutable(self::NOW),
+        );
+        $sessions->save($session);
+
+        $thread = ChatThread::create(
+            ChatThreadId::generate(),
+            $session->id(),
+            'Thread without worker',
+            new DateTimeImmutable(self::NOW),
+        );
+        $threads->save($thread);
+
+        $sut(new SendMessageCommand(
+            actorId: $actorId,
+            sessionId: $session->id(),
+            threadId: $thread->id(),
+            senderType: ParticipantType::User,
+            senderId: $actorId->value,
+            recipientType: ParticipantType::Agent,
+            recipientId: $agentId->value,
+            subject: 'Hello',
+            priority: Priority::P2,
+            content: 'Hello body',
+            contentType: ContentType::Text,
+            metadata: [],
+            replyToMessageId: null,
+            engineId: Uuid::v7(),
+            engineType: EngineType::CliTerminal,
+            classifiedBy: ClassifiedBy::Sender,
+            classificationConfidence: null,
+        ));
+
+        self::assertSame([], $bus->envelopes);
+        $savedThread = $threads->findById($thread->id());
+        self::assertNotNull($savedThread);
+        self::assertNull($savedThread->currentWorkerId());
+    }
+
     public function testShouldNotDispatchAgentReplyWhenRecipientIsNotAgent(): void
     {
         $actorId = new UserId(Uuid::v7());
@@ -161,6 +332,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
+            new InMemoryAgentsApi(),
         );
 
         $session = ChatSession::create(
@@ -317,6 +489,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             $audit,
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             new SpyMessageBus(),
+            new InMemoryAgentsApi(),
         );
 
         $session = ChatSession::create(
@@ -365,6 +538,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             $audit ?? new SpyAuditLogger(),
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             new SpyMessageBus(),
+            new InMemoryAgentsApi(),
         );
     }
 
