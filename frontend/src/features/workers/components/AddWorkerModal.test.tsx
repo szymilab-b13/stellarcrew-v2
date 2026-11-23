@@ -107,6 +107,33 @@ describe('AddWorkerModal', () => {
     expect(writeText).toHaveBeenCalledWith('curl ... --code ABCD-2345');
   });
 
+  it('copies the pairing code to clipboard when the code copy button is clicked', async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    stubClipboard(writeText);
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      mockResponse(
+        {
+          code: 'ABCD-2345',
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+          pairCommand: 'curl ... --code ABCD-2345',
+        },
+        201,
+      ),
+    );
+
+    renderModal();
+    await user.click(
+      screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }),
+    );
+    await screen.findByText('ABCD-2345');
+    await user.click(
+      screen.getByRole('button', { name: /Skopiuj kod parowania|Copy pairing code/i }),
+    );
+
+    expect(writeText).toHaveBeenCalledWith('ABCD-2345');
+  });
+
   it('calls onClose when Escape is pressed', async () => {
     const user = userEvent.setup();
     const { onClose } = renderModal();
@@ -114,6 +141,71 @@ describe('AddWorkerModal', () => {
     await user.keyboard('{Escape}');
 
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('invokes onPaired when polling detects a worker paired after the code was issued', async () => {
+    const user = userEvent.setup();
+    const issuedBefore = new Date(Date.now() - 60_000).toISOString();
+    const createdAfter = new Date(Date.now() + 2_000).toISOString();
+
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === 'string' ? input : input.toString();
+        if (url.includes('/api/workers/pairing-codes') && init?.method === 'POST') {
+          return mockResponse(
+            {
+              code: 'ABCD-2345',
+              expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+              pairCommand: 'curl ... --code ABCD-2345',
+            },
+            201,
+          );
+        }
+        if (url.endsWith('/api/workers')) {
+          return mockResponse({
+            workers: [
+              {
+                id: 'old-worker-1',
+                name: 'Old',
+                hostLabel: null,
+                createdAt: issuedBefore,
+                lastHeartbeatAt: null,
+                fingerprintHashShort: null,
+                fingerprintStatus: 'missing',
+              },
+              {
+                id: 'fresh-worker-9',
+                name: 'Fresh',
+                hostLabel: null,
+                createdAt: createdAfter,
+                lastHeartbeatAt: null,
+                fingerprintHashShort: null,
+                fingerprintStatus: 'missing',
+              },
+            ],
+          });
+        }
+        return mockResponse({ error: 'unexpected call' }, 500);
+      });
+
+    const onPaired = vi.fn();
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+    });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AddWorkerModal onClose={vi.fn()} onPaired={onPaired} />
+      </QueryClientProvider>,
+    );
+    await user.click(
+      screen.getByRole('button', { name: /Wygeneruj kod parowania|Generate pairing code/i }),
+    );
+
+    await vi.waitFor(() => {
+      expect(onPaired).toHaveBeenCalledWith('fresh-worker-9');
+    });
+    expect(fetchMock).toHaveBeenCalled();
   });
 
   it('shows an error message when code generation fails', async () => {

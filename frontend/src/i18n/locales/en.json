@@ -376,6 +376,8 @@
       "commandLabel": "Run this on your server",
       "copy": "Copy install command",
       "copied": "Command copied to clipboard.",
+      "copyCode": "Copy pairing code",
+      "codeCopied": "Code copied to clipboard.",
       "hint": "The command installs the worker as a service and pairs it with this code. Keep this modal open until the worker appears in the list.",
       "expiresIn": "Expires in {{time}}",
       "expired": "This code has expired.",

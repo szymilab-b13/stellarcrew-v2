@@ -21,6 +21,8 @@ export function usePollForPairedWorker({
   const queryClient = useQueryClient();
   const expiryMs = expiresAt !== null ? new Date(expiresAt).getTime() : null;
 
+  const issuedMs = pairingIssuedAt !== null ? new Date(pairingIssuedAt).getTime() : null;
+
   const query = useQuery<ListWorkersResponse>({
     queryKey: ['workers', 'pair-polling', pairingIssuedAt ?? 'idle'],
     queryFn: fetchWorkers,
@@ -28,8 +30,11 @@ export function usePollForPairedWorker({
     refetchInterval: (query) => {
       if (!enabled) return false;
       if (expiryMs !== null && Date.now() >= expiryMs) return false;
-      if (query.state.data !== undefined && query.state.data.workers.length > 0) {
-        return false;
+      if (query.state.data !== undefined && issuedMs !== null) {
+        const hasFresh = query.state.data.workers.some(
+          (worker) => new Date(worker.createdAt).getTime() >= issuedMs,
+        );
+        if (hasFresh) return false;
       }
       return 2000;
     },
@@ -37,8 +42,7 @@ export function usePollForPairedWorker({
   });
 
   useEffect(() => {
-    if (!enabled || query.data === undefined || pairingIssuedAt === null) return;
-    const issuedMs = new Date(pairingIssuedAt).getTime();
+    if (!enabled || query.data === undefined || issuedMs === null) return;
     const fresh = query.data.workers.find(
       (worker) => new Date(worker.createdAt).getTime() >= issuedMs,
     );
@@ -46,5 +50,5 @@ export function usePollForPairedWorker({
       void queryClient.invalidateQueries({ queryKey: workersQueryKey });
       onPaired(fresh.id);
     }
-  }, [enabled, pairingIssuedAt, query.data, queryClient, onPaired]);
+  }, [enabled, issuedMs, query.data, queryClient, onPaired]);
 }

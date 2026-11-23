@@ -26,6 +26,7 @@ export function AddWorkerModal({ onClose, onPaired }: AddWorkerModalProps) {
   const [pairingCode, setPairingCode] = useState<PairingCodeResponse | null>(null);
   const [issuedAt, setIssuedAt] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
   const [remainingMs, setRemainingMs] = useState<number>(0);
 
   const handlePaired = useCallback(
@@ -67,6 +68,7 @@ export function AddWorkerModal({ onClose, onPaired }: AddWorkerModalProps) {
 
   function handleGenerate() {
     setCopied(false);
+    setCodeCopied(false);
     createCode.mutate(
       {},
       {
@@ -83,6 +85,13 @@ export function AddWorkerModal({ onClose, onPaired }: AddWorkerModalProps) {
     await navigator.clipboard.writeText(pairingCode.pairCommand);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleCopyCode() {
+    if (pairingCode === null) return;
+    await navigator.clipboard.writeText(pairingCode.code);
+    setCodeCopied(true);
+    window.setTimeout(() => setCodeCopied(false), 2000);
   }
 
   const expired = pairingCode !== null && remainingMs <= 0;
@@ -154,9 +163,24 @@ export function AddWorkerModal({ onClose, onPaired }: AddWorkerModalProps) {
                     : t('workers.add.expiresIn', { time: formatCountdown(remainingMs) })}
                 </span>
               </div>
-              <div className="font-mono text-2xl font-semibold tracking-wider text-sc-text">
-                {pairingCode.code}
+              <div className="flex items-center justify-between gap-2">
+                <div className="font-mono text-2xl font-semibold tracking-wider text-sc-text">
+                  {pairingCode.code}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyCode}
+                  aria-label={t('workers.add.copyCode')}
+                  className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-md border border-sc-border bg-sc-bg-card text-sc-text hover:bg-sc-bg-card/70"
+                >
+                  {codeCopied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
+                </button>
               </div>
+              {codeCopied ? (
+                <p role="status" className="text-xs text-emerald-600 dark:text-emerald-400">
+                  {t('workers.add.codeCopied')}
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-col gap-2">

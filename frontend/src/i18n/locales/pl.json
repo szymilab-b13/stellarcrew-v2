@@ -376,6 +376,8 @@
       "commandLabel": "Uruchom na swoim serwerze",
       "copy": "Skopiuj komendę",
       "copied": "Komenda skopiowana.",
+      "copyCode": "Skopiuj kod parowania",
+      "codeCopied": "Kod skopiowany.",
       "hint": "Komenda zainstaluje workera jako serwis i sparuje go tym kodem. Zostaw to okno otwarte, aż worker pojawi się na liście.",
       "expiresIn": "Wygasa za {{time}}",
       "expired": "Ten kod wygasł.",
