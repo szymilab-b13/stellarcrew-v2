@@ -387,6 +387,10 @@
       "loadingBreadcrumb": "Worker",
       "loadError": "Could not load worker.",
       "backToList": "Back to workers",
+      "fingerprintWarning": {
+        "title": "Device fingerprint changed",
+        "body": "This worker just contacted us from a different machine than the one it was paired with. If you recognise the change, accept the new fingerprint in the history below. Otherwise revoke the worker to block it."
+      },
       "info": {
         "pairedAt": "Paired at",
         "currentHash": "Current fingerprint"

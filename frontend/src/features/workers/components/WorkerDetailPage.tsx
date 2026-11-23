@@ -221,6 +221,7 @@ export function WorkerDetailPage() {
 
   const worker = workerQuery.data;
   const online = worker.isOnline;
+  const hasFingerprintWarning = worker.fingerprintStatus === 'warning';
 
   return (
     <div className="flex w-full flex-col gap-6">
@@ -245,6 +246,23 @@ export function WorkerDetailPage() {
           <p className="text-sm text-sc-text-muted">{worker.hostLabel}</p>
         ) : null}
       </header>
+
+      {hasFingerprintWarning ? (
+        <section
+          role="alert"
+          aria-labelledby="fingerprint-warning-title"
+          className="flex flex-col gap-2 rounded-lg border border-amber-400/60 bg-amber-500/10 p-4 text-amber-900 dark:text-amber-200"
+        >
+          <h2
+            id="fingerprint-warning-title"
+            className="flex items-center gap-2 text-base font-semibold"
+          >
+            <ShieldAlert size={18} aria-hidden />
+            {t('workers.detail.fingerprintWarning.title')}
+          </h2>
+          <p className="text-sm">{t('workers.detail.fingerprintWarning.body')}</p>
+        </section>
+      ) : null}
 
       <section className="grid grid-cols-1 gap-3 rounded-lg border border-sc-border bg-sc-bg-card/60 p-4 sm:grid-cols-3">
         <div className="flex flex-col gap-0.5">

@@ -387,6 +387,10 @@
       "loadingBreadcrumb": "Worker",
       "loadError": "Nie udało się załadować workera.",
       "backToList": "Powrót do listy workerów",
+      "fingerprintWarning": {
+        "title": "Zmiana odcisku urządzenia",
+        "body": "Worker odezwał się z innej maszyny niż ta, z którą był sparowany. Jeśli rozpoznajesz zmianę, zaakceptuj nowy odcisk w historii poniżej. W przeciwnym razie wycofaj workera, żeby go zablokować."
+      },
       "info": {
         "pairedAt": "Sparowano",
         "currentHash": "Aktualny odcisk"

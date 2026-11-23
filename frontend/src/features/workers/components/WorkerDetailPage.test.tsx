@@ -123,6 +123,39 @@ describe('WorkerDetailPage', () => {
     expect(acceptButtons).toHaveLength(1);
   });
 
+  it('does not render the fingerprint warning banner when status is ok', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(mockResponse(workerBase));
+
+    renderPage();
+
+    await screen.findByRole('heading', { name: /projekt-a/ });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('renders the fingerprint warning banner when status is warning', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      mockResponse({
+        ...workerBase,
+        fingerprintStatus: 'warning',
+        fingerprintChangeHistory: [
+          {
+            at: '2026-11-21T10:00:00+00:00',
+            status: 'detected',
+            previousHash: 'a'.repeat(64),
+            previousMeta: null,
+            newHash: 'c'.repeat(64),
+            newMeta: { hostname: 'new' },
+          },
+        ],
+      }),
+    );
+
+    renderPage();
+
+    const banner = await screen.findByRole('alert');
+    expect(banner).toHaveTextContent(/Device fingerprint changed|Zmiana odcisku urządzenia/i);
+  });
+
   it('shows error state when fetch fails', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(mockResponse({ message: 'nope' }, 500));
 
