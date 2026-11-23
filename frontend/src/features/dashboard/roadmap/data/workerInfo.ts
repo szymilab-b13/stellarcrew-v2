@@ -22,6 +22,7 @@ export const WORKER_INFO_MILESTONE: RoadmapMilestone = {
     { id: 'BL-WI-015', status: 'done', commit: '1a23a6c' },
     { id: 'BL-WI-016', status: 'done', commit: '1a23a6c' },
     { id: 'BL-WI-017', status: 'done', commit: '2b38243' },
+    { id: 'BL-WI-R01', status: 'done', commit: '0f8f9ae' },
     { id: 'BL-WI-018', status: 'planned' },
     { id: 'BL-WI-019', status: 'planned' },
     { id: 'BL-WI-020', status: 'planned' },
