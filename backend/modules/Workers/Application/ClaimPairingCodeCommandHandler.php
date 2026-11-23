@@ -6,6 +6,7 @@ namespace Modules\Workers\Application;
 
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\WorkerId;
+use Modules\Workers\Api\Event\WorkerPaired;
 use Modules\Workers\Domain\RefreshTokenGenerator;
 use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerPairingCode;
@@ -13,6 +14,7 @@ use Modules\Workers\Domain\WorkerPairingCodeRepository;
 use Modules\Workers\Domain\WorkerRefreshToken;
 use Modules\Workers\Domain\WorkerRefreshTokenRepository;
 use Modules\Workers\Domain\WorkerRepository;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 use function sprintf;
 use function str_replace;
@@ -30,6 +32,7 @@ final readonly class ClaimPairingCodeCommandHandler
         private WorkerRefreshTokenRepository $refreshTokens,
         private RefreshTokenGenerator $tokenGenerator,
         private Clock $clock,
+        private EventDispatcherInterface $events,
     ) {
     }
 
@@ -77,6 +80,14 @@ final readonly class ClaimPairingCodeCommandHandler
         $this->codes->save($code);
         $this->workers->save($worker);
         $this->refreshTokens->save($refreshToken);
+
+        $this->events->dispatch(new WorkerPaired(
+            workerId: $workerId,
+            ownerUserId: $code->ownerUserId(),
+            rabbitmqUser: $rabbitmqUser,
+            rabbitmqPassword: $rabbitmqPassword,
+            occurredAt: $now,
+        ));
 
         return new ClaimedPairingResult($workerId, $rabbitmqPassword, $rabbitmqUser, $refreshPlaintext);
     }

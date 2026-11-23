@@ -42,6 +42,7 @@ final class CascadeWorkerRevokedListenerTest extends TestCase
             new UserId(Uuid::v7()),
             new UserId(Uuid::v7()),
             new DateTimeImmutable('2026-11-18T12:00:00+00:00'),
+            'worker-threads-test',
         ));
 
         self::assertNull($threads->findById($matching->id())?->currentWorkerId());
@@ -66,6 +67,7 @@ final class CascadeWorkerRevokedListenerTest extends TestCase
             new UserId(Uuid::v7()),
             new UserId(Uuid::v7()),
             new DateTimeImmutable('2026-11-18T12:00:00+00:00'),
+            'worker-sessions-test',
         ));
 
         $remaining = $sessions->all();
@@ -91,6 +93,7 @@ final class CascadeWorkerRevokedListenerTest extends TestCase
             new UserId(Uuid::v7()),
             new UserId(Uuid::v7()),
             new DateTimeImmutable('2026-11-18T12:00:00+00:00'),
+            'worker-noop-test',
         ));
 
         self::assertTrue($threads->findById($other->id())?->currentWorkerId()?->equals($otherWorkerId));

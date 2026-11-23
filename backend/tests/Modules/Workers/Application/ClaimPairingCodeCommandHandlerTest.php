@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Workers\Application;
 
+use App\Tests\Fixtures\Core\SpyEventDispatcher;
 use App\Tests\Fixtures\Workers\InMemoryWorkerPairingCodeRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRefreshTokenRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRepository;
@@ -15,6 +16,7 @@ use function hash;
 use LogicException;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
+use Modules\Workers\Api\Event\WorkerPaired;
 use Modules\Workers\Application\ClaimPairingCodeCommand;
 use Modules\Workers\Application\ClaimPairingCodeCommandHandler;
 use Modules\Workers\Domain\RefreshTokenGenerator;
@@ -182,6 +184,38 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         self::assertSame($meta, $worker->fingerprintMeta());
     }
 
+    public function testShouldDispatchWorkerPairedWithRabbitMqCredentials(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, new DateTimeImmutable('2026-11-23T10:00:00+00:00')));
+        $events = new SpyEventDispatcher();
+        $sut = $this->makeHandler(
+            $codes,
+            $workers,
+            $refreshTokens,
+            new DateTimeImmutable('2026-11-23T10:05:00+00:00'),
+            $events,
+        );
+
+        $result = $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'Host'));
+
+        $paired = null;
+        foreach ($events->dispatched as $dispatched) {
+            if ($dispatched instanceof WorkerPaired) {
+                $paired = $dispatched;
+            }
+        }
+
+        self::assertInstanceOf(WorkerPaired::class, $paired);
+        self::assertTrue($paired->workerId->equals($result->workerId));
+        self::assertTrue($paired->ownerUserId->equals($owner));
+        self::assertSame($result->rabbitmqUser, $paired->rabbitmqUser);
+        self::assertSame('amqp-pass', $paired->rabbitmqPassword);
+    }
+
     public function testShouldRejectExpiredCode(): void
     {
         $codes = new InMemoryWorkerPairingCodeRepository();
@@ -203,6 +237,7 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         InMemoryWorkerRepository $workers,
         InMemoryWorkerRefreshTokenRepository $refreshTokens,
         DateTimeImmutable $now,
+        ?SpyEventDispatcher $events = null,
     ): ClaimPairingCodeCommandHandler {
         return new ClaimPairingCodeCommandHandler(
             $codes,
@@ -210,6 +245,7 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
             $refreshTokens,
             $this->sequencedGenerator(['amqp-pass', 'refresh-plain']),
             $this->fixedClock($now),
+            $events ?? new SpyEventDispatcher(),
         );
     }
 

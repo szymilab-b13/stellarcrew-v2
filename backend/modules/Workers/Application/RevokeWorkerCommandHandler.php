@@ -66,6 +66,7 @@ final readonly class RevokeWorkerCommandHandler
             ownerUserId: $ownerUserId,
             actorId: $command->actorUserId,
             occurredAt: $now,
+            rabbitmqUser: $rabbitmqUser,
         ));
     }
 }
