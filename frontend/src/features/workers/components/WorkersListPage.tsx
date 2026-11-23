@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/Button';
 import { useWorkers } from '../api/useWorkers';
 import type { FingerprintStatus, Worker } from '../types';
 import { AddWorkerModal } from './AddWorkerModal';
+import { WorkerRowActionsMenu } from './WorkerRowActionsMenu';
 
 function FingerprintBadge({ status }: { status: FingerprintStatus }) {
   const { t } = useTranslation();
@@ -91,7 +92,10 @@ function WorkerCard({ worker }: { worker: Worker }) {
             <p className="truncate text-xs text-sc-text-muted">{worker.hostLabel}</p>
           ) : null}
         </div>
-        <FingerprintBadge status={worker.fingerprintStatus} />
+        <div className="flex items-center gap-1">
+          <FingerprintBadge status={worker.fingerprintStatus} />
+          <WorkerRowActionsMenu workerId={worker.id} workerName={worker.name} />
+        </div>
       </header>
       <dl className="grid grid-cols-2 gap-2 text-xs text-sc-text-muted">
         <div className="flex flex-col gap-0.5">

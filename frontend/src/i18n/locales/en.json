@@ -345,6 +345,24 @@
         "ok": "Device OK",
         "warning": "Device changed",
         "missing": "No fingerprint"
+      },
+      "rowActions": {
+        "aria": "Actions for worker {{name}}",
+        "details": "Details",
+        "copyId": "Copy ID",
+        "copied": "Worker ID copied",
+        "revoke": "Revoke"
+      }
+    },
+    "revokeDialog": {
+      "title": "Revoke this worker?",
+      "body": "Revoking \"{{name}}\" removes it from your account and drops its RabbitMQ credentials. Agents using it as default will fall back to no worker. This cannot be undone.",
+      "confirm": "Revoke worker",
+      "confirming": "Revoking…",
+      "errors": {
+        "notFound": "Worker was already removed.",
+        "forbidden": "You do not have permission to revoke this worker.",
+        "generic": "Could not revoke worker. Try again in a moment."
       }
     },
     "add": {

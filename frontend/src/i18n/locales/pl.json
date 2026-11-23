@@ -345,6 +345,24 @@
         "ok": "Urządzenie OK",
         "warning": "Zmiana urządzenia",
         "missing": "Brak odcisku"
+      },
+      "rowActions": {
+        "aria": "Akcje dla workera {{name}}",
+        "details": "Szczegóły",
+        "copyId": "Skopiuj ID",
+        "copied": "Skopiowano ID workera",
+        "revoke": "Wycofaj"
+      }
+    },
+    "revokeDialog": {
+      "title": "Wycofać tego workera?",
+      "body": "Wycofanie „{{name}}\" usuwa go z Twojego konta i unieważnia poświadczenia RabbitMQ. Agenci ustawiający go jako domyślny stracą workera. Operacji nie można cofnąć.",
+      "confirm": "Wycofaj workera",
+      "confirming": "Wycofywanie…",
+      "errors": {
+        "notFound": "Worker już został usunięty.",
+        "forbidden": "Nie masz uprawnień do wycofania tego workera.",
+        "generic": "Nie udało się wycofać workera. Spróbuj za chwilę."
       }
     },
     "add": {
