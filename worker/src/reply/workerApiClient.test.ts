@@ -208,3 +208,34 @@ describe('WorkerApiClient.recordMessage', () => {
     ).rejects.toBeInstanceOf(WorkerApiError);
   });
 });
+
+describe('WorkerApiClient.sendHeartbeat', () => {
+  it('posts to /api/workers/me/heartbeat with Bearer authorization', async () => {
+    const fetchFn = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    const tm = makeTokenManager('jwt-heartbeat');
+    const client = createWorkerApiClient({
+      baseUrl: 'http://api.test',
+      tokenManager: tm.manager,
+      fetchFn: fetchFn as unknown as typeof fetch,
+    });
+
+    await client.sendHeartbeat();
+
+    const [url, init] = fetchFn.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe('http://api.test/api/workers/me/heartbeat');
+    expect(init.method).toBe('POST');
+    expect(init.headers).toMatchObject({ Authorization: 'Bearer jwt-heartbeat' });
+  });
+
+  it('throws WorkerApiError when heartbeat responds non-2xx', async () => {
+    const fetchFn = vi.fn().mockResolvedValue(new Response('{"detail":"nope"}', { status: 500 }));
+    const tm = makeTokenManager();
+    const client = createWorkerApiClient({
+      baseUrl: 'http://api.test',
+      tokenManager: tm.manager,
+      fetchFn: fetchFn as unknown as typeof fetch,
+    });
+
+    await expect(client.sendHeartbeat()).rejects.toBeInstanceOf(WorkerApiError);
+  });
+});

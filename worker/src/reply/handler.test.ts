@@ -46,9 +46,11 @@ function fakeApiClient(overrides: Partial<WorkerApiClient> = {}): {
 } {
   const getOrCreateSession = vi.fn().mockResolvedValue(session);
   const recordMessage = vi.fn().mockResolvedValue(recorded);
+  const sendHeartbeat = vi.fn().mockResolvedValue(undefined);
   const client: WorkerApiClient = {
     getOrCreateSession: overrides.getOrCreateSession ?? getOrCreateSession,
     recordMessage: overrides.recordMessage ?? recordMessage,
+    sendHeartbeat: overrides.sendHeartbeat ?? sendHeartbeat,
   };
   return { client, getOrCreateSession, recordMessage };
 }
@@ -94,9 +96,10 @@ describe('createReplyHandler', () => {
   it('propagates the error when getOrCreateSession fails', async () => {
     const getOrCreateSession = vi.fn().mockRejectedValue(new Error('session boom'));
     const recordMessage = vi.fn();
+    const sendHeartbeat = vi.fn().mockResolvedValue(undefined);
     const claude: ClaudeRunner = { run: vi.fn() };
     const handler = createReplyHandler({
-      apiClient: { getOrCreateSession, recordMessage },
+      apiClient: { getOrCreateSession, recordMessage, sendHeartbeat },
       claude,
       logger: silentLogger(),
     });

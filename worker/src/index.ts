@@ -71,8 +71,21 @@ async function main(): Promise<void> {
     onPayload,
   });
 
+  const heartbeatIntervalMs = config.heartbeatIntervalMs;
+  const heartbeatTimer = setInterval(() => {
+    void apiClient.sendHeartbeat().catch((error: unknown) => {
+      logger.warn({ err: error }, 'Heartbeat POST failed');
+    });
+  }, heartbeatIntervalMs);
+  heartbeatTimer.unref();
+  logger.info({ heartbeatIntervalMs }, 'Heartbeat scheduler started');
+  void apiClient.sendHeartbeat().catch((error: unknown) => {
+    logger.warn({ err: error }, 'Initial heartbeat POST failed');
+  });
+
   const shutdown = async (signal: NodeJS.Signals): Promise<void> => {
     logger.info({ signal }, 'Shutting down worker');
+    clearInterval(heartbeatTimer);
     await safeCancel(consumer, logger);
     await safeClose(amqp, logger);
     await healthcheck.stop();
