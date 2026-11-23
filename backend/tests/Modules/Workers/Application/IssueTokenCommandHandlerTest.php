@@ -57,6 +57,36 @@ final class IssueTokenCommandHandlerTest extends TestCase
         self::assertSame(IssueTokenCommandHandler::ACCESS_TOKEN_TTL_SECONDS, $result->expiresIn);
         self::assertTrue($refreshTokens->findByTokenHash(hash('sha256', $plaintext))?->isConsumed());
         self::assertNotNull($refreshTokens->findByTokenHash(hash('sha256', 'rotated-plain')));
+        self::assertEquals($exchangeAt, $workers->findById($worker->id())?->lastHeartbeatAt());
+    }
+
+    public function testShouldPersistHostInfoAndBumpHeartbeatOnTokenExchange(): void
+    {
+        $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $worker = $this->createWorker($owner);
+        $workers->save($worker);
+        $plaintext = 'valid-plaintext-token';
+        $issuedAt = new DateTimeImmutable('2026-11-21T13:00:00+00:00');
+        $refreshTokens->save(WorkerRefreshToken::issue(hash('sha256', $plaintext), $worker->id(), $issuedAt));
+        $exchangeAt = new DateTimeImmutable('2026-11-21T13:05:00+00:00');
+        $sut = new IssueTokenCommandHandler(
+            $refreshTokens,
+            $workers,
+            $this->deterministicGenerator('rotated-plain'),
+            $this->fakeEncoder('access-jwt-xyz'),
+            new SpyEventDispatcher(),
+            $this->fixedClock($exchangeAt),
+        );
+        $hostInfo = ['os' => 'Linux', 'cpuCount' => 8, 'memoryBytes' => 16000000000];
+
+        $sut(new IssueTokenCommand(refreshToken: $plaintext, hostInfo: $hostInfo));
+
+        $stored = $workers->findById($worker->id());
+        self::assertNotNull($stored);
+        self::assertSame($hostInfo, $stored->hostInfo());
+        self::assertEquals($exchangeAt, $stored->lastHeartbeatAt());
     }
 
     public function testShouldRejectUnknownRefreshToken(): void

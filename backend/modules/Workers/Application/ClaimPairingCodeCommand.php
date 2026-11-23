@@ -8,13 +8,15 @@ final readonly class ClaimPairingCodeCommand
 {
     /**
      * @param array<string, mixed>|null $fingerprintMeta
+     * @param array<string, mixed>|null $hostInfo
      */
     public function __construct(
         public string $code,
-        public string $name,
+        public ?string $name = null,
         public ?string $hostLabel = null,
         public ?string $fingerprintHash = null,
         public ?array $fingerprintMeta = null,
+        public ?array $hostInfo = null,
     ) {
     }
 }

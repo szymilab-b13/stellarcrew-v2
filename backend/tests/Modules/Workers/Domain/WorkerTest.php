@@ -278,6 +278,72 @@ final class WorkerTest extends TestCase
         $sut->recordFingerprintMismatch('not-a-sha256', null, $later);
     }
 
+    public function testShouldReportMissingFingerprintStatusWhenHashNotSet(): void
+    {
+        $sut = $this->makeWorker();
+
+        self::assertSame('missing', $sut->fingerprintStatus());
+    }
+
+    public function testShouldReportOkFingerprintStatusWhenHashSetAndHistoryEmpty(): void
+    {
+        $sut = $this->makeWorker();
+        $sut->updateFingerprint(str_repeat('a', 64), null, new DateTimeImmutable('2026-11-18T15:30:00+00:00'));
+
+        self::assertSame('ok', $sut->fingerprintStatus());
+    }
+
+    public function testShouldReportWarningFingerprintStatusWhenLastEntryDetected(): void
+    {
+        $sut = $this->makeWorker();
+        $sut->updateFingerprint(str_repeat('a', 64), null, new DateTimeImmutable('2026-11-18T15:30:00+00:00'));
+        $sut->recordFingerprintMismatch(str_repeat('b', 64), null, new DateTimeImmutable('2026-11-18T16:00:00+00:00'));
+
+        self::assertSame('warning', $sut->fingerprintStatus());
+    }
+
+    public function testShouldReportOkFingerprintStatusWhenMismatchAcceptedAfterDetection(): void
+    {
+        $sut = $this->makeWorker();
+        $sut->updateFingerprint(str_repeat('a', 64), null, new DateTimeImmutable('2026-11-18T15:30:00+00:00'));
+        $sut->recordFingerprintMismatch(str_repeat('b', 64), null, new DateTimeImmutable('2026-11-18T16:00:00+00:00'));
+        $sut->updateFingerprint(str_repeat('b', 64), null, new DateTimeImmutable('2026-11-18T16:30:00+00:00'));
+
+        self::assertSame('ok', $sut->fingerprintStatus());
+    }
+
+    public function testShouldDefaultHostInfoToNullWhenCreated(): void
+    {
+        $sut = $this->makeWorker();
+
+        self::assertNull($sut->hostInfo());
+    }
+
+    public function testShouldPersistHostInfoAndBumpUpdatedAtWhenUpdated(): void
+    {
+        $createdAt = new DateTimeImmutable('2026-11-21T13:00:00+00:00');
+        $sut = $this->makeWorker(now: $createdAt);
+        $later = new DateTimeImmutable('2026-11-21T13:30:00+00:00');
+
+        $sut->updateHostInfo(['os' => 'Linux', 'cpuCount' => 8], $later);
+
+        self::assertSame(['os' => 'Linux', 'cpuCount' => 8], $sut->hostInfo());
+        self::assertEquals($later, $sut->updatedAt());
+    }
+
+    public function testShouldNotBumpUpdatedAtWhenHostInfoUnchanged(): void
+    {
+        $createdAt = new DateTimeImmutable('2026-11-21T13:00:00+00:00');
+        $sut = $this->makeWorker(now: $createdAt);
+        $sut->updateHostInfo(['os' => 'Linux'], new DateTimeImmutable('2026-11-21T13:30:00+00:00'));
+
+        $before = $sut->updatedAt();
+
+        $sut->updateHostInfo(['os' => 'Linux'], new DateTimeImmutable('2026-11-21T14:00:00+00:00'));
+
+        self::assertEquals($before, $sut->updatedAt());
+    }
+
     private function makeWorker(
         ?string $name = null,
         ?string $hostLabel = 'default-host',

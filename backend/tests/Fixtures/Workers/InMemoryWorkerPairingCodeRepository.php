@@ -21,4 +21,9 @@ final class InMemoryWorkerPairingCodeRepository implements WorkerPairingCodeRepo
     {
         return $this->codes[$code] ?? null;
     }
+
+    public function delete(WorkerPairingCode $code): void
+    {
+        unset($this->codes[$code->code()]);
+    }
 }

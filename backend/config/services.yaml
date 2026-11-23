@@ -7,6 +7,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    env(RABBITMQ_ADMIN_URL): 'http://rabbitmq:15672'
+    env(RABBITMQ_ADMIN_USER): 'guest'
+    env(RABBITMQ_ADMIN_PASSWORD): 'guest'
 
 services:
     # default configuration for services in *this* file
@@ -129,6 +132,23 @@ services:
 
     Modules\Workers\Domain\RefreshTokenGenerator:
         alias: Modules\Workers\Infrastructure\Support\RandomBytesRefreshTokenGenerator
+
+    Modules\Workers\Domain\RabbitMqAdminClient:
+        alias: Modules\Workers\Infrastructure\Support\HttpRabbitMqAdminClient
+
+    Modules\Workers\Infrastructure\Support\HttpRabbitMqAdminClient:
+        arguments:
+            $baseUrl: '%env(RABBITMQ_ADMIN_URL)%'
+            $adminUser: '%env(RABBITMQ_ADMIN_USER)%'
+            $adminPassword: '%env(RABBITMQ_ADMIN_PASSWORD)%'
+
+    Modules\Workers\Infrastructure\Support\PairCommandFormatter:
+        arguments:
+            $publicBaseUrl: '%env(DEFAULT_URI)%'
+
+    Modules\Workers\Infrastructure\Http\InstallerController:
+        arguments:
+            $publicBaseUrl: '%env(DEFAULT_URI)%'
 
     # Plan limits (cross-cutting usage gate per ADR-BE-006)
     Modules\Shared\Api\PlanLimitsService:

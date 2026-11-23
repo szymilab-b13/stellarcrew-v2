@@ -44,7 +44,7 @@ final class MenuEndpointTest extends WebTestCase
         $payload = json_decode((string) $this->client->getResponse()->getContent(), true, flags: JSON_THROW_ON_ERROR);
 
         $sectionIds = array_map(static fn (array $section): string => $section['id'], $payload['sections']);
-        self::assertSame(['general', 'admin'], $sectionIds);
+        self::assertSame(['general', 'settings', 'admin'], $sectionIds);
 
         $general = $payload['sections'][0];
         self::assertSame('menu.sections.general', $general['labelKey']);
@@ -72,7 +72,16 @@ final class MenuEndpointTest extends WebTestCase
         self::assertSame('Bot', $general['items'][3]['icon']);
         self::assertNull($general['items'][3]['disabledMilestoneKey']);
 
-        $admin = $payload['sections'][1];
+        $settings = $payload['sections'][1];
+        self::assertSame('menu.sections.settings', $settings['labelKey']);
+
+        $settingsItemIds = array_map(static fn (array $item): string => $item['id'], $settings['items']);
+        self::assertSame(['settings.workers'], $settingsItemIds);
+        self::assertSame('menu.items.workers', $settings['items'][0]['labelKey']);
+        self::assertSame('/settings/workers', $settings['items'][0]['path']);
+        self::assertSame('Server', $settings['items'][0]['icon']);
+
+        $admin = $payload['sections'][2];
         self::assertSame('menu.sections.admin', $admin['labelKey']);
 
         $adminItemIds = array_map(static fn (array $item): string => $item['id'], $admin['items']);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Workers\Application;
 
+use App\Tests\Fixtures\Core\SpyEventDispatcher;
 use App\Tests\Fixtures\Workers\InMemoryWorkerPairingCodeRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRefreshTokenRepository;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRepository;
@@ -15,6 +16,7 @@ use function hash;
 use LogicException;
 use Modules\Shared\Kernel\Clock;
 use Modules\Shared\Kernel\UserId;
+use Modules\Workers\Api\Event\WorkerPaired;
 use Modules\Workers\Application\ClaimPairingCodeCommand;
 use Modules\Workers\Application\ClaimPairingCodeCommandHandler;
 use Modules\Workers\Domain\RefreshTokenGenerator;
@@ -89,6 +91,71 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'M2'));
     }
 
+    public function testShouldGenerateAutoNameWhenNamesIsNull(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('WXYZ-4567', $owner, new DateTimeImmutable('2026-11-21T14:00:00+00:00')));
+        $sut = $this->makeHandler(
+            $codes,
+            $workers,
+            new InMemoryWorkerRefreshTokenRepository(),
+            new DateTimeImmutable('2026-11-21T14:05:00+00:00'),
+        );
+
+        $result = $sut(new ClaimPairingCodeCommand(code: 'WXYZ-4567'));
+
+        $worker = $workers->findById($result->workerId);
+        self::assertNotNull($worker);
+        self::assertMatchesRegularExpression('/^worker-[0-9a-f]{6}$/', $worker->name());
+    }
+
+    public function testShouldGenerateAutoNameWhenNameIsBlank(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('XYZZ-5678', $owner, new DateTimeImmutable('2026-11-21T14:00:00+00:00')));
+        $sut = $this->makeHandler(
+            $codes,
+            $workers,
+            new InMemoryWorkerRefreshTokenRepository(),
+            new DateTimeImmutable('2026-11-21T14:05:00+00:00'),
+        );
+
+        $result = $sut(new ClaimPairingCodeCommand(code: 'XYZZ-5678', name: '   '));
+
+        $worker = $workers->findById($result->workerId);
+        self::assertNotNull($worker);
+        self::assertMatchesRegularExpression('/^worker-[0-9a-f]{6}$/', $worker->name());
+    }
+
+    public function testShouldPersistHostInfoWhenProvided(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('BCDE-3456', $owner, new DateTimeImmutable('2026-11-21T13:00:00+00:00')));
+        $sut = $this->makeHandler(
+            $codes,
+            $workers,
+            new InMemoryWorkerRefreshTokenRepository(),
+            new DateTimeImmutable('2026-11-21T13:05:00+00:00'),
+        );
+        $hostInfo = ['os' => 'Linux', 'osRelease' => '6.1.0', 'cpuModel' => 'AMD Ryzen 9', 'cpuCount' => 16, 'memoryBytes' => 32 * 1024 * 1024 * 1024];
+
+        $result = $sut(new ClaimPairingCodeCommand(
+            code: 'BCDE-3456',
+            name: 'Prod',
+            hostInfo: $hostInfo,
+        ));
+
+        $worker = $workers->findById($result->workerId);
+        self::assertNotNull($worker);
+        self::assertSame($hostInfo, $worker->hostInfo());
+    }
+
     public function testShouldPersistFingerprintWhenProvided(): void
     {
         $codes = new InMemoryWorkerPairingCodeRepository();
@@ -117,6 +184,38 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         self::assertSame($meta, $worker->fingerprintMeta());
     }
 
+    public function testShouldDispatchWorkerPairedWithRabbitMqCredentials(): void
+    {
+        $codes = new InMemoryWorkerPairingCodeRepository();
+        $workers = new InMemoryWorkerRepository();
+        $refreshTokens = new InMemoryWorkerRefreshTokenRepository();
+        $owner = new UserId(Uuid::v7());
+        $codes->save(WorkerPairingCode::issue('ABCD-2345', $owner, new DateTimeImmutable('2026-11-23T10:00:00+00:00')));
+        $events = new SpyEventDispatcher();
+        $sut = $this->makeHandler(
+            $codes,
+            $workers,
+            $refreshTokens,
+            new DateTimeImmutable('2026-11-23T10:05:00+00:00'),
+            $events,
+        );
+
+        $result = $sut(new ClaimPairingCodeCommand(code: 'ABCD-2345', name: 'Host'));
+
+        $paired = null;
+        foreach ($events->dispatched as $dispatched) {
+            if ($dispatched instanceof WorkerPaired) {
+                $paired = $dispatched;
+            }
+        }
+
+        self::assertInstanceOf(WorkerPaired::class, $paired);
+        self::assertTrue($paired->workerId->equals($result->workerId));
+        self::assertTrue($paired->ownerUserId->equals($owner));
+        self::assertSame($result->rabbitmqUser, $paired->rabbitmqUser);
+        self::assertSame('amqp-pass', $paired->rabbitmqPassword);
+    }
+
     public function testShouldRejectExpiredCode(): void
     {
         $codes = new InMemoryWorkerPairingCodeRepository();
@@ -138,6 +237,7 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
         InMemoryWorkerRepository $workers,
         InMemoryWorkerRefreshTokenRepository $refreshTokens,
         DateTimeImmutable $now,
+        ?SpyEventDispatcher $events = null,
     ): ClaimPairingCodeCommandHandler {
         return new ClaimPairingCodeCommandHandler(
             $codes,
@@ -145,6 +245,7 @@ final class ClaimPairingCodeCommandHandlerTest extends TestCase
             $refreshTokens,
             $this->sequencedGenerator(['amqp-pass', 'refresh-plain']),
             $this->fixedClock($now),
+            $events ?? new SpyEventDispatcher(),
         );
     }
 

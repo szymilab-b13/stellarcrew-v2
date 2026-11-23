@@ -24,4 +24,10 @@ final readonly class DoctrineWorkerPairingCodeRepository implements WorkerPairin
     {
         return $this->em->getRepository(WorkerPairingCode::class)->findOneBy(['code' => $code]);
     }
+
+    public function delete(WorkerPairingCode $code): void
+    {
+        $this->em->remove($code);
+        $this->em->flush();
+    }
 }

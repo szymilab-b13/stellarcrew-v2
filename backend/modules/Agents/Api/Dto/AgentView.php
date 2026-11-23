@@ -9,6 +9,7 @@ use Modules\Shared\Kernel\AgentId;
 use Modules\Shared\Kernel\AgentTemplateId;
 use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
+use Modules\Shared\Kernel\WorkerId;
 
 final readonly class AgentView
 {
@@ -29,6 +30,7 @@ final readonly class AgentView
         public DateTimeImmutable $createdAt,
         public DateTimeImmutable $updatedAt,
         public ?string $color = null,
+        public ?WorkerId $defaultWorkerId = null,
     ) {
     }
 }

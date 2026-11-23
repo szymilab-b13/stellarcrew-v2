@@ -85,6 +85,7 @@ final readonly class DefaultAgentsApi implements AgentsApi
             createdAt: $agent->createdAt(),
             updatedAt: $agent->updatedAt(),
             color: $agent->color(),
+            defaultWorkerId: $agent->defaultWorkerId(),
         );
     }
 }

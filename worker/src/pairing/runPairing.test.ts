@@ -130,6 +130,15 @@ describe('runPairing', () => {
         hostLabel: 'macbook.local',
         fingerprintHash: sampleFingerprint.hash,
         fingerprintMeta: sampleFingerprint.meta,
+        hostInfo: {
+          os: sampleFingerprint.meta.osPlatform,
+          osRelease: sampleFingerprint.meta.osRelease,
+          arch: sampleFingerprint.meta.arch,
+          cpuModel: sampleFingerprint.meta.cpuModel,
+          cpuCount: sampleFingerprint.meta.cpuCount,
+          hostname: sampleFingerprint.meta.hostname,
+          kernelVersion: sampleFingerprint.meta.osVersion,
+        },
       },
     ]);
     expect(saved).toEqual([
@@ -187,12 +196,12 @@ describe('runPairing', () => {
     expect(errors.some((msg) => msg.includes('XXXX-XXXX'))).toBe(true);
   });
 
-  it('should re-prompt when the worker name is blank', async () => {
+  it('should let the worker name stay blank so the backend assigns a default', async () => {
     const { store } = createRecordingStore();
     const { client, calls } = captureClient(sampleApiResult);
-    const { prompts, errors } = createScriptedPrompts({
+    const { prompts } = createScriptedPrompts({
       code: ['ABCD-2345'],
-      name: ['   ', 'laptop'],
+      name: ['   '],
       hostLabel: [undefined],
     });
 
@@ -205,8 +214,7 @@ describe('runPairing', () => {
       collectFingerprint: fakeCollectFingerprint,
     });
 
-    expect(calls[0].name).toBe('laptop');
-    expect(errors.some((msg) => msg.toLowerCase().includes('name'))).toBe(true);
+    expect(calls[0].name).toBeUndefined();
   });
 
   it('should ask for confirmation before overwriting an existing credentials file', async () => {

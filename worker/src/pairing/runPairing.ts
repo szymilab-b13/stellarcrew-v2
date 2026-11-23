@@ -42,7 +42,7 @@ export async function runPairing(deps: RunPairingDeps): Promise<WorkerCredential
     (value) => validateCode(value),
     (reason) => prompts.error(reason),
   );
-  const name = await promptUntil(
+  const name = await promptUntilOptional(
     prompts.askName,
     (value) => validateName(value),
     (reason) => prompts.error(reason),
@@ -63,6 +63,15 @@ export async function runPairing(deps: RunPairingDeps): Promise<WorkerCredential
       hostLabel,
       fingerprintHash: fingerprint.hash,
       fingerprintMeta: fingerprint.meta,
+      hostInfo: {
+        os: fingerprint.meta.osPlatform,
+        osRelease: fingerprint.meta.osRelease,
+        arch: fingerprint.meta.arch,
+        cpuModel: fingerprint.meta.cpuModel,
+        cpuCount: fingerprint.meta.cpuCount,
+        hostname: fingerprint.meta.hostname,
+        kernelVersion: fingerprint.meta.osVersion,
+      },
     });
     const credentials: WorkerCredentials =
       result.refreshToken !== undefined
@@ -141,11 +150,7 @@ function validateCode(raw: string): Validation {
   return { value: normalised };
 }
 
-function validateName(raw: string): Validation {
-  const trimmed = raw.trim();
-  if (trimmed === '') {
-    return { error: 'Worker name cannot be blank.' };
-  }
+function validateName(trimmed: string): Validation {
   if (trimmed.length > NAME_MAX_LENGTH) {
     return { error: `Worker name is too long (max ${String(NAME_MAX_LENGTH)} characters).` };
   }

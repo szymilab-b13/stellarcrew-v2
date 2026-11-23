@@ -41,7 +41,7 @@ final class CascadeWorkerRevokedListenerTest extends TestCase
         $now = new DateTimeImmutable('2026-11-18T12:00:00+00:00');
         $sut = new CascadeWorkerRevokedListener($agents);
 
-        $sut(new WorkerRevoked($workerId, new UserId(Uuid::v7()), new UserId(Uuid::v7()), $now));
+        $sut(new WorkerRevoked($workerId, new UserId(Uuid::v7()), new UserId(Uuid::v7()), $now, 'worker-agents-test'));
 
         self::assertNull($agents->findById($matching1->id())?->defaultWorkerId());
         self::assertNull($agents->findById($matching2->id())?->defaultWorkerId());
@@ -62,6 +62,7 @@ final class CascadeWorkerRevokedListenerTest extends TestCase
             new UserId(Uuid::v7()),
             new UserId(Uuid::v7()),
             new DateTimeImmutable('2026-11-18T12:00:00+00:00'),
+            'worker-agents-noop',
         ));
 
         self::assertNull($agents->findById($unrelated->id())?->defaultWorkerId());

@@ -15,6 +15,7 @@ final readonly class WorkerRevoked
         public UserId $ownerUserId,
         public UserId $actorId,
         public DateTimeImmutable $occurredAt,
+        public string $rabbitmqUser,
     ) {
     }
 }

@@ -1,10 +1,11 @@
 export interface PairWorkerInput {
   readonly apiBaseUrl: string;
   readonly code: string;
-  readonly name: string;
+  readonly name?: string;
   readonly hostLabel?: string;
   readonly fingerprintHash?: string;
   readonly fingerprintMeta?: object;
+  readonly hostInfo?: object;
 }
 
 export interface PairWorkerResult {
@@ -35,8 +36,10 @@ export function createPairingClient(fetchFn: typeof fetch = fetch): PairingClien
 
     const payload: Record<string, unknown> = {
       code: input.code,
-      name: input.name,
     };
+    if (input.name !== undefined && input.name !== '') {
+      payload.name = input.name;
+    }
     if (input.hostLabel !== undefined && input.hostLabel !== '') {
       payload.hostLabel = input.hostLabel;
     }
@@ -45,6 +48,9 @@ export function createPairingClient(fetchFn: typeof fetch = fetch): PairingClien
     }
     if (input.fingerprintMeta !== undefined) {
       payload.fingerprintMeta = input.fingerprintMeta;
+    }
+    if (input.hostInfo !== undefined) {
+      payload.hostInfo = input.hostInfo;
     }
 
     const response = await fetchFn(url, {

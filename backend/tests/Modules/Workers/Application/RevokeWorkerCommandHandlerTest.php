@@ -43,6 +43,7 @@ final class RevokeWorkerCommandHandlerTest extends TestCase
         self::assertTrue($dispatched->workerId->equals($workerId));
         self::assertTrue($dispatched->ownerUserId->equals($owner));
         self::assertEquals($now, $dispatched->occurredAt);
+        self::assertSame('worker-xyz', $dispatched->rabbitmqUser);
     }
 
     public function testShouldWriteAuditEntryWhenRevoked(): void

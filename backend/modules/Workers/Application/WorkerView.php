@@ -18,6 +18,8 @@ final readonly class WorkerView
         public bool $isOnline,
         public DateTimeImmutable $createdAt,
         public DateTimeImmutable $updatedAt,
+        public ?string $fingerprintHashShort,
+        public string $fingerprintStatus,
     ) {
     }
 }

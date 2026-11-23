@@ -7,9 +7,13 @@ namespace Modules\Workers\Application;
 use Modules\Shared\Kernel\Clock;
 use Modules\Workers\Domain\WorkerRepository;
 
+use function substr;
+
 final readonly class ListUserWorkersQueryHandler
 {
     public const int ONLINE_THRESHOLD_SECONDS = 120;
+
+    public const int FINGERPRINT_HASH_SHORT_LENGTH = 12;
 
     public function __construct(
         private WorkerRepository $workers,
@@ -25,6 +29,7 @@ final readonly class ListUserWorkersQueryHandler
         $now = $this->clock->now();
         $views = [];
         foreach ($this->workers->findByOwner($query->ownerUserId) as $worker) {
+            $fingerprintHash = $worker->fingerprintHash();
             $views[] = new WorkerView(
                 id: $worker->id(),
                 name: $worker->name(),
@@ -34,6 +39,8 @@ final readonly class ListUserWorkersQueryHandler
                 isOnline: $worker->isOnline($now, self::ONLINE_THRESHOLD_SECONDS),
                 createdAt: $worker->createdAt(),
                 updatedAt: $worker->updatedAt(),
+                fingerprintHashShort: $fingerprintHash !== null ? substr($fingerprintHash, 0, self::FINGERPRINT_HASH_SHORT_LENGTH) : null,
+                fingerprintStatus: $worker->fingerprintStatus(),
             );
         }
 

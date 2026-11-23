@@ -48,6 +48,7 @@ final readonly class WorkerMeController
             refreshToken: $request->refreshToken,
             fingerprintHash: $request->fingerprintHash,
             fingerprintMeta: $request->fingerprintMeta,
+            hostInfo: $request->hostInfo,
         ));
 
         return new JsonResponse([
