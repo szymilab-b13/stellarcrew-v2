@@ -18,6 +18,8 @@ export const messagesQueryKey = (threadId: string, limit?: number, offset?: numb
     { limit: limit ?? null, offset: offset ?? null },
   ] as const;
 
+const AGENT_REPLY_POLL_INTERVAL_MS = 3_000;
+
 export function useMessages({ threadId, limit, offset }: UseMessagesInput) {
   return useQuery<ListMessagesResponse>({
     queryKey: threadId
@@ -26,6 +28,8 @@ export function useMessages({ threadId, limit, offset }: UseMessagesInput) {
     queryFn: () => fetchMessages({ threadId: threadId as string, limit, offset }),
     enabled: threadId !== null,
     placeholderData: keepPreviousData,
-    staleTime: 30_000,
+    staleTime: 2_000,
+    refetchInterval: AGENT_REPLY_POLL_INTERVAL_MS,
+    refetchIntervalInBackground: false,
   });
 }

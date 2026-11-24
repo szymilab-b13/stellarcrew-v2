@@ -35,7 +35,9 @@ export function ConversationFeed({ conversation, sessionId, senderId }: Conversa
       ],
       queryFn: () => fetchMessages({ threadId: thread.threadId }),
       enabled: threads.length > 0,
-      staleTime: 30_000,
+      staleTime: 2_000,
+      refetchInterval: 3_000,
+      refetchIntervalInBackground: false,
     })),
   });
 
