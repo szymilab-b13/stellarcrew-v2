@@ -8,6 +8,8 @@ export interface AgentDefaults {
   priority: Priority;
 }
 
+const UPDATED_EVENT = 'chat.agent-defaults.updated';
+
 export function defaultAgentDefaults(agentId: string): AgentDefaults {
   return {
     engineType: 'stellarcrew_worker',
@@ -55,11 +57,42 @@ export function useAgentDefaults(agentId: string): {
     setDefaults(readFromStorage(agentId) ?? defaultAgentDefaults(agentId));
   }, [agentId]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    function resync(event: Event) {
+      if (event instanceof CustomEvent) {
+        const payload = event.detail as { agentId?: string } | null;
+        if (payload?.agentId !== undefined && payload.agentId !== agentId) {
+          return;
+        }
+      }
+      setDefaults(readFromStorage(agentId) ?? defaultAgentDefaults(agentId));
+    }
+
+    function onStorage(event: StorageEvent) {
+      if (event.key !== storageKey(agentId)) {
+        return;
+      }
+      setDefaults(readFromStorage(agentId) ?? defaultAgentDefaults(agentId));
+    }
+
+    window.addEventListener(UPDATED_EVENT, resync);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(UPDATED_EVENT, resync);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, [agentId]);
+
   const update = useCallback(
     (next: AgentDefaults) => {
       setDefaults(next);
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(storageKey(agentId), JSON.stringify(next));
+        window.dispatchEvent(new CustomEvent(UPDATED_EVENT, { detail: { agentId } }));
       }
     },
     [agentId],
