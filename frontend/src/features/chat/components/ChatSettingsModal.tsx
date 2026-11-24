@@ -34,7 +34,12 @@ export function ChatSettingsModal({ conversation, onClose }: ChatSettingsModalPr
     onClose();
   }
 
-  const workers = workersQuery.data?.workers ?? [];
+  const workers = [...(workersQuery.data?.workers ?? [])].sort((left, right) => {
+    if (left.isOnline !== right.isOnline) {
+      return left.isOnline ? -1 : 1;
+    }
+    return left.name.localeCompare(right.name);
+  });
 
   return (
     <div
@@ -76,10 +81,14 @@ export function ChatSettingsModal({ conversation, onClose }: ChatSettingsModalPr
           >
             <option value="">{t('chat.settings.workerPlaceholder')}</option>
             {workers.map((worker) => (
-              <option key={worker.id} value={worker.id}>
+              <option
+                key={worker.id}
+                value={worker.id}
+                style={{ color: worker.isOnline ? '#16a34a' : undefined }}
+              >
+                {worker.isOnline ? '🟢 ' : '⚪ '}
                 {worker.name}
                 {worker.hostLabel ? ` (${worker.hostLabel})` : ''}
-                {worker.isOnline ? ' · online' : ''}
               </option>
             ))}
           </select>
