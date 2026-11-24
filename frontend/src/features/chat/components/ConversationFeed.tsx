@@ -1,6 +1,6 @@
 import { useQueries } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { fetchMessages } from '../api/chatApi';
@@ -48,12 +48,25 @@ export function ConversationFeed({ conversation, sessionId, senderId }: Conversa
 
   const latestThreadId = threads.length > 0 ? threads[0].threadId : null;
   const defaultSubject = t('chat.composer.defaultSubject', { agentName: conversation.agentName });
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const lastMessageId = mergedMessages[mergedMessages.length - 1]?.id ?? null;
+
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (node === null) {
+      return;
+    }
+    node.scrollTop = node.scrollHeight;
+  }, [conversation.agentId, lastMessageId]);
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3">
       <ChatHeader conversation={conversation} onOpenSettings={() => setIsSettingsOpen(true)} />
 
-      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto rounded-xl border border-sc-border bg-sc-bg-card/40 p-4">
+      <div
+        ref={scrollRef}
+        className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto rounded-xl border border-sc-border bg-sc-bg-card/40 p-4"
+      >
         {threadsQuery.isPending || isLoadingMessages ? (
           <p className="flex items-center gap-2 text-sm text-sc-text-muted">
             <Loader2 className="animate-spin" size={14} aria-hidden />
