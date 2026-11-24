@@ -10,7 +10,7 @@ export interface AgentDefaults {
 
 export function defaultAgentDefaults(agentId: string): AgentDefaults {
   return {
-    engineType: 'cli_terminal',
+    engineType: 'stellarcrew_worker',
     engineId: agentId,
     priority: 'P2',
   };

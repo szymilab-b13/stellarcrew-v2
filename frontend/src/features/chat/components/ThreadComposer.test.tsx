@@ -65,7 +65,7 @@ function installFetch(script: FetchScript = {}) {
             metadata: {},
             replyToMessageId: null,
             engineId: agentId,
-            engineType: 'cli_terminal',
+            engineType: 'stellarcrew_worker',
             classifiedBy: 'sender',
             classificationConfidence: null,
             createdAt: '2026-11-18T12:00:01+00:00',
@@ -146,7 +146,7 @@ describe('ThreadComposer', () => {
             metadata: {},
             replyToMessageId: null,
             engineId: agentId,
-            engineType: 'cli_terminal',
+            engineType: 'stellarcrew_worker',
             classifiedBy: 'sender',
             classificationConfidence: null,
             createdAt: '2026-11-18T12:00:01+00:00',
@@ -167,7 +167,7 @@ describe('ThreadComposer', () => {
     expect(payload.threadId).toBe(existingThreadId);
     expect(payload.content).toBe('Hello');
     expect(payload.priority).toBe('P2');
-    expect(payload.engineType).toBe('cli_terminal');
+    expect(payload.engineType).toBe('stellarcrew_worker');
     expect(payload.engineId).toBe(agentId);
   });
 
@@ -211,7 +211,7 @@ describe('ThreadComposer', () => {
             metadata: {},
             replyToMessageId: null,
             engineId: agentId,
-            engineType: 'cli_terminal',
+            engineType: 'stellarcrew_worker',
             classifiedBy: 'sender',
             classificationConfidence: null,
             createdAt: '2026-11-18T12:00:01+00:00',

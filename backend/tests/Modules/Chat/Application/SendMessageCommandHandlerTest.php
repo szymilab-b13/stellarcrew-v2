@@ -10,6 +10,7 @@ use App\Tests\Fixtures\Chat\InMemoryChatSessionRepository;
 use App\Tests\Fixtures\Chat\InMemoryChatThreadRepository;
 use App\Tests\Fixtures\Chat\SpyMessageBus;
 use App\Tests\Fixtures\Core\SpyAuditLogger;
+use App\Tests\Fixtures\Core\SpyRealtimePublisher;
 use DateTimeImmutable;
 use Modules\Agents\Api\Dto\AgentView;
 use Modules\Chat\Application\AgentReplyRequested;
@@ -31,6 +32,9 @@ use Modules\Shared\Kernel\OrganizationId;
 use Modules\Shared\Kernel\UserId;
 use Modules\Shared\Kernel\WorkerId;
 use PHPUnit\Framework\TestCase;
+
+use function sprintf;
+
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
@@ -49,6 +53,7 @@ final class SendMessageCommandHandlerTest extends TestCase
         $messages = new InMemoryChatMessageRepository();
         $audit = new SpyAuditLogger();
         $bus = new SpyMessageBus();
+        $realtime = new SpyRealtimePublisher();
         $sut = new SendMessageCommandHandler(
             $sessions,
             $threads,
@@ -57,6 +62,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
             new InMemoryAgentsApi(),
+            $realtime,
         );
 
         $session = ChatSession::create(
@@ -92,6 +98,9 @@ final class SendMessageCommandHandlerTest extends TestCase
         self::assertNotNull($audit->entries[0]->userId);
         self::assertTrue($audit->entries[0]->userId->equals($actorId));
         self::assertSame([], $bus->envelopes, 'No agent reply dispatched when thread has no worker.');
+        self::assertCount(1, $realtime->events);
+        self::assertSame(sprintf('chat/thread/%s', (string) $thread->id()), $realtime->events[0]['topic']);
+        self::assertSame('message.sent', $realtime->events[0]['data']['type']);
     }
 
     public function testShouldDispatchAgentReplyWhenThreadHasCurrentWorkerAndRecipientIsAgent(): void
@@ -110,6 +119,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
             new InMemoryAgentsApi(),
+            new SpyRealtimePublisher(),
         );
 
         $session = ChatSession::create(
@@ -187,6 +197,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
             $agents,
+            new SpyRealtimePublisher(),
         );
 
         $session = ChatSession::create(
@@ -272,6 +283,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
             $agents,
+            new SpyRealtimePublisher(),
         );
 
         $session = ChatSession::create(
@@ -354,6 +366,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
             $agents,
+            new SpyRealtimePublisher(),
         );
 
         $session = ChatSession::create(
@@ -420,6 +433,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             $bus,
             new InMemoryAgentsApi(),
+            new SpyRealtimePublisher(),
         );
 
         $session = ChatSession::create(
@@ -577,6 +591,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             new SpyMessageBus(),
             new InMemoryAgentsApi(),
+            new SpyRealtimePublisher(),
         );
 
         $session = ChatSession::create(
@@ -626,6 +641,7 @@ final class SendMessageCommandHandlerTest extends TestCase
             new FrozenClock(new DateTimeImmutable(self::NOW)),
             new SpyMessageBus(),
             new InMemoryAgentsApi(),
+            new SpyRealtimePublisher(),
         );
     }
 
