@@ -58,7 +58,7 @@ const messageUserDeploy = {
   metadata: {},
   replyToMessageId: null,
   engineId: agentId,
-  engineType: 'cli_terminal',
+  engineType: 'stellarcrew_worker',
   classifiedBy: 'sender',
   classificationConfidence: null,
   createdAt: '2026-11-18T10:40:00+00:00',
@@ -185,7 +185,7 @@ describe('ConversationFeed', () => {
     await userEvent.click(settingsButton);
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Engine type')).toBeInTheDocument();
+    expect(screen.getByText('Worker')).toBeInTheDocument();
   });
 
   it('shows an empty state when the agent has no threads yet', async () => {
