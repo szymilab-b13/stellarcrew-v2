@@ -13,6 +13,8 @@ use Modules\Shared\Kernel\ChatMessageId;
 use Modules\Shared\Kernel\ChatThreadId;
 use Modules\Workers\Application\IssueTokenCommand;
 use Modules\Workers\Application\IssueTokenCommandHandler;
+use Modules\Workers\Application\RecordHeartbeatCommand;
+use Modules\Workers\Application\RecordHeartbeatCommandHandler;
 use Modules\Workers\Infrastructure\Support\WorkerAuthenticator;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,6 +31,7 @@ final readonly class WorkerMeController
         private GetOrCreateThreadWorkerSessionCommandHandler $getOrCreateSession,
         private RecordAgentReplyCommandHandler $recordAgentReply,
         private IssueTokenCommandHandler $issueToken,
+        private RecordHeartbeatCommandHandler $recordHeartbeat,
     ) {
     }
 
@@ -123,5 +126,23 @@ final readonly class WorkerMeController
             'threadId' => (string) $message->threadId(),
             'createdAt' => $message->createdAt()->format(DateTimeInterface::ATOM),
         ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/api/workers/me/heartbeat', name: 'workers_me_heartbeat', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/workers/me/heartbeat',
+        summary: 'Bump last_heartbeat_at for the authenticated worker',
+        tags: ['workers-me'],
+        responses: [
+            new OA\Response(response: 204, description: 'Heartbeat recorded'),
+            new OA\Response(response: 403, description: 'Invalid worker credentials'),
+        ],
+    )]
+    public function heartbeat(Request $request): Response
+    {
+        $worker = $this->authenticator->authenticate($request);
+        ($this->recordHeartbeat)(new RecordHeartbeatCommand(workerId: $worker->id()));
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }

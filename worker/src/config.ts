@@ -14,15 +14,19 @@ export interface WorkerConfig {
   readonly healthcheckPort: number;
   readonly logLevel: string;
   readonly workerName: string;
+  readonly heartbeatIntervalMs: number;
 }
 
-const DEFAULT_RABBITMQ_HOST = 'rabbitmq';
+const DEFAULT_RABBITMQ_HOST = 'localhost';
 const DEFAULT_RABBITMQ_PORT = 5672;
 const DEFAULT_RABBITMQ_VHOST = '/';
-const DEFAULT_API_BASE_URL = 'http://localhost:8080';
+const DEFAULT_API_BASE_URL = 'http://localhost:8000';
 const DEFAULT_HEALTHCHECK_PORT = 3001;
 const DEFAULT_LOG_LEVEL = 'info';
 const DEFAULT_WORKER_NAME = 'stellarcrew-worker';
+const DEFAULT_HEARTBEAT_INTERVAL_MS = 30_000;
+const MIN_HEARTBEAT_INTERVAL_MS = 1_000;
+const MAX_HEARTBEAT_INTERVAL_MS = 600_000;
 
 const MAX_PORT = 65535;
 
@@ -43,13 +47,29 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
     'HEALTHCHECK_PORT',
   );
 
+  const heartbeatIntervalMs = parseHeartbeatInterval(env.HEARTBEAT_INTERVAL_MS);
+
   return {
     rabbitmq,
     api,
     healthcheckPort,
     logLevel: nonEmpty(env.LOG_LEVEL, DEFAULT_LOG_LEVEL),
     workerName: nonEmpty(env.WORKER_NAME, DEFAULT_WORKER_NAME),
+    heartbeatIntervalMs,
   };
+}
+
+function parseHeartbeatInterval(raw: string | undefined): number {
+  if (raw === undefined || raw === '') return DEFAULT_HEARTBEAT_INTERVAL_MS;
+  const parsed = Number.parseInt(raw, 10);
+  if (
+    !Number.isInteger(parsed) ||
+    parsed < MIN_HEARTBEAT_INTERVAL_MS ||
+    parsed > MAX_HEARTBEAT_INTERVAL_MS
+  ) {
+    throw new Error(`Invalid HEARTBEAT_INTERVAL_MS value: ${raw}`);
+  }
+  return parsed;
 }
 
 function nonEmpty(value: string | undefined, fallback: string): string {

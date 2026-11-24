@@ -38,7 +38,7 @@ describe('loadConfig', () => {
   it('should default rabbitmq host/port/vhost', () => {
     const config = loadConfig({});
 
-    expect(config.rabbitmq).toEqual({ host: 'rabbitmq', port: 5672, vhost: '/' });
+    expect(config.rabbitmq).toEqual({ host: 'localhost', port: 5672, vhost: '/' });
   });
 
   it('should override rabbitmq host/port/vhost from env', () => {
@@ -55,10 +55,25 @@ describe('loadConfig', () => {
     expect(() => loadConfig({ RABBITMQ_PORT: 'xyz' })).toThrow(/RABBITMQ_PORT/);
   });
 
-  it('should default API_BASE_URL to http://localhost:8080', () => {
+  it('should default API_BASE_URL to http://localhost:8000', () => {
     const config = loadConfig({});
 
-    expect(config.api.baseUrl).toBe('http://localhost:8080');
+    expect(config.api.baseUrl).toBe('http://localhost:8000');
+  });
+
+  it('should default heartbeat interval to 30 seconds and accept env overrides', () => {
+    const defaults = loadConfig({});
+
+    expect(defaults.heartbeatIntervalMs).toBe(30000);
+
+    const overridden = loadConfig({ HEARTBEAT_INTERVAL_MS: '5000' });
+
+    expect(overridden.heartbeatIntervalMs).toBe(5000);
+  });
+
+  it('should throw when HEARTBEAT_INTERVAL_MS is outside the supported range', () => {
+    expect(() => loadConfig({ HEARTBEAT_INTERVAL_MS: '500' })).toThrow(/HEARTBEAT_INTERVAL_MS/);
+    expect(() => loadConfig({ HEARTBEAT_INTERVAL_MS: 'abc' })).toThrow(/HEARTBEAT_INTERVAL_MS/);
   });
 
   it('should strip the trailing slash from API_BASE_URL', () => {

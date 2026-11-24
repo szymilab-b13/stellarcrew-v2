@@ -23,6 +23,7 @@ export interface RecordedMessage {
 export interface WorkerApiClient {
   readonly getOrCreateSession: (threadId: string) => Promise<WorkerSessionView>;
   readonly recordMessage: (input: RecordMessageInput) => Promise<RecordedMessage>;
+  readonly sendHeartbeat: () => Promise<void>;
 }
 
 export class WorkerApiError extends Error {
@@ -95,7 +96,15 @@ export function createWorkerApiClient({
     return (await response.json()) as RecordedMessage;
   }
 
-  return { getOrCreateSession, recordMessage };
+  async function sendHeartbeat(): Promise<void> {
+    const url = `${base}/api/workers/me/heartbeat`;
+    const response = await authorizedFetch(url, { method: 'POST' });
+    if (!response.ok) {
+      throw await makeError(response, `POST ${url}`);
+    }
+  }
+
+  return { getOrCreateSession, recordMessage, sendHeartbeat };
 }
 
 function buildHeaders(
