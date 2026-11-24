@@ -4,6 +4,7 @@ import type { Logger } from 'pino';
 export interface ClaudeRunInput {
   readonly sessionId: string;
   readonly prompt: string;
+  readonly resume?: boolean;
 }
 
 export interface ClaudeRunResult {
@@ -18,27 +19,34 @@ export interface ClaudeRunnerOptions {
   readonly logger: Logger;
   readonly command?: string;
   readonly baseArgs?: readonly string[];
+  readonly resumeFlag?: string;
+  readonly newSessionFlag?: string;
   readonly cwd?: string;
   readonly timeoutMs?: number;
   readonly spawnFn?: typeof spawn;
 }
 
 const DEFAULT_COMMAND = 'claude';
-const DEFAULT_BASE_ARGS: readonly string[] = ['-p', '--resume'];
+const DEFAULT_BASE_ARGS: readonly string[] = ['-p'];
+const DEFAULT_RESUME_FLAG = '--resume';
+const DEFAULT_NEW_SESSION_FLAG = '--session-id';
 const DEFAULT_TIMEOUT_MS = 120_000;
 
 export function createClaudeRunner({
   logger,
   command = DEFAULT_COMMAND,
   baseArgs = DEFAULT_BASE_ARGS,
+  resumeFlag = DEFAULT_RESUME_FLAG,
+  newSessionFlag = DEFAULT_NEW_SESSION_FLAG,
   cwd,
   timeoutMs = DEFAULT_TIMEOUT_MS,
   spawnFn = spawn,
 }: ClaudeRunnerOptions): ClaudeRunner {
   return {
-    run: ({ sessionId, prompt }) =>
+    run: ({ sessionId, prompt, resume = false }) =>
       new Promise<ClaudeRunResult>((resolve, reject) => {
-        const args = [...baseArgs, sessionId];
+        const modeFlag = resume ? resumeFlag : newSessionFlag;
+        const args = [...baseArgs, modeFlag, sessionId];
         const child: ChildProcess = spawnFn(command, args, {
           cwd,
           stdio: ['pipe', 'pipe', 'pipe'],

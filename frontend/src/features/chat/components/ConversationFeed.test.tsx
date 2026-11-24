@@ -185,7 +185,6 @@ describe('ConversationFeed', () => {
     await userEvent.click(settingsButton);
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByText('Priority')).toBeInTheDocument();
     expect(screen.getByText('Engine type')).toBeInTheDocument();
   });
 

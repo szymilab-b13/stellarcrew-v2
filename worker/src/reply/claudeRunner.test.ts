@@ -73,7 +73,7 @@ function buildChildMock(options: FakeChildOptions, onStdin: (data: string) => vo
 }
 
 describe('createClaudeRunner', () => {
-  it('spawns claude with `-p --resume <sessionId>` args and pipes prompt via stdin', async () => {
+  it('spawns claude with `-p --session-id <sessionId>` for new sessions and pipes prompt via stdin', async () => {
     let capturedCommand = '';
     let capturedArgs: readonly string[] = [];
     let capturedStdin = '';
@@ -95,7 +95,7 @@ describe('createClaudeRunner', () => {
 
     expect(result.stdout).toBe('Here is the draft.');
     expect(capturedCommand).toBe('claude');
-    expect(capturedArgs).toEqual(['-p', '--resume', 'session-abc']);
+    expect(capturedArgs).toEqual(['-p', '--session-id', 'session-abc']);
     expect(capturedStdin).toBe('Draft release notes.');
   });
 
@@ -116,6 +116,24 @@ describe('createClaudeRunner', () => {
     await expect(runner.run({ sessionId: 'sid', prompt: 'x' })).rejects.toThrow(/code=2/);
   });
 
+  it('spawns claude with `-p --resume <sessionId>` when resume=true', async () => {
+    let capturedArgs: readonly string[] = [];
+    const spawnFn = vi.fn().mockImplementation((_command: string, args: string[]) => {
+      capturedArgs = args;
+      const { mock } = buildChildMock({ stdout: 'ok', exitCode: 0 }, () => undefined);
+      return mock;
+    });
+
+    const runner = createClaudeRunner({
+      logger: silentLogger(),
+      spawnFn: spawnFn as unknown as typeof import('node:child_process').spawn,
+    });
+
+    await runner.run({ sessionId: 'sid-resumed', prompt: 'hi', resume: true });
+
+    expect(capturedArgs).toEqual(['-p', '--resume', 'sid-resumed']);
+  });
+
   it('honours a custom command and base args override', async () => {
     let capturedArgs: readonly string[] = [];
     const spawnFn = vi.fn().mockImplementation((_command: string, args: string[]) => {
@@ -127,7 +145,7 @@ describe('createClaudeRunner', () => {
     const runner = createClaudeRunner({
       logger: silentLogger(),
       command: 'custom-claude',
-      baseArgs: ['--print', '--session-id'],
+      baseArgs: ['--print'],
       spawnFn: spawnFn as unknown as typeof import('node:child_process').spawn,
     });
 

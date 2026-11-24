@@ -31,6 +31,7 @@ export function createReplyHandler({
     const { stdout } = await claude.run({
       sessionId: session.claudeSessionId,
       prompt: payload.userContent,
+      resume: session.lastMessageAt !== null,
     });
 
     const content = stdout.trim();

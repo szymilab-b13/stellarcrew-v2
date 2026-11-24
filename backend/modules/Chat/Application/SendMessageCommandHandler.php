@@ -15,6 +15,7 @@ use Modules\Chat\Domain\ChatSessionRepository;
 use Modules\Chat\Domain\ChatThread;
 use Modules\Chat\Domain\ChatThreadNotFoundException;
 use Modules\Chat\Domain\ChatThreadRepository;
+use Modules\Chat\Domain\EngineType;
 use Modules\Chat\Domain\ParticipantType;
 use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Core\Api\Dto\AuditEntry;
@@ -146,16 +147,25 @@ final readonly class SendMessageCommandHandler
             return;
         }
 
-        $workerId = $thread->currentWorkerId();
-        if (!$workerId instanceof WorkerId) {
-            $agent = $this->agents->findById(new AgentId($command->recipientId));
-            if (!$agent instanceof AgentView || !$agent->defaultWorkerId instanceof WorkerId) {
-                return;
+        if ($command->engineType === EngineType::StellarcrewWorker) {
+            $workerId = new WorkerId($command->engineId);
+            $currentWorkerId = $thread->currentWorkerId();
+            if (!$currentWorkerId instanceof WorkerId || !$currentWorkerId->equals($workerId)) {
+                $thread->assignCurrentWorker($workerId, $this->clock->now());
+                $this->threads->save($thread);
             }
+        } else {
+            $workerId = $thread->currentWorkerId();
+            if (!$workerId instanceof WorkerId) {
+                $agent = $this->agents->findById(new AgentId($command->recipientId));
+                if (!$agent instanceof AgentView || !$agent->defaultWorkerId instanceof WorkerId) {
+                    return;
+                }
 
-            $workerId = $agent->defaultWorkerId;
-            $thread->assignCurrentWorker($workerId, $this->clock->now());
-            $this->threads->save($thread);
+                $workerId = $agent->defaultWorkerId;
+                $thread->assignCurrentWorker($workerId, $this->clock->now());
+                $this->threads->save($thread);
+            }
         }
 
         $this->agentReplyBus->dispatch(

@@ -73,6 +73,7 @@ describe('createReplyHandler', () => {
     expect(claude.run).toHaveBeenCalledWith({
       sessionId: session.claudeSessionId,
       prompt: payload.userContent,
+      resume: false,
     });
     expect(api.recordMessage).toHaveBeenCalledWith({
       threadId: payload.threadId,

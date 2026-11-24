@@ -670,9 +670,11 @@
       "title": "Ustawienia rozmowy",
       "titleWithAgent": "Ustawienia — {{agentName}}",
       "close": "Zamknij",
-      "priority": "Priorytet",
       "engineType": "Typ silnika",
       "engineId": "Engine ID",
+      "worker": "Worker",
+      "workerPlaceholder": "Wybierz workera…",
+      "noWorkers": "Brak workerów. Sparuj jednego w sekcji Workery.",
       "cancel": "Anuluj",
       "save": "Zapisz"
     },
@@ -750,6 +752,7 @@
       "toolbar": "Więcej akcji",
       "attach": "Dołącz plik",
       "engineTypes": {
+        "stellarcrew_worker": "Worker StellarCrew",
         "cli_terminal": "Terminal CLI",
         "webhook": "Webhook",
         "batch": "Batch"

@@ -670,9 +670,11 @@
       "title": "Chat settings",
       "titleWithAgent": "Settings — {{agentName}}",
       "close": "Close",
-      "priority": "Priority",
       "engineType": "Engine type",
       "engineId": "Engine ID",
+      "worker": "Worker",
+      "workerPlaceholder": "Pick a worker…",
+      "noWorkers": "No workers yet. Pair one in Workers.",
       "cancel": "Cancel",
       "save": "Save"
     },
@@ -750,6 +752,7 @@
       "toolbar": "More actions",
       "attach": "Attach file",
       "engineTypes": {
+        "stellarcrew_worker": "StellarCrew worker",
         "cli_terminal": "CLI terminal",
         "webhook": "Webhook",
         "batch": "Batch"

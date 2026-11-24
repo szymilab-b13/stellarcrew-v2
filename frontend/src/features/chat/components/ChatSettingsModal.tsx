@@ -2,24 +2,24 @@ import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useWorkers } from '../../workers/api/useWorkers';
 import { useAgentDefaults } from '../hooks/useAgentDefaults';
-import type { AgentConversation, EngineType, Priority } from '../types';
+import type { AgentConversation, EngineType } from '../types';
 
 interface ChatSettingsModalProps {
   conversation: AgentConversation;
   onClose(): void;
 }
 
-const PRIORITIES: Priority[] = ['P0', 'P1', 'P2', 'P3'];
-const ENGINE_TYPES: EngineType[] = ['cli_terminal', 'webhook', 'batch'];
+const ENGINE_TYPES: EngineType[] = ['stellarcrew_worker', 'cli_terminal', 'webhook', 'batch'];
 
 export function ChatSettingsModal({ conversation, onClose }: ChatSettingsModalProps) {
   const { t } = useTranslation();
   const { defaults, update } = useAgentDefaults(conversation.agentId);
+  const workersQuery = useWorkers();
 
   const [engineType, setEngineType] = useState<EngineType>(defaults.engineType);
   const [engineId, setEngineId] = useState(defaults.engineId);
-  const [priority, setPriority] = useState<Priority>(defaults.priority);
 
   useEffect(() => {
     function handleKey(event: KeyboardEvent) {
@@ -33,9 +33,12 @@ export function ChatSettingsModal({ conversation, onClose }: ChatSettingsModalPr
 
   function handleSave(event: React.FormEvent) {
     event.preventDefault();
-    update({ engineType, engineId, priority });
+    update({ engineType, engineId, priority: defaults.priority });
     onClose();
   }
+
+  const workers = workersQuery.data?.workers ?? [];
+  const isWorkerMode = engineType === 'stellarcrew_worker';
 
   return (
     <div
@@ -68,21 +71,6 @@ export function ChatSettingsModal({ conversation, onClose }: ChatSettingsModalPr
         </header>
 
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-sc-text-muted">{t('chat.settings.priority')}</span>
-          <select
-            value={priority}
-            onChange={(event) => setPriority(event.target.value as Priority)}
-            className="rounded-md border border-sc-border bg-sc-bg px-2 py-1 text-sc-text focus:border-indigo-400 focus:outline-none"
-          >
-            {PRIORITIES.map((p) => (
-              <option key={p} value={p}>
-                {t(`chat.priority.${p}` as const)}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="flex flex-col gap-1 text-sm">
           <span className="text-sc-text-muted">{t('chat.settings.engineType')}</span>
           <select
             value={engineType}
@@ -97,16 +85,42 @@ export function ChatSettingsModal({ conversation, onClose }: ChatSettingsModalPr
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-sc-text-muted">{t('chat.settings.engineId')}</span>
-          <input
-            type="text"
-            value={engineId}
-            onChange={(event) => setEngineId(event.target.value)}
-            placeholder="00000000-0000-0000-0000-000000000000"
-            className="rounded-md border border-sc-border bg-sc-bg px-2 py-1 font-mono text-xs text-sc-text placeholder:text-sc-text-muted focus:border-indigo-400 focus:outline-none"
-          />
-        </label>
+        {isWorkerMode ? (
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-sc-text-muted">{t('chat.settings.worker')}</span>
+            <select
+              value={engineId}
+              onChange={(event) => setEngineId(event.target.value)}
+              disabled={workersQuery.isLoading || workers.length === 0}
+              className="rounded-md border border-sc-border bg-sc-bg px-2 py-1 text-sc-text focus:border-indigo-400 focus:outline-none disabled:opacity-60"
+            >
+              <option value="">{t('chat.settings.workerPlaceholder')}</option>
+              {workers.map((worker) => (
+                <option key={worker.id} value={worker.id}>
+                  {worker.name}
+                  {worker.hostLabel ? ` (${worker.hostLabel})` : ''}
+                  {worker.isOnline ? ' · online' : ''}
+                </option>
+              ))}
+            </select>
+            {workers.length === 0 && !workersQuery.isLoading ? (
+              <span className="text-xs text-sc-text-muted">
+                {t('chat.settings.noWorkers')}
+              </span>
+            ) : null}
+          </label>
+        ) : (
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-sc-text-muted">{t('chat.settings.engineId')}</span>
+            <input
+              type="text"
+              value={engineId}
+              onChange={(event) => setEngineId(event.target.value)}
+              placeholder="00000000-0000-0000-0000-000000000000"
+              className="rounded-md border border-sc-border bg-sc-bg px-2 py-1 font-mono text-xs text-sc-text placeholder:text-sc-text-muted focus:border-indigo-400 focus:outline-none"
+            />
+          </label>
+        )}
 
         <div className="flex justify-end gap-2">
           <button
