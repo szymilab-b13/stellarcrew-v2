@@ -24,7 +24,7 @@ export interface ClaudeRunnerOptions {
 }
 
 const DEFAULT_COMMAND = 'claude';
-const DEFAULT_BASE_ARGS: readonly string[] = ['-p', '--resume'];
+const DEFAULT_BASE_ARGS: readonly string[] = ['-p', '--session-id'];
 const DEFAULT_TIMEOUT_MS = 120_000;
 
 export function createClaudeRunner({

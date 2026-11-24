@@ -73,7 +73,7 @@ function buildChildMock(options: FakeChildOptions, onStdin: (data: string) => vo
 }
 
 describe('createClaudeRunner', () => {
-  it('spawns claude with `-p --resume <sessionId>` args and pipes prompt via stdin', async () => {
+  it('spawns claude with `-p --session-id <sessionId>` args and pipes prompt via stdin', async () => {
     let capturedCommand = '';
     let capturedArgs: readonly string[] = [];
     let capturedStdin = '';
@@ -95,7 +95,7 @@ describe('createClaudeRunner', () => {
 
     expect(result.stdout).toBe('Here is the draft.');
     expect(capturedCommand).toBe('claude');
-    expect(capturedArgs).toEqual(['-p', '--resume', 'session-abc']);
+    expect(capturedArgs).toEqual(['-p', '--session-id', 'session-abc']);
     expect(capturedStdin).toBe('Draft release notes.');
   });
 
