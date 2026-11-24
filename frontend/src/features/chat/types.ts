@@ -5,7 +5,7 @@ export type Priority = 'P0' | 'P1' | 'P2' | 'P3';
 export type ContentType =
   'text' | 'markdown' | 'task_dispatch' | 'tool_request' | 'forwarded' | 'notification';
 
-export type EngineType = 'cli_terminal' | 'webhook' | 'batch';
+export type EngineType = 'cli_terminal' | 'webhook' | 'batch' | 'stellarcrew_worker';
 
 export type ClassifiedBy = 'sender' | 'supervisor' | 'manual';
 
