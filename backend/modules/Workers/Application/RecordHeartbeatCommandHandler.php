@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Workers\Application;
 
+use Modules\Core\Api\RealtimePublisher;
 use Modules\Shared\Kernel\Clock;
 use Modules\Workers\Domain\Worker;
 use Modules\Workers\Domain\WorkerNotFoundException;
@@ -14,6 +15,7 @@ final readonly class RecordHeartbeatCommandHandler
     public function __construct(
         private WorkerRepository $workers,
         private Clock $clock,
+        private RealtimePublisher $realtime,
     ) {
     }
 
@@ -26,5 +28,10 @@ final readonly class RecordHeartbeatCommandHandler
 
         $worker->recordHeartbeat($this->clock->now());
         $this->workers->save($worker);
+
+        $this->realtime->publish('workers/list', [
+            'type' => 'worker.heartbeat',
+            'workerId' => (string) $command->workerId,
+        ]);
     }
 }

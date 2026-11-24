@@ -19,6 +19,7 @@ use Modules\Chat\Domain\EngineType;
 use Modules\Chat\Domain\ParticipantType;
 use Modules\Core\Api\AuditLoggerInterface;
 use Modules\Core\Api\Dto\AuditEntry;
+use Modules\Core\Api\RealtimePublisher;
 use Modules\Shared\Kernel\AgentId;
 use Modules\Shared\Kernel\ChatMessageId;
 use Modules\Shared\Kernel\Clock;
@@ -47,6 +48,7 @@ final readonly class SendMessageCommandHandler
         private Clock $clock,
         private MessageBusInterface $agentReplyBus,
         private AgentsApi $agents,
+        private RealtimePublisher $realtime,
     ) {
     }
 
@@ -130,6 +132,15 @@ final readonly class SendMessageCommandHandler
         ));
 
         $this->dispatchAgentReplyIfNeeded($command, $thread, $message);
+
+        $this->realtime->publish(
+            sprintf('chat/thread/%s', (string) $command->threadId),
+            [
+                'type' => 'message.sent',
+                'threadId' => (string) $command->threadId,
+                'messageId' => (string) $message->id(),
+            ],
+        );
 
         return $message;
     }

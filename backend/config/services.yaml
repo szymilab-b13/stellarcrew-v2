@@ -53,6 +53,22 @@ services:
     Modules\Core\Domain\SystemSettingRepository:
         alias: Modules\Core\Infrastructure\Doctrine\Repository\DoctrineSystemSettingRepository
 
+    # Realtime (Mercure) bindings
+    Modules\Core\Infrastructure\Realtime\MercureJwtFactory:
+        arguments:
+            $secret: '%env(MERCURE_JWT_SECRET)%'
+
+    Modules\Core\Infrastructure\Realtime\HttpMercurePublisher:
+        arguments:
+            $hubUrl: '%env(MERCURE_URL)%'
+
+    Modules\Core\Infrastructure\Http\MercureTokenController:
+        arguments:
+            $hubPublicUrl: '%env(MERCURE_PUBLIC_URL)%'
+
+    Modules\Core\Api\RealtimePublisher:
+        alias: Modules\Core\Infrastructure\Realtime\HttpMercurePublisher
+
     # Audit module bindings
     Modules\Audit\Domain\AuditLogEntryRepository:
         alias: Modules\Audit\Infrastructure\Doctrine\Repository\DoctrineAuditLogEntryRepository
@@ -243,6 +259,11 @@ when@test:
 
         Modules\UserManagement\Application\ReadModel\UserProfileReadModel:
             alias: App\Tests\Fixtures\UserManagement\InMemoryUserProfileReadModel
+
+        App\Tests\Fixtures\Core\SpyRealtimePublisher: ~
+
+        Modules\Core\Api\RealtimePublisher:
+            alias: App\Tests\Fixtures\Core\SpyRealtimePublisher
 
         # swap real health checks with always-healthy fakes so endpoint tests do not require live infrastructure
         Modules\Core\Infrastructure\HealthCheck\DbHealthCheck:

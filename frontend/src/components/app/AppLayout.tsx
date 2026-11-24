@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { useMe } from '@/features/auth/api/useMe';
+import { useRealtime } from '@/features/realtime/useRealtime';
 import { readAuthToken } from '@/lib/authToken';
 
 import { AppTopbar } from './AppTopbar';
@@ -11,6 +12,7 @@ export function AppLayout() {
   const location = useLocation();
   const token = readAuthToken();
   const me = useMe();
+  useRealtime();
 
   if (token === null) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;

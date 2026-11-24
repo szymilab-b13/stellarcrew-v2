@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Modules\Workers\Application;
 
+use App\Tests\Fixtures\Core\SpyRealtimePublisher;
 use App\Tests\Fixtures\Workers\InMemoryWorkerRepository;
 use DateTimeImmutable;
 use Modules\Shared\Kernel\Clock;
@@ -30,13 +31,17 @@ final class RecordHeartbeatCommandHandlerTest extends TestCase
             new DateTimeImmutable('2026-11-18T10:00:00+00:00'),
         ));
         $now = new DateTimeImmutable('2026-11-23T14:00:00+00:00');
-        $sut = new RecordHeartbeatCommandHandler($workers, $this->fixedClock($now));
+        $realtime = new SpyRealtimePublisher();
+        $sut = new RecordHeartbeatCommandHandler($workers, $this->fixedClock($now), $realtime);
 
         $sut(new RecordHeartbeatCommand(workerId: $workerId));
 
         $worker = $workers->findById($workerId);
         self::assertNotNull($worker);
         self::assertEquals($now, $worker->lastHeartbeatAt());
+        self::assertCount(1, $realtime->events);
+        self::assertSame('workers/list', $realtime->events[0]['topic']);
+        self::assertSame('worker.heartbeat', $realtime->events[0]['data']['type']);
     }
 
     public function testShouldThrowWhenWorkerUnknown(): void
@@ -44,6 +49,7 @@ final class RecordHeartbeatCommandHandlerTest extends TestCase
         $sut = new RecordHeartbeatCommandHandler(
             new InMemoryWorkerRepository(),
             $this->fixedClock(new DateTimeImmutable('2026-11-23T14:00:00+00:00')),
+            new SpyRealtimePublisher(),
         );
 
         $this->expectException(WorkerNotFoundException::class);

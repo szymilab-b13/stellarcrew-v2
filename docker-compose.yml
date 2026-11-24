@@ -69,6 +69,27 @@ services:
     networks:
       - sc_net
 
+  mercure:
+    image: dunglas/mercure:v0.19
+    container_name: sc_mercure
+    environment:
+      SERVER_NAME: ":80"
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+      MERCURE_EXTRA_DIRECTIVES: |
+        cors_origins http://localhost:5173 http://localhost:5273 http://127.0.0.1:5173 http://127.0.0.1:5273
+        anonymous
+    ports:
+      - "${MERCURE_PORT:-3000}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    networks:
+      - sc_net
+
   backend:
     build:
       context: ./backend
@@ -82,6 +103,9 @@ services:
       RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
       RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
       MAILER_DSN: ${MAILER_DSN:-smtp://mailpit:1025}
+      MERCURE_URL: ${MERCURE_URL:-http://mercure/.well-known/mercure}
+      MERCURE_PUBLIC_URL: ${MERCURE_PUBLIC_URL:-http://localhost:3000/.well-known/mercure}
+      MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
     volumes:
       - ./backend:/app
     depends_on:
@@ -121,6 +145,7 @@ services:
     environment:
       FRONTEND_PORT: ${FRONTEND_PORT:-5173}
       VITE_API_URL: ${VITE_API_URL:-}
+      VITE_MERCURE_URL: ${VITE_MERCURE_URL:-http://localhost:3000/.well-known/mercure}
     command: sh -c "corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm install --frozen-lockfile && pnpm dev --host 0.0.0.0 --port $${FRONTEND_PORT}"
     ports:
       - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
