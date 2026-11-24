@@ -9,4 +9,5 @@ enum EngineType: string
     case CliTerminal = 'cli_terminal';
     case Webhook = 'webhook';
     case Batch = 'batch';
+    case StellarcrewWorker = 'stellarcrew_worker';
 }

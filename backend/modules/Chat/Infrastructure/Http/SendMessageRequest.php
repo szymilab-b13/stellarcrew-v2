@@ -51,7 +51,7 @@ final readonly class SendMessageRequest
         #[Assert\NotBlank(message: 'engineId is required')]
         #[Assert\Uuid]
         public string $engineId,
-        #[Assert\Choice(choices: ['cli_terminal', 'webhook', 'batch'])]
+        #[Assert\Choice(choices: ['cli_terminal', 'webhook', 'batch', 'stellarcrew_worker'])]
         public string $engineType,
         #[Assert\Choice(choices: ['sender', 'supervisor', 'manual'])]
         public string $classifiedBy,

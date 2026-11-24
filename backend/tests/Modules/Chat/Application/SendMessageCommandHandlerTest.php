@@ -317,6 +317,93 @@ final class SendMessageCommandHandlerTest extends TestCase
         self::assertNull($savedThread->currentWorkerId());
     }
 
+    public function testShouldRouteAgentReplyToEngineIdWorkerWhenEngineTypeIsStellarcrewWorker(): void
+    {
+        $actorId = new UserId(Uuid::v7());
+        $defaultWorkerId = WorkerId::generate();
+        $chosenWorkerId = WorkerId::generate();
+        $sessions = new InMemoryChatSessionRepository();
+        $threads = new InMemoryChatThreadRepository();
+        $bus = new SpyMessageBus();
+        $agentId = AgentId::generate();
+        $agents = new InMemoryAgentsApi([
+            new AgentView(
+                id: $agentId,
+                organizationId: OrganizationId::generate(),
+                ownerUserId: $actorId,
+                sourceTemplateId: null,
+                slug: 'bot',
+                name: 'Bot',
+                role: 'Assistant',
+                roleDescription: 'desc',
+                expertise: 'expertise',
+                workflow: 'workflow',
+                style: 'style',
+                outputFormat: 'format',
+                isActive: true,
+                createdAt: new DateTimeImmutable(self::NOW),
+                updatedAt: new DateTimeImmutable(self::NOW),
+                defaultWorkerId: $defaultWorkerId,
+            ),
+        ]);
+        $sut = new SendMessageCommandHandler(
+            $sessions,
+            $threads,
+            new InMemoryChatMessageRepository(),
+            new SpyAuditLogger(),
+            new FrozenClock(new DateTimeImmutable(self::NOW)),
+            $bus,
+            $agents,
+        );
+
+        $session = ChatSession::create(
+            ChatSessionId::generate(),
+            OrganizationId::generate(),
+            $actorId,
+            'Session',
+            new DateTimeImmutable(self::NOW),
+        );
+        $sessions->save($session);
+
+        $thread = ChatThread::create(
+            ChatThreadId::generate(),
+            $session->id(),
+            'Thread',
+            new DateTimeImmutable(self::NOW),
+        );
+        $threads->save($thread);
+
+        $command = new SendMessageCommand(
+            actorId: $actorId,
+            sessionId: $session->id(),
+            threadId: $thread->id(),
+            senderType: ParticipantType::User,
+            senderId: $actorId->value,
+            recipientType: ParticipantType::Agent,
+            recipientId: $agentId->value,
+            subject: 'Hello',
+            priority: Priority::P2,
+            content: 'Hello body',
+            contentType: ContentType::Text,
+            metadata: [],
+            replyToMessageId: null,
+            engineId: $chosenWorkerId->value,
+            engineType: EngineType::StellarcrewWorker,
+            classifiedBy: ClassifiedBy::Sender,
+            classificationConfidence: null,
+        );
+
+        $sut($command);
+
+        $savedThread = $threads->findById($thread->id());
+        self::assertNotNull($savedThread);
+        self::assertTrue($savedThread->currentWorkerId()?->equals($chosenWorkerId));
+        self::assertCount(1, $bus->envelopes);
+        $event = $bus->envelopes[0]->getMessage();
+        self::assertInstanceOf(AgentReplyRequested::class, $event);
+        self::assertTrue($event->workerId->equals($chosenWorkerId));
+    }
+
     public function testShouldNotDispatchAgentReplyWhenRecipientIsNotAgent(): void
     {
         $actorId = new UserId(Uuid::v7());
