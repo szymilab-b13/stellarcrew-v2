@@ -93,9 +93,7 @@ export function ChatSettingsModal({ conversation, onClose }: ChatSettingsModalPr
             ))}
           </select>
           {workers.length === 0 && !workersQuery.isLoading ? (
-            <span className="text-xs text-sc-text-muted">
-              {t('chat.settings.noWorkers')}
-            </span>
+            <span className="text-xs text-sc-text-muted">{t('chat.settings.noWorkers')}</span>
           ) : null}
         </label>
 
