@@ -99,7 +99,7 @@ final class SendMessageCommandHandlerTest extends TestCase
         self::assertTrue($audit->entries[0]->userId->equals($actorId));
         self::assertSame([], $bus->envelopes, 'No agent reply dispatched when thread has no worker.');
         self::assertCount(1, $realtime->events);
-        self::assertSame(sprintf('chat/thread/%s', (string) $thread->id()), $realtime->events[0]['topic']);
+        self::assertSame(sprintf('/chat/thread/%s', (string) $thread->id()), $realtime->events[0]['topic']);
         self::assertSame('message.sent', $realtime->events[0]['data']['type']);
     }
 

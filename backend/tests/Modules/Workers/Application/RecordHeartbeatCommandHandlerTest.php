@@ -40,7 +40,7 @@ final class RecordHeartbeatCommandHandlerTest extends TestCase
         self::assertNotNull($worker);
         self::assertEquals($now, $worker->lastHeartbeatAt());
         self::assertCount(1, $realtime->events);
-        self::assertSame('workers/list', $realtime->events[0]['topic']);
+        self::assertSame('/workers/list', $realtime->events[0]['topic']);
         self::assertSame('worker.heartbeat', $realtime->events[0]['data']['type']);
     }
 

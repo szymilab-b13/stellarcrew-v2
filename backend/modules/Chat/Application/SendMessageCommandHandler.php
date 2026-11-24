@@ -134,7 +134,7 @@ final readonly class SendMessageCommandHandler
         $this->dispatchAgentReplyIfNeeded($command, $thread, $message);
 
         $this->realtime->publish(
-            sprintf('chat/thread/%s', (string) $command->threadId),
+            sprintf('/chat/thread/%s', (string) $command->threadId),
             [
                 'type' => 'message.sent',
                 'threadId' => (string) $command->threadId,

@@ -29,7 +29,7 @@ final readonly class RecordHeartbeatCommandHandler
         $worker->recordHeartbeat($this->clock->now());
         $this->workers->save($worker);
 
-        $this->realtime->publish('workers/list', [
+        $this->realtime->publish('/workers/list', [
             'type' => 'worker.heartbeat',
             'workerId' => (string) $command->workerId,
         ]);

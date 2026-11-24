@@ -35,8 +35,8 @@ export function useRealtime(): void {
     }
 
     const url = new URL(hub);
-    url.searchParams.append('topic', 'chat/thread/{id}');
-    url.searchParams.append('topic', 'workers/list');
+    url.searchParams.append('topic', '/chat/thread/{id}');
+    url.searchParams.append('topic', '/workers/list');
 
     const source = new EventSource(url.toString());
 
