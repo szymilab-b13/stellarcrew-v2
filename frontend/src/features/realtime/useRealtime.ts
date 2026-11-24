@@ -62,10 +62,8 @@ export function useRealtime(): void {
       }
 
       if (parsed.type === 'message.sent') {
-        // eslint-disable-next-line no-console
-        console.info('[realtime] invalidating messages for thread', parsed.threadId);
         const threadId = parsed.threadId;
-        queryClient.invalidateQueries({
+        const matches = queryClient.getQueryCache().findAll({
           predicate: (query) => {
             const key = query.queryKey;
             return (
@@ -76,19 +74,22 @@ export function useRealtime(): void {
               key[3] === 'messages'
             );
           },
-          refetchType: 'all',
         });
-        queryClient.invalidateQueries({
-          queryKey: ['chat', 'conversations'],
-          refetchType: 'all',
+        // eslint-disable-next-line no-console
+        console.info(
+          '[realtime] refetching',
+          matches.length,
+          'message queries for thread',
+          threadId,
+        );
+        matches.forEach((query) => {
+          void query.fetch();
         });
-        queryClient.invalidateQueries({ queryKey: ['chat', 'agent'], refetchType: 'all' });
+        void queryClient.refetchQueries({ queryKey: ['chat', 'conversations'] });
+        void queryClient.refetchQueries({ queryKey: ['chat', 'agent'] });
       } else if (parsed.type === 'worker.heartbeat') {
-        queryClient.invalidateQueries({ queryKey: ['workers', 'list'], refetchType: 'all' });
-        queryClient.invalidateQueries({
-          queryKey: ['workers', 'detail', parsed.workerId],
-          refetchType: 'all',
-        });
+        void queryClient.refetchQueries({ queryKey: ['workers', 'list'] });
+        void queryClient.refetchQueries({ queryKey: ['workers', 'detail', parsed.workerId] });
       }
     };
 
