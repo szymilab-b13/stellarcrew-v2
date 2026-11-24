@@ -40,7 +40,17 @@ export function useRealtime(): void {
 
     const source = new EventSource(url.toString());
 
+    // eslint-disable-next-line no-console
+    console.info('[realtime] subscribing', url.toString());
+
+    source.onopen = () => {
+      // eslint-disable-next-line no-console
+      console.info('[realtime] connected');
+    };
+
     source.onmessage = (event: MessageEvent<string>) => {
+      // eslint-disable-next-line no-console
+      console.info('[realtime] event', event.data);
       let parsed: RealtimeEvent | null = null;
       try {
         parsed = JSON.parse(event.data) as RealtimeEvent;
@@ -52,6 +62,8 @@ export function useRealtime(): void {
       }
 
       if (parsed.type === 'message.sent') {
+        // eslint-disable-next-line no-console
+        console.info('[realtime] invalidating messages for thread', parsed.threadId);
         queryClient.invalidateQueries({
           queryKey: ['chat', 'thread', parsed.threadId, 'messages'],
         });
@@ -61,6 +73,11 @@ export function useRealtime(): void {
         queryClient.invalidateQueries({ queryKey: ['workers', 'list'] });
         queryClient.invalidateQueries({ queryKey: ['workers', 'detail', parsed.workerId] });
       }
+    };
+
+    source.onerror = (event) => {
+      // eslint-disable-next-line no-console
+      console.error('[realtime] error', event);
     };
 
     return () => {
